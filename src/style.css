@@ -4,3 +4,21 @@
   align-items: center;
   min-height: 100vh;
 }
+
+.black-piece {
+  opacity:1;
+  fill:#000000;
+  fill-opacity:1;
+  fill-rule:evenodd;
+  stroke:#ffffff;
+  stroke-width:1;
+}
+
+.white-piece {
+  opacity:1;
+  fill:#ffffff;
+  fill-opacity:1;
+  fill-rule:evenodd;
+  stroke:#000000;
+  stroke-width:1;
+}

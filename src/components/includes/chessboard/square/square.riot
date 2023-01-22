@@ -1,0 +1,48 @@
+<square xmlns="http://www.w3.org/2000/svg" width={state.width} height={state.width} x={state.x} y={state.y} viewBox="0 0 50 50" class="square" >
+
+    <rect width="50" height="50" class="{state.color}-square"></rect>
+
+    <text x="5" y="45" class="square-label stroke-{state.color}" if={displayName}>
+        {props.id}
+    </text>
+
+
+<!--    <svg is="pawn" width="45" height="45" x="2" y="1" color="{props.color}"></svg>-->
+
+    <script>
+        export default {
+            displayName: true,
+            onMounted(props) {
+                this.update(props)
+            },
+            message() {
+              alert('hello')
+            },
+        }
+    </script>
+
+    <style>
+        .black-square {
+            fill: #315F65FF;
+
+        }
+        .white-square {
+            fill: #FFEED1FF;
+
+        }
+
+        .square-label {
+            font-size: 10px;
+        }
+
+        .stroke-white {
+            stroke: #315F65FF;
+        }
+
+        .stroke-black {
+            stroke: #FFEED1FF;
+        }
+
+    </style>
+
+</square>
