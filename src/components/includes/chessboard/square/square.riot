@@ -6,16 +6,15 @@
         {props.id}
     </text>
 
-    <svg is="piece" piece-name={props.gamePiece}  width="40" x="4" y="5" color="{props.gamePieceColor}" if={props.gamePiece}></svg>
+<!--    <svg is="piece" piece-name={props.gamePiece}  width="40" x="4" y="5" color="{props.gamePieceColor}" if={props.gamePiece}></svg>-->
 
     <script>
         import Piece from "../piece/piece.riot"
         export default {
             components: {Piece},
-            displayName: false,
+            displayName: true,
             onMounted(props) {
                 this.update(props)
-                console.log(props)
             },
         }
     </script>

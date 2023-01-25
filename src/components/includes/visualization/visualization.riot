@@ -1,0 +1,31 @@
+<visualization>
+    <div class="row">
+        <div class="column">
+            <h1>Let's Visualize!</h1>
+            <p> Here's the deal. To calculate well in chess you need to be able to properly visualize the board and the pieces. These exercises are designed to improve this skill. </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <guess-the-square-color></guess-the-square-color>
+        </div>
+    </div>
+
+    <script>
+        import GuessTheSquareColor from './exercises/guess-the-square-color.riot'
+        export default {
+            components: {
+                GuessTheSquareColor
+            }
+        }
+    </script>
+
+
+    <style>
+        h1,h2,h3 {
+            font-weight: lighter;
+        }
+    </style>
+
+</visualization>

@@ -1,0 +1,47 @@
+<app>
+    <div id='app-header'>
+        <div class="row">
+            <div class="column" id="header-logo-column">
+                <svg x=0 y=0 is="piece" piece-name="rook" color="black" width="40" class="header-logo"></svg>
+                <strong class="header-title">Rook Takes</strong>
+            </div>
+            <div class="column { this.state.page === 'chessboard' ? 'selected' : ''}">
+                <span class="app-link " onclick={ () => changePage('chessboard')}>Chessboard</span>
+            </div>
+            <div class="column { this.state.page === 'visualization' ? 'selected' : ''}">
+                <span class="app-link" onclick={() => changePage('visualization')}>Visualization Practice</span>
+            </div>
+        </div>
+    </div>
+
+    <main class="container">
+
+        <chessboard if={this.state.page === 'chessboard'}></chessboard>
+        <visualization if={this.state.page === 'visualization'}></visualization>
+
+    </main>
+
+    <script>
+        import Chessboard from '../includes/chessboard/chessboard.riot';
+        import Visualization from '../includes/visualization/visualization.riot'
+        import Piece from '../includes/chessboard/piece/piece.riot'
+        export default {
+            components: {
+                Chessboard,
+                Piece,
+                Visualization,
+            },
+            onBeforeMount() {
+              this.state = {
+                  page: 'visualization'
+              }
+            },
+            changePage(page) {
+                this.update({
+                    page: page
+                })
+            },
+        }
+    </script>
+
+</app>

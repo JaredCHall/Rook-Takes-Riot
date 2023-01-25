@@ -1,0 +1,176 @@
+<guess-the-square-color>
+    <h3>Exercise 1: Guess the Square's color</h3>
+    <p>
+        I say the name of a square, and you guess the color. Three seconds and time is out. Ready?
+        <button  onclick={() => toggleGame()}>{state.isPlaying ? 'I Quit!' : "Let's go"}</button>
+    </p>
+    <div class="exercise-area row" if={state.isPlaying}>
+
+        <div class="column">
+            { state.question }
+        </div>
+
+        <div class="column prompt" if={!state.isAnswered}>
+            <button class="button button-white" onclick={() => answerQuestion('white')}>It's white</button>
+            <button class="button button-black" onclick={() => answerQuestion('black')}>It's black</button>
+        </div>
+
+        <div class="column result" if="{state.isAnswered}">
+            <span class="wrong-answer" if={!state.isAnswerCorrect}>You're wrong!</span>
+            <span class="correct-answer" if={state.isAnswerCorrect}>You are correct!</span>
+            <button class="button" onclick={() => askQuestion()}>Go Again!</button>
+        </div>
+
+    </div>
+
+
+    <script>
+        export default {
+            onBeforeMount() {
+                this.state = {
+                    isPlaying: false,
+                    isAnswered: false,
+                    expectedAnswer: null,
+                    isAnswerCorrect: null,
+                    question: null,
+                }
+            },
+            toggleGame() {
+
+                const isPlaying = !this.state.isPlaying;
+                if(isPlaying){
+                    this.askQuestion()
+                    return
+                }
+
+                this.update({
+                    isPlaying: false,
+                })
+            },
+            askQuestion() {
+
+                const questionNumber = Math.floor(Math.random() * this.squareColors.length);
+                const square = this.squareColors[questionNumber];
+
+                this.update({
+                    isPlaying: true,
+                    isAnswered: false,
+                    expectedAnswer: square.color,
+                    question: 'What color is the '+square.name+' square? See it in your mind!'
+                })
+
+            },
+            answerQuestion(answer) {
+                this.update({
+                    isAnswered: true,
+                    isAnswerCorrect: answer === this.state.expectedAnswer
+                })
+            },
+            squareColors: [
+                {name: 'a1', color:'black'},
+                {name: 'b1', color:'white'},
+                {name: 'c1', color:'black'},
+                {name: 'd1', color:'white'},
+                {name: 'e1', color:'black'},
+                {name: 'f1', color:'white'},
+                {name: 'g1', color:'black'},
+                {name: 'h1', color:'white'},
+
+                {name: 'a2', color:'white'},
+                {name: 'b2', color:'black'},
+                {name: 'c2', color:'white'},
+                {name: 'd2', color:'black'},
+                {name: 'e2', color:'white'},
+                {name: 'f2', color:'black'},
+                {name: 'g2', color:'white'},
+                {name: 'h2', color:'black'},
+
+                {name: 'a3', color:'black'},
+                {name: 'b3', color:'white'},
+                {name: 'c3', color:'black'},
+                {name: 'd3', color:'white'},
+                {name: 'e3', color:'black'},
+                {name: 'f3', color:'white'},
+                {name: 'g3', color:'black'},
+                {name: 'h3', color:'white'},
+
+                {name: 'a4', color:'white'},
+                {name: 'b4', color:'black'},
+                {name: 'c4', color:'white'},
+                {name: 'd4', color:'black'},
+                {name: 'e4', color:'white'},
+                {name: 'f4', color:'black'},
+                {name: 'g4', color:'white'},
+                {name: 'h4', color:'black'},
+
+                {name: 'a5', color:'black'},
+                {name: 'b5', color:'white'},
+                {name: 'c5', color:'black'},
+                {name: 'd5', color:'white'},
+                {name: 'e5', color:'black'},
+                {name: 'f5', color:'white'},
+                {name: 'g5', color:'black'},
+                {name: 'h5', color:'white'},
+
+                {name: 'a6', color:'white'},
+                {name: 'b6', color:'black'},
+                {name: 'c6', color:'white'},
+                {name: 'd6', color:'black'},
+                {name: 'e6', color:'white'},
+                {name: 'f6', color:'black'},
+                {name: 'g6', color:'white'},
+                {name: 'h6', color:'black'},
+
+                {name: 'a7', color:'black'},
+                {name: 'b7', color:'white'},
+                {name: 'c7', color:'black'},
+                {name: 'd7', color:'white'},
+                {name: 'e7', color:'black'},
+                {name: 'f7', color:'white'},
+                {name: 'g7', color:'black'},
+                {name: 'h7', color:'white'},
+
+                {name: 'a8', color:'white'},
+                {name: 'b8', color:'black'},
+                {name: 'c8', color:'white'},
+                {name: 'd8', color:'black'},
+                {name: 'e8', color:'white'},
+                {name: 'f8', color:'black'},
+                {name: 'g8', color:'white'},
+                {name: 'h8', color:'black'},
+
+            ]
+        }
+    </script>
+
+    <style>
+
+        div.prompt button {
+            margin-left: 2rem;
+        }
+        div.result button {
+            margin-left: 2rem;
+        }
+
+        div.result span {
+            display:inline-block;
+            padding: 1rem 2rem;
+            font-weight: bolder;
+            font-size: 2rem;
+
+        }
+
+        span.correct-answer {
+            background-color: greenyellow;
+            color: black;
+
+        }
+
+        span.wrong-answer {
+            background-color: darkred;
+            color: antiquewhite;
+        }
+
+    </style>
+
+</guess-the-square-color>
