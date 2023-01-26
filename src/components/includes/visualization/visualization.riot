@@ -1,28 +1,61 @@
-<visualization>
-    <div class="row">
+<visualization class="container-content">
+    <div class="row" if={!state.selectedGame}>
         <div class="column">
+
             <h1>Let's Visualize!</h1>
             <p> Here's the deal. To calculate well in chess you need to be able to properly visualize the board and the pieces. These exercises are designed to improve this skill. </p>
+
+            <div style="text-align: center">
+                <h3> Select Your Game, Champion </h3>
+                <button class="button button-white" onclick={() => toggleGame('what-color-is-the-square')}>
+                    What Color Is The Square
+                </button>
+                <button class='button button-black margin-left' onclick={() => toggleGame('what-does-the-piece-see')}>
+                     What Does The Piece See
+                </button>
+            </div>
+
         </div>
     </div>
 
-    <div class="row">
+    <div class="row" if={state.selectedGame}>
         <div class="column">
-            <guess-the-square-color></guess-the-square-color>
+            <div style="text-align: left">
+                <button class="button button-small button-white" onclick={() => toggleGame(null)}>
+                    Back
+                </button>
+            </div>
+
+
+            <what-color-is-the-square if={state.selectedGame === 'what-color-is-the-square'}></what-color-is-the-square>
+            <what-does-the-piece-see if={state.selectedGame === 'what-does-the-piece-see'}></what-does-the-piece-see>
         </div>
     </div>
 
     <script>
-        import GuessTheSquareColor from './exercises/guess-the-square-color.riot'
+        import WhatColorIsTheSquare from './exercises/what-color-is-the-square.riot'
+        import WhatDoesThePieceSee from './exercises/what-does-the-piece-see.riot'
         export default {
             components: {
-                GuessTheSquareColor
-            }
+                WhatColorIsTheSquare,
+                WhatDoesThePieceSee
+            },
+            onBeforeMount() {
+                this.state = {
+                    selectedGame: null,
+                }
+            },
+            toggleGame(gameName) {
+              this.update({
+                  selectedGame: gameName,
+              })
+            },
         }
     </script>
 
 
     <style>
+
         h1,h2,h3 {
             font-weight: lighter;
         }

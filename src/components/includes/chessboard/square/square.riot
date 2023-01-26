@@ -2,19 +2,26 @@
 
     <rect width="50" height="50" class="{state.color}-square"></rect>
 
-    <text x="5" y="45" class="square-label stroke-{state.color}" if={displayName}>
+    <text x="5" y="45" class="square-label stroke-{state.color}" if={state.showLabel}>
         {props.id}
     </text>
 
-<!--    <svg is="piece" piece-name={props.gamePiece}  width="40" x="4" y="5" color="{props.gamePieceColor}" if={props.gamePiece}></svg>-->
+ <svg is="piece" piece-name={props.gamePiece}  width="40" x="4" y="5" color="{props.gamePieceColor}" if={props.gamePiece && state.showPiece}></svg>
 
     <script>
         import Piece from "../piece/piece.riot"
         export default {
             components: {Piece},
-            displayName: true,
+            toggleLabel() {
+                this.update({showLabel: !this.state.showLabel})
+            },
+            togglePiece() {
+                this.update({showPiece: !this.state.showPiece})
+            },
             onMounted(props) {
                 this.update(props)
+                this.root.toggleLabel = this.toggleLabel;
+                this.root.togglePiece = this.togglePiece;
             },
         }
     </script>

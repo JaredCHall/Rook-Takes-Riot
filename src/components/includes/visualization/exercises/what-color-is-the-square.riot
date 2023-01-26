@@ -1,26 +1,23 @@
-<guess-the-square-color>
-    <h3>Exercise 1: Guess the Square's color</h3>
-    <p>
-        I say the name of a square, and you guess the color. Three seconds and time is out. Ready?
-        <button  onclick={() => toggleGame()}>{state.isPlaying ? 'I Quit!' : "Let's go"}</button>
-    </p>
-    <div class="exercise-area row" if={state.isPlaying}>
+<what-color-is-the-square style="text-align:center">
+    <h1>What Color Is the Square</h1>
 
-        <div class="column">
-            { state.question }
-        </div>
+    <div class="column square-name" if={!state.isAnswered}>
+        { state.square }
+    </div>
+    <div class="column correct-answer" if={state.isAnswered && state.isAnswerCorrect}>
+        !!
+    </div>
+    <div class="column wrong-answer" if={state.isAnswered && !state.isAnswerCorrect}>
+        ??
+    </div>
 
-        <div class="column prompt" if={!state.isAnswered}>
-            <button class="button button-white" onclick={() => answerQuestion('white')}>It's white</button>
-            <button class="button button-black" onclick={() => answerQuestion('black')}>It's black</button>
-        </div>
+    <div class="column prompt" if={!state.isAnswered}>
+        <button class="button button-white" onclick={() => answerQuestion('white')}>It's white</button>
+        <button class="button button-black" onclick={() => answerQuestion('black')}>It's black</button>
+    </div>
 
-        <div class="column result" if="{state.isAnswered}">
-            <span class="wrong-answer" if={!state.isAnswerCorrect}>You're wrong!</span>
-            <span class="correct-answer" if={state.isAnswerCorrect}>You are correct!</span>
-            <button class="button" onclick={() => askQuestion()}>Go Again!</button>
-        </div>
-
+    <div class="column result" if="{state.isAnswered}">
+        <button class="button" onclick={() => askQuestion()}>Go Again!</button>
     </div>
 
 
@@ -28,24 +25,14 @@
         export default {
             onBeforeMount() {
                 this.state = {
-                    isPlaying: false,
                     isAnswered: false,
                     expectedAnswer: null,
                     isAnswerCorrect: null,
-                    question: null,
+                    square: null,
                 }
             },
-            toggleGame() {
-
-                const isPlaying = !this.state.isPlaying;
-                if(isPlaying){
-                    this.askQuestion()
-                    return
-                }
-
-                this.update({
-                    isPlaying: false,
-                })
+            onMounted() {
+              this.askQuestion()
             },
             askQuestion() {
 
@@ -53,10 +40,9 @@
                 const square = this.squareColors[questionNumber];
 
                 this.update({
-                    isPlaying: true,
                     isAnswered: false,
                     expectedAnswer: square.color,
-                    question: 'What color is the '+square.name+' square? See it in your mind!'
+                    square: square.name,
                 })
 
             },
@@ -145,6 +131,10 @@
 
     <style>
 
+        div.square-name {
+            font-size: 20rem;
+        }
+
         div.prompt button {
             margin-left: 2rem;
         }
@@ -160,17 +150,16 @@
 
         }
 
-        span.correct-answer {
-            background-color: greenyellow;
-            color: black;
-
+        .correct-answer {
+            color: greenyellow;
+            font-size: 20rem;
         }
 
-        span.wrong-answer {
-            background-color: darkred;
-            color: antiquewhite;
+        .wrong-answer {
+            color: indianred;
+            font-size: 20rem;
         }
 
     </style>
 
-</guess-the-square-color>
+</what-color-is-the-square>
