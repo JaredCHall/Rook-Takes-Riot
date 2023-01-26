@@ -6,23 +6,77 @@
         {props.id}
     </text>
 
- <svg is="piece" piece-name={props.gamePiece}  width="40" x="4" y="5" color="{props.gamePieceColor}" if={props.gamePiece && state.showPiece}></svg>
+    <svg is="piece" piece-name={state.gamePiece}  width="40" x="4" y="5" color="{state.gamePieceColor}" if={state.gamePiece}></svg>
 
     <script>
         import Piece from "../piece/piece.riot"
         export default {
             components: {Piece},
-            toggleLabel() {
-                this.update({showLabel: !this.state.showLabel})
-            },
-            togglePiece() {
-                this.update({showPiece: !this.state.showPiece})
+            onBeforeMount(props) {
+                if(props.index === undefined || props.id === undefined){
+                    throw new Error("Must set id and index properties")
+                }
+
+                const orientation = 'white'
+                const coords = this.getXYPosition(props.index, orientation);
+                this.state = {
+                    orientation: orientation,
+                    x: coords[0],
+                    y: coords[1],
+                    color: this.colorsMap[props.index] === 1 ? 'black' : 'white',
+                    gamePiece: null,
+                    gamePieceColor: null,
+                }
             },
             onMounted(props) {
                 this.update(props)
                 this.root.toggleLabel = this.toggleLabel;
-                this.root.togglePiece = this.togglePiece;
+                this.root.setOrientation = this.setOrientation;
+                this.root.setPiece = this.setPiece;
             },
+            toggleLabel() {
+                this.update({showLabel: !this.state.showLabel})
+            },
+            setPiece(type=null,color=null) {
+                this.update({
+                    gamePiece: type,
+                    gamePieceColor: color,
+                })
+            },
+
+            setOrientation(orientation) {
+                const coords = this.getXYPosition(this.props.index, orientation);
+                this.update({
+                    x: coords[0],
+                    y: coords[1],
+                })
+            },
+
+            getXYPosition(index, orientation) {
+                let x = Math.floor(index / 8) + 1
+                let y = index % 8 + 1
+
+                if(orientation === 'black'){
+                    x = x * -1 +9
+                    y = y * -1 + 9
+                }
+
+                x = (x-1) * 100;
+                y = -100 * y + 800;
+
+                return [x, y]
+            },
+            // 0 - white, 1 - black
+            colorsMap: [
+                1,0,1,0,1,0,1,0, // a1-a8
+                0,1,0,1,0,1,0,1, // b1-b8
+                1,0,1,0,1,0,1,0, // c1-c8
+                0,1,0,1,0,1,0,1, // d1-d8
+                1,0,1,0,1,0,1,0, // e1-e8
+                0,1,0,1,0,1,0,1, // f1-f8
+                1,0,1,0,1,0,1,0, // g1-g8
+                0,1,0,1,0,1,0,1, // h1-h8
+            ],
         }
     </script>
 
