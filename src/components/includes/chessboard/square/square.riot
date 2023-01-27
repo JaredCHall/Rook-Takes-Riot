@@ -1,9 +1,9 @@
-<square xmlns="http://www.w3.org/2000/svg" width={state.width} height={state.width} x={state.x} y={state.y} viewBox="0 0 50 50" class="square" >
+<square xmlns="http://www.w3.org/2000/svg" width={state.width} height={state.width} x={state.x} y={state.y} viewBox="0 0 50 50" class="square square-{props.name}" >
 
     <rect width="50" height="50" class="{state.color}-square"></rect>
 
     <text x="5" y="45" class="square-label stroke-{state.color}" if={state.showLabel}>
-        {props.id}
+        {props.name}
     </text>
 
     <svg is="piece" piece-name={state.gamePiece}  width="40" x="4" y="5" color="{state.gamePieceColor}" if={state.gamePiece}></svg>
@@ -13,7 +13,7 @@
         export default {
             components: {Piece},
             onBeforeMount(props) {
-                if(props.index === undefined || props.id === undefined){
+                if(props.index === undefined || props.name === undefined){
                     throw new Error("Must set id and index properties")
                 }
 
@@ -33,6 +33,7 @@
                 this.root.toggleLabel = this.toggleLabel;
                 this.root.setOrientation = this.setOrientation;
                 this.root.setPiece = this.setPiece;
+                this.root.getName = this.getName;
             },
             toggleLabel() {
                 this.update({showLabel: !this.state.showLabel})
@@ -50,6 +51,9 @@
                     x: coords[0],
                     y: coords[1],
                 })
+            },
+            getName() {
+              return this.name
             },
 
             getXYPosition(index, orientation) {

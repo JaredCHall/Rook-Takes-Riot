@@ -6,7 +6,7 @@
 
             <svg viewBox="0 0 800 800" style="min-width:40rem;max-width:70rem">
 
-                <svg each={ (id, index) in squaresMap } is="square" id={id} index={index} width=100></svg>
+                <svg each={ (name, index) in squaresMap } is="square" name={name} index={index} width=100></svg>
 
             </svg>
         </div>
@@ -32,6 +32,8 @@
 
     <script>
         import Square from "../../includes/chessboard/square/square.riot"
+        import ChessGamePosition from "../../../classes/ChessGamePosition.js"
+
         export default {
 
             components: {
@@ -53,58 +55,12 @@
                 const showPieces = !this.state.showPieces;
 
                 if(showPieces){
-
-                    // white pawns
-                    this.$('#a2').setPiece('pawn', 'white');
-                    this.$('#b2').setPiece('pawn', 'white');
-                    this.$('#c2').setPiece('pawn', 'white');
-                    this.$('#d2').setPiece('pawn', 'white');
-                    this.$('#e2').setPiece('pawn', 'white');
-                    this.$('#f2').setPiece('pawn', 'white');
-                    this.$('#g2').setPiece('pawn', 'white');
-                    this.$('#h2').setPiece('pawn', 'white');
-
-                    // white pieces
-                    this.$('#a1').setPiece('rook', 'white');
-                    this.$('#b1').setPiece('knight', 'white');
-                    this.$('#c1').setPiece('bishop', 'white');
-                    this.$('#d1').setPiece('queen', 'white');
-                    this.$('#e1').setPiece('king', 'white');
-                    this.$('#f1').setPiece('bishop', 'white');
-                    this.$('#g1').setPiece('knight', 'white');
-                    this.$('#h1').setPiece('rook', 'white');
-
-                    // black pawns
-                    this.$('#a7').setPiece('pawn', 'black');
-                    this.$('#b7').setPiece('pawn', 'black');
-                    this.$('#c7').setPiece('pawn', 'black');
-                    this.$('#d7').setPiece('pawn', 'black');
-                    this.$('#e7').setPiece('pawn', 'black');
-                    this.$('#f7').setPiece('pawn', 'black');
-                    this.$('#g7').setPiece('pawn', 'black');
-                    this.$('#h7').setPiece('pawn', 'black');
-
-                    // black pieces
-                    this.$('#a8').setPiece('rook', 'black');
-                    this.$('#b8').setPiece('knight', 'black');
-                    this.$('#c8').setPiece('bishop', 'black');
-                    this.$('#d8').setPiece('queen', 'black');
-                    this.$('#e8').setPiece('king', 'black');
-                    this.$('#f8').setPiece('bishop', 'black');
-                    this.$('#g8').setPiece('knight', 'black');
-                    this.$('#h8').setPiece('rook', 'black');
-
+                    const FEN='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+                    this.setPosition(FEN)
 
                 }else{
-                    const clearMap = [
-                        'a1','b1','c1','d1','e1','f1','g1','h1', //row 1
-                        'a2','b2','c2','d2','e2','f2','g2','h2', //row 2
-                        'a7','b7','c7','d7','e7','f7','g7','h7', //row 7
-                        'a8','b8','c8','d8','e8','f8','g8','h8', //row 8
-                    ]
-                    for(let i=0;i<clearMap.length;i++){
-                        this.$('#'+clearMap[i]).setPiece(null)
-                    }
+                    const FEN='8/8/8/8/8/8/8/8'
+                    this.setPosition(FEN)
                 }
 
                 this.update({
@@ -130,6 +86,25 @@
                     showLabels: false,
                     showPieces: false,
                 }
+            },
+            setPosition(fen) {
+                const parser = new ChessGamePosition(fen)
+                for(const squareName in parser.positions){
+                    const position = parser.positions[squareName];
+                    const square = this.getSquare(squareName);
+                    if(position === null){
+                        square.setPiece(null)
+                    }else{
+                        square.setPiece(position[0],position[1])
+                    }
+                }
+            },
+            getSquare(key) {
+                if(typeof key === 'string'){
+                    return this.squares[this.squaresMap.indexOf(key)];
+                }
+
+                return this.squares[key];
             },
             squaresMap: [
                 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8',
