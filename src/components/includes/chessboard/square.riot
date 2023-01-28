@@ -1,6 +1,14 @@
-<square xmlns="http://www.w3.org/2000/svg" width={state.width} height={state.width} x={state.x} y={state.y} viewBox="0 0 50 50" class="square square-{props.name}" >
+<square
+        xmlns="http://www.w3.org/2000/svg"
+        width={state.width}
+        height={state.width}
+        x={state.x}
+        y={state.y}
+        viewBox="0 0 50 50"
+        class="square square-{props.name}" onclick={() => select(!state.selected)}>
 
     <rect width="50" height="50" class="{state.color}-square"></rect>
+    <rect width="50" height="50" class="square-{state.color}-selected" if={state.selected}></rect>
 
     <text x="5" y="45" class="square-label stroke-{state.color}" if={state.showLabel}>
         {props.name}
@@ -9,7 +17,8 @@
     <svg is="piece" piece-name={state.gamePiece}  width="40" x="4" y="5" color="{state.gamePieceColor}" if={state.gamePiece}></svg>
 
     <script>
-        import Piece from "../piece/piece.riot"
+        import Piece from "./piece.riot"
+        import ChessGamePosition from "../../../classes/ChessGamePosition.js";
         export default {
             components: {Piece},
             onBeforeMount(props) {
@@ -23,9 +32,10 @@
                     orientation: orientation,
                     x: coords[0],
                     y: coords[1],
-                    color: this.colorsMap[props.index] === 1 ? 'black' : 'white',
+                    color: ChessGamePosition.squareColors[props.index] === 1 ? 'black' : 'white',
                     gamePiece: null,
                     gamePieceColor: null,
+                    selected: false,
                 }
             },
             onMounted(props) {
@@ -34,6 +44,7 @@
                 this.root.setOrientation = this.setOrientation;
                 this.root.setPiece = this.setPiece;
                 this.root.getName = this.getName;
+                this.root.select = this.select;
             },
             toggleLabel() {
                 this.update({showLabel: !this.state.showLabel})
@@ -43,6 +54,9 @@
                     gamePiece: type,
                     gamePieceColor: color,
                 })
+            },
+            select(isSelected) {
+              this.update({selected: isSelected ?? false})
             },
 
             setOrientation(orientation) {
@@ -57,30 +71,19 @@
             },
 
             getXYPosition(index, orientation) {
-                let x = Math.floor(index / 8) + 1
-                let y = index % 8 + 1
+                let y = Math.floor(index / 8) * -1 + 8
+                let x = index % 8 + 1
 
                 if(orientation === 'black'){
-                    x = x * -1 +9
+                    x = x * -1 + 9
                     y = y * -1 + 9
                 }
 
-                x = (x-1) * 100;
-                y = -100 * y + 800;
+                x = (x - 1) * 100;
+                y = (8 - y) * 100;
 
                 return [x, y]
             },
-            // 0 - white, 1 - black
-            colorsMap: [
-                1,0,1,0,1,0,1,0, // a1-a8
-                0,1,0,1,0,1,0,1, // b1-b8
-                1,0,1,0,1,0,1,0, // c1-c8
-                0,1,0,1,0,1,0,1, // d1-d8
-                1,0,1,0,1,0,1,0, // e1-e8
-                0,1,0,1,0,1,0,1, // f1-f8
-                1,0,1,0,1,0,1,0, // g1-g8
-                0,1,0,1,0,1,0,1, // h1-h8
-            ],
         }
     </script>
 
@@ -91,7 +94,6 @@
         }
         .white-square {
             fill: #FFEED1FF;
-
         }
 
         .square-label {
@@ -104,6 +106,16 @@
 
         .stroke-black {
             stroke: #FFEED1FF;
+        }
+
+        .square-black-selected {
+            fill: hotpink;
+            fill-opacity: 0.65;
+        }
+        .square-white-selected {
+            fill: hotpink;
+            fill-opacity: 0.35;
+
         }
 
     </style>

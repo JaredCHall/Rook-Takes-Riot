@@ -1,28 +1,42 @@
-<what-color-is-the-square style="text-align:center">
+<what-color-is-the-square style="text-align:center;">
     <h1>What Color Is the Square</h1>
 
     <div class="column square-name" if={!state.isAnswered}>
         { state.square }
     </div>
-    <div class="column correct-answer" if={state.isAnswered && state.isAnswerCorrect}>
-        !!
+    <div class="row" style=" align-items: center; width:120rem">
+        <div class="column correct-answer" if={state.isAnswered && state.isAnswerCorrect}>
+            !!
+        </div>
+        <div class="column wrong-answer" if={state.isAnswered && !state.isAnswerCorrect}>
+            ??
+        </div>
+        <div class="column" if={state.isAnswered}>
+            <chessboard selected-square={state.square}></chessboard>
+        </div>
     </div>
-    <div class="column wrong-answer" if={state.isAnswered && !state.isAnswerCorrect}>
-        ??
-    </div>
+
 
     <div class="column prompt" if={!state.isAnswered}>
         <button class="button button-white" onclick={() => answerQuestion('white')}>It's white</button>
         <button class="button button-black" onclick={() => answerQuestion('black')}>It's black</button>
     </div>
 
+
+
+
     <div class="column result" if="{state.isAnswered}">
-        <button class="button" onclick={() => askQuestion()}>Go Again!</button>
+        <button class="button margin-top2" onclick={() => askQuestion()}>Go Again!</button>
     </div>
 
 
     <script>
+        import ChessGamePosition from "../../../../classes/ChessGamePosition.js";
+        import Chessboard from "../../chessboard/chessboard.riot"
         export default {
+            components: {
+                Chessboard,
+            },
             onBeforeMount() {
                 this.state = {
                     isAnswered: false,
@@ -36,13 +50,14 @@
             },
             askQuestion() {
 
-                const questionNumber = Math.floor(Math.random() * this.squareColors.length);
-                const square = this.squareColors[questionNumber];
+                const squareAddress = Math.floor(Math.random() * ChessGamePosition.squareNames.length);
+                const squareName = ChessGamePosition.squareNames[squareAddress];
+                const squareColor = ChessGamePosition.squareColors[squareAddress] === 0 ? 'white' : 'black';
 
                 this.update({
                     isAnswered: false,
-                    expectedAnswer: square.color,
-                    square: square.name,
+                    expectedAnswer: squareColor,
+                    square: squareName,
                 })
 
             },
@@ -52,80 +67,6 @@
                     isAnswerCorrect: answer === this.state.expectedAnswer
                 })
             },
-            squareColors: [
-                {name: 'a1', color:'black'},
-                {name: 'b1', color:'white'},
-                {name: 'c1', color:'black'},
-                {name: 'd1', color:'white'},
-                {name: 'e1', color:'black'},
-                {name: 'f1', color:'white'},
-                {name: 'g1', color:'black'},
-                {name: 'h1', color:'white'},
-
-                {name: 'a2', color:'white'},
-                {name: 'b2', color:'black'},
-                {name: 'c2', color:'white'},
-                {name: 'd2', color:'black'},
-                {name: 'e2', color:'white'},
-                {name: 'f2', color:'black'},
-                {name: 'g2', color:'white'},
-                {name: 'h2', color:'black'},
-
-                {name: 'a3', color:'black'},
-                {name: 'b3', color:'white'},
-                {name: 'c3', color:'black'},
-                {name: 'd3', color:'white'},
-                {name: 'e3', color:'black'},
-                {name: 'f3', color:'white'},
-                {name: 'g3', color:'black'},
-                {name: 'h3', color:'white'},
-
-                {name: 'a4', color:'white'},
-                {name: 'b4', color:'black'},
-                {name: 'c4', color:'white'},
-                {name: 'd4', color:'black'},
-                {name: 'e4', color:'white'},
-                {name: 'f4', color:'black'},
-                {name: 'g4', color:'white'},
-                {name: 'h4', color:'black'},
-
-                {name: 'a5', color:'black'},
-                {name: 'b5', color:'white'},
-                {name: 'c5', color:'black'},
-                {name: 'd5', color:'white'},
-                {name: 'e5', color:'black'},
-                {name: 'f5', color:'white'},
-                {name: 'g5', color:'black'},
-                {name: 'h5', color:'white'},
-
-                {name: 'a6', color:'white'},
-                {name: 'b6', color:'black'},
-                {name: 'c6', color:'white'},
-                {name: 'd6', color:'black'},
-                {name: 'e6', color:'white'},
-                {name: 'f6', color:'black'},
-                {name: 'g6', color:'white'},
-                {name: 'h6', color:'black'},
-
-                {name: 'a7', color:'black'},
-                {name: 'b7', color:'white'},
-                {name: 'c7', color:'black'},
-                {name: 'd7', color:'white'},
-                {name: 'e7', color:'black'},
-                {name: 'f7', color:'white'},
-                {name: 'g7', color:'black'},
-                {name: 'h7', color:'white'},
-
-                {name: 'a8', color:'white'},
-                {name: 'b8', color:'black'},
-                {name: 'c8', color:'white'},
-                {name: 'd8', color:'black'},
-                {name: 'e8', color:'white'},
-                {name: 'f8', color:'black'},
-                {name: 'g8', color:'white'},
-                {name: 'h8', color:'black'},
-
-            ]
         }
     </script>
 
@@ -152,12 +93,12 @@
 
         .correct-answer {
             color: greenyellow;
-            font-size: 20rem;
+            font-size: 40rem;
         }
 
         .wrong-answer {
             color: indianred;
-            font-size: 20rem;
+            font-size: 40rem;
         }
 
     </style>

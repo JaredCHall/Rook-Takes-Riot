@@ -1,44 +1,62 @@
 <chessboard class="container-content">
 
+    <h1 if={state.title}>{state.title}</h1>
     <div class="row">
+
         <div class="column">
-            <h1>How about a nice game of chess?</h1>
-
-            <svg viewBox="0 0 800 800" style="min-width:40rem;max-width:70rem">
-
-                <svg each={ (name, index) in squaresMap } is="square" name={name} index={index} width=100></svg>
-
+            <svg viewBox="0 0 800 800" style="min-width:20rem;max-width:70rem">
+                <svg
+                        each={ (name, index) in squareNames }
+                        is="square" name={name}
+                        index={index}
+                        selected={state.selectedSquare === name}
+                        width=100
+                        ></svg>
             </svg>
         </div>
-        <div class="column options" style="width:12rem; text-align: left; margin-top:20rem;">
-            <h3> Options:</h3>
-            <div>
-                <button class="button button-white" onclick={() => flipBoard()}>
-                    Flip Board
-                </button>
-            </div>
-            <div>
-                <button class="button button-white" onclick={() => toggleLabels()}>
-                    {state.showLabels ? 'Hide' : 'Show' } Labels
-                </button>
-            </div>
-            <div>
-                <button class="button button-white" onclick={() => togglePieces()}>
-                    {state.showPieces ? 'Hide' : 'Show' } Pieces
-                </button>
-            </div>
+
+
+        <div class="column options" style="width:40rem; text-align: left;" if={state.showOptions}>
+            <board-options
+                    toggle-labels={ () => toggleLabels()}
+                    toggle-pieces={ () => togglePieces()}
+                    flip-board={ () => flipBoard()}
+                    set-fen={ (fen) => setPosition(fen)}
+                    get-fen="{ () => getFen() }"
+            >
+                <h3> Options:</h3>
+                <div>
+                    <button class="button button-white" onclick={() => flipBoard()}>
+                        Flip Board
+                    </button>
+                </div>
+                <div>
+                    <button class="button button-white" onclick={() => toggleLabels()}>
+                        {state.showLabels ? 'Hide' : 'Show' } Labels
+                    </button>
+                </div>
+                <div>
+                    <button class="button button-white" onclick={() => togglePieces()}>
+                        {state.showPieces ? 'Hide' : 'Show' } Pieces
+                    </button>
+                </div>
+            </board-options>
         </div>
     </div>
 
     <script>
-        import Square from "../../includes/chessboard/square/square.riot"
+        import Square from "./square.riot"
         import ChessGamePosition from "../../../classes/ChessGamePosition.js"
+        import BoardOptions from "./board-options.riot"
 
         export default {
-
             components: {
-                Square
+                Square,
+                BoardOptions
             },
+            gamePosition: null,
+            squareNames: null,
+            squareColors: null,
             flipBoard() {
                this.orientBoard(this.state.orientation === 'white' ? 'black' : 'white');
             },
@@ -51,18 +69,16 @@
                     showLabels: !this.state.showLabels,
                 })
             },
+            getFen() {
+              return this.gamePosition.fen;
+            },
             togglePieces() {
                 const showPieces = !this.state.showPieces;
-
                 if(showPieces){
-                    const FEN='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
-                    this.setPosition(FEN)
-
+                    this.setPosition('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
                 }else{
-                    const FEN='8/8/8/8/8/8/8/8'
-                    this.setPosition(FEN)
+                    this.setPosition('8/8/8/8/8/8/8/8 w KQkq -')
                 }
-
                 this.update({
                     showPieces: showPieces,
                 })
@@ -78,19 +94,25 @@
             },
             onMounted() {
                 this.squares = this.root.querySelectorAll('svg.square');
-                this.orientBoard('white');
+                this.setPosition(this.gamePosition.fen)
             },
-            onBeforeMount() {
+            onBeforeMount(props) {
+                this.gamePosition = new ChessGamePosition('8/8/8/8/8/8/8/8 w KQkq -')
+                this.squareNames = ChessGamePosition.squareNames
+                this.squareColors = ChessGamePosition.squareColors
                 this.state = {
                     orientation: 'white',
                     showLabels: false,
                     showPieces: false,
+                    title: props.title,
+                    showOptions: props.showOptions,
+                    selectedSquare: props.selectedSquare ?? null,
                 }
             },
             setPosition(fen) {
-                const parser = new ChessGamePosition(fen)
-                for(const squareName in parser.positions){
-                    const position = parser.positions[squareName];
+                this.gamePosition.setPosition(fen)
+                for(const squareName in this.gamePosition.positions){
+                    const position = this.gamePosition.positions[squareName];
                     const square = this.getSquare(squareName);
                     if(position === null){
                         square.setPiece(null)
@@ -101,21 +123,11 @@
             },
             getSquare(key) {
                 if(typeof key === 'string'){
-                    return this.squares[this.squaresMap.indexOf(key)];
+                    return this.squares[this.squareNames.indexOf(key)];
                 }
 
                 return this.squares[key];
             },
-            squaresMap: [
-                'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8',
-                'b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8',
-                'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8',
-                'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8',
-                'e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8',
-                'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8',
-                'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8',
-                'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'h8',
-            ],
         }
     </script>
 

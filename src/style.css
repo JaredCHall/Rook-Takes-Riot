@@ -132,10 +132,23 @@ body {
   text-decoration: none;
 }
 
+.error-text {
+  color: orangered;
+  font-size:smaller;
+  font-weight: bold;
+}
 
 #header-logo-column {
   min-width: 20rem;
   text-align: left;
+}
+
+input[type="text"] {
+  background-color: white;
+}
+
+input[type="text"]:focus {
+  border-color: lightgreen;
 }
 
 /* Larger than mobile screen */

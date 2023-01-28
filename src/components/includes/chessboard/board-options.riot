@@ -1,0 +1,65 @@
+<board-options>
+    <h3> Options:</h3>
+    <div>
+        <button class="button button-white" onclick={() => props.flipBoard()}>
+            Flip Board
+        </button>
+    </div>
+    <div>
+        <button class="button button-white" onclick={()  => props.toggleLabels()}>
+            Toggle Labels
+        </button>
+    </div>
+    <div>
+        <button class="button button-white" onclick={() => props.togglePieces()}>
+           Toggle Pieces
+        </button>
+    </div>
+    <div>
+        <button class="button button-white" onclick={() => randomPuzzle()}>
+            Random Puzzle
+        </button>
+    </div>
+    <hr>
+    <div>
+
+        <fieldset>
+            <h3>FEN:</h3>
+            { props.getFen() }
+            <input name="fenNumber" type="text"  onfocus={() => clearFenError()}>
+            <div if={state.fenError} class="error-text" style="margin-bottom: 1rem">
+                {state.fenError}
+            </div>
+            <div  style="text-align: right">
+                <button class="button button-white" onclick={() => setFen()} style="text-align: right">Update</button>
+            </div>
+        </fieldset>
+
+    </div>
+
+    <script>
+        import ChessGamePosition from "../../../classes/ChessGamePosition";
+
+        export default {
+            setFen(fen) {
+                fen = fen ?? this.$('input[name="fenNumber"]').value;
+                try {
+                    this.props.setFen(fen)
+                }catch (e) {
+                    this.update({fenError: e.message})
+                }
+                this.update();
+            },
+            clearFenError() {
+                this.update({fenError: null})
+            },
+            randomPuzzle() {
+                const puzzles = ChessGamePosition.puzzles;
+                const fen = puzzles[Math.floor(Math.random() * puzzles.length)];
+                this.setFen(fen)
+
+            }
+        }
+    </script>
+
+</board-options>
