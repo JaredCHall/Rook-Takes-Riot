@@ -2,6 +2,21 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack')
 const path = require('path')
+const sass = require('sass')
+const compiler = require('@riotjs/compiler')
+
+const sass = require('sass')
+compiler.registerPreprocessor('css', 'sass', function(code, { options }) {
+
+  // dart sass api docs:  https://sass-lang.com/documentation/js-api/
+  const sassOptions = {syntax: 'indented'}
+
+  return {
+    code: sass.compileString(code,sassOptions).css,
+    map: null
+  }
+
+});
 
 module.exports = {
   entry: {
@@ -54,13 +69,13 @@ module.exports = {
         use: [{
           loader: '@riotjs/webpack-loader',
           options: {
-            hot: true
+            hot: true,
           }
         }]
       },
       {
-        test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        test: /\.css|\.sass$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader','sass-loader'],
       },
     ]
   },
@@ -69,6 +84,5 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'src/index.html'
     }),
-    new webpack.HotModuleReplacementPlugin(),
   ]
 }
