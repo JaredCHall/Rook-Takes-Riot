@@ -17,30 +17,7 @@
 
 
         <div class="column options" style="width:40rem; text-align: left;" if={state.showOptions}>
-            <board-options
-                    toggle-labels={ () => toggleLabels()}
-                    toggle-pieces={ () => togglePieces()}
-                    flip-board={ () => flipBoard()}
-                    set-fen={ (fen) => setPosition(fen)}
-                    get-fen="{ () => getFen() }"
-            >
-                <h3> Options:</h3>
-                <div>
-                    <button class="button button-white" onclick={() => flipBoard()}>
-                        Flip Board
-                    </button>
-                </div>
-                <div>
-                    <button class="button button-white" onclick={() => toggleLabels()}>
-                        {state.showLabels ? 'Hide' : 'Show' } Labels
-                    </button>
-                </div>
-                <div>
-                    <button class="button button-white" onclick={() => togglePieces()}>
-                        {state.showPieces ? 'Hide' : 'Show' } Pieces
-                    </button>
-                </div>
-            </board-options>
+            <board-options board={this}></board-options>
         </div>
     </div>
 
