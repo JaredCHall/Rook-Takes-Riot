@@ -5,7 +5,6 @@ const path = require('path')
 const sass = require('sass')
 const compiler = require('@riotjs/compiler')
 
-const sass = require('sass')
 compiler.registerPreprocessor('css', 'sass', function(code, { options }) {
 
   // dart sass api docs:  https://sass-lang.com/documentation/js-api/
