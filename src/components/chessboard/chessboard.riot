@@ -6,7 +6,7 @@
         <div class="column">
             <svg viewBox="0 0 800 800" style="min-width:20rem;max-width:70rem">
                 <svg
-                        each={ (name, index) in squareNames }
+                        each={ (name, index) in getSquareNames() }
                         is="square" name={name}
                         index={index}
                         selected={state.selectedSquare === name}
@@ -21,44 +21,63 @@
         </div>
     </div>
 
-    <script>
+    <script lang="ts">
         import Square from "./square"
         import ChessGamePosition from "ChessGamePosition"
         import BoardOptions from "./board-options"
 
-        export default {
-            components: {
-                Square,
-                BoardOptions
+        import {RiotComponent, withTypes} from 'riot';
+        import {ChessboardProps, ChessboardState} from "Chessboard/chessboard.d";
+
+        export interface ChessboardComponent extends RiotComponent<ChessboardProps, ChessboardState> {
+
+            squares: Array<Element>,
+
+            gamePosition: ChessGamePosition,
+
+            flipBoard(): void,
+            toggleLabels(): void,
+
+            getFen(): string,
+
+            orientBoard(color: string): void,
+
+            setPosition(fen: string): void,
+
+            getSquare(name: string): Element,
+
+            getSquareNames(): Array<string>,
+
+
+        }
+
+        // noinspection TypeScriptValidateTypes
+        export default withTypes<ChessboardComponent>({
+            components: {Square, BoardOptions},
+            state: {
+              orientation: 'white',
+              showLabels: false,
+              showPieces: false,
             },
-            gamePosition: null,
-            squareNames: null,
-            squareColors: null,
-            flipBoard() {
-               this.orientBoard(this.state.orientation === 'white' ? 'black' : 'white');
+            onBeforeMount(props: ChessboardProps, state: ChessboardState) {
+                this.gamePosition = new ChessGamePosition('8/8/8/8/8/8/8/8 w KQkq -')
+                state.title = props.title;
+                state.showOptions = props.showOptions;
+                state.selectedSquare = props.selectedSquare;
             },
-            toggleLabels() {
-                for(let i=0; i<this.squares.length; i++){
-                    const square = this.squares[i]
-                    square.toggleLabel();
+            onMounted() {
+                this.squares = this.root.querySelectorAll('svg.square');
+                this.setPosition(this.gamePosition.fen)
+            },
+            getSquareNames() {
+                return ChessGamePosition.squareNames;
+            },
+            getSquare(key) {
+                if(typeof key === 'string'){
+                    return this.squares[this.getSquareNames().indexOf(key)];
                 }
-                this.update({
-                    showLabels: !this.state.showLabels,
-                })
-            },
-            getFen() {
-              return this.gamePosition.fen;
-            },
-            togglePieces() {
-                const showPieces = !this.state.showPieces;
-                if(showPieces){
-                    this.setPosition('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
-                }else{
-                    this.setPosition('8/8/8/8/8/8/8/8 w KQkq -')
-                }
-                this.update({
-                    showPieces: showPieces,
-                })
+
+                return this.squares[key];
             },
             orientBoard(color){
                 for(let i=0; i<this.squares.length; i++){
@@ -69,22 +88,8 @@
                     orientation: color
                 })
             },
-            onMounted() {
-                this.squares = this.root.querySelectorAll('svg.square');
-                this.setPosition(this.gamePosition.fen)
-            },
-            onBeforeMount(props) {
-                this.gamePosition = new ChessGamePosition('8/8/8/8/8/8/8/8 w KQkq -')
-                this.squareNames = ChessGamePosition.squareNames
-                this.squareColors = ChessGamePosition.squareColors
-                this.state = {
-                    orientation: 'white',
-                    showLabels: false,
-                    showPieces: false,
-                    title: props.title,
-                    showOptions: props.showOptions,
-                    selectedSquare: props.selectedSquare ?? null,
-                }
+            getFen() {
+                return this.gamePosition.fen;
             },
             setPosition(fen) {
                 this.gamePosition.setPosition(fen)
@@ -98,14 +103,30 @@
                     }
                 }
             },
-            getSquare(key) {
-                if(typeof key === 'string'){
-                    return this.squares[this.squareNames.indexOf(key)];
+            togglePieces() {
+                const showPieces = !this.state.showPieces;
+                if(showPieces){
+                    this.setPosition('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+                }else{
+                    this.setPosition('8/8/8/8/8/8/8/8 w KQkq -')
                 }
-
-                return this.squares[key];
+                this.update({
+                    showPieces: showPieces,
+                })
             },
-        }
+            toggleLabels() {
+                for(let i=0; i<this.squares.length; i++){
+                    const square = this.squares[i]
+                    square.toggleLabel();
+                }
+                this.update({
+                    showLabels: !this.state.showLabels,
+                })
+            },
+            flipBoard() {
+                this.orientBoard(this.state.orientation === 'white' ? 'black' : 'white');
+            },
+        })
     </script>
 
 
