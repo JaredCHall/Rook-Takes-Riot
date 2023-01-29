@@ -17,6 +17,7 @@
     "@riotjs/compiler": "^6.3.2",
     "@riotjs/register": "^6.0.1",
     "@riotjs/webpack-loader": "^6.0.0",
+    "@tsconfig/node18": "^1.0.1",
     "chai": "^4.3.6",
     "css-loader": "^6.7.1",
     "esm": "^3.2.25",
@@ -36,6 +37,7 @@
     "@riotjs/route": "^8.0.2",
     "riot": "^7.0.3",
     "sass": "^1.57.1",
-    "sass-loader": "^13.2.0"
+    "sass-loader": "^13.2.0",
+    "ts-loader": "^9.4.2"
   }
 }

@@ -19,7 +19,7 @@ compiler.registerPreprocessor('css', 'sass', function(code, { options }) {
 
 module.exports = {
   entry: {
-    app: './src/index.js',
+    app: './src/app.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -73,9 +73,19 @@ module.exports = {
         }]
       },
       {
-        test: /\.css|\.sass$/i,
+        test: /\.css|\.sass$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader','sass-loader'],
       },
+      {
+        test: /\.ts$/,
+        use: [{
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true,
+            appendTsSuffixTo: [/\.riot$/],
+          }
+        }]
+      }
     ]
   },
   plugins: [
