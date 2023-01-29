@@ -14,11 +14,11 @@
         {props.name}
     </text>
 
-    <svg is="piece" piece-name={state.gamePiece}  width="40" x="4" y="5" color="{state.gamePieceColor}" if={state.gamePiece}></svg>
+    <svg is="piece" piece-name={state.gamePiece}  width="40" x="4" y="5" color={state.gamePieceColor} if={state.gamePiece}></svg>
 
     <script>
-        import Piece from "./piece.riot"
-        import ChessGamePosition from "../../classes/ChessGamePosition.js";
+        import Piece from "./piece"
+        import ChessGamePosition from "ChessGamePosition";
         export default {
             components: {Piece},
             onBeforeMount(props) {

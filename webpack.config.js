@@ -26,6 +26,15 @@ module.exports = {
     filename: '[name].bundle.js',
     clean: true
   },
+  resolve: {
+    extensions: ['.js','.ts','.riot'],
+    modules: [path.resolve(__dirname, 'src'), 'node_modules'],
+    alias: {
+      Chessboard: path.resolve(__dirname, 'src/components/chessboard/'),
+      Visualization: path.resolve(__dirname, 'src/components/visualization/'),
+      ChessGamePosition$: path.resolve(__dirname, 'src/classes/ChessGamePosition.js'),
+    }
+  },
   devtool: 'source-map',
   optimization: {
     runtimeChunk: {
@@ -86,7 +95,7 @@ module.exports = {
           }
         }]
       }
-    ]
+    ],
   },
   plugins: [
     new MiniCssExtractPlugin(),
