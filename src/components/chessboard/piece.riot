@@ -1,6 +1,6 @@
-<piece xmlns="http://www.w3.org/2000/svg" width={state.width} height={state.width} x={state.x} y={state.y} viewBox="0 0 50 50">
+<piece xmlns="http://www.w3.org/2000/svg" width={props.width} height={props.width} x={props.x} y={props.y} viewBox="0 0 50 50">
 
-    <g { ...groupAttributes } class="{ state.color }-piece" if={props.pieceName == 'pawn'}>
+    <g class="chess-piece { props.color }-piece" if={props.pieceName == 'pawn'}>
 
         <rect height="4.46" width="33.33" x="7.44" y="40.98"/>
         <ellipse cx="23.85" cy="24.1" rx="16.93" ry="13.28" transform="rotate(-89.5524, 23.8472, 24.1009)"/>
@@ -9,18 +9,18 @@
 
     </g>
 
-    <g { ...groupAttributes } class="{ state.color }-piece" if={props.pieceName == 'rook'}>
+    <g x=100 y=100 class="chess-piece { props.color }-piece" if={props.pieceName == 'rook'}>
         <rect height="4.4" id="svg_12" transform="matrix(1, 0, 0, 1, 0, 0)" width="41.1" x="4.45" y="41.67"/>
         <rect height="3.6" id="svg_13" transform="matrix(1, 0, 0, 1, 0, 0)" width="35.2" x="7.45" y="37.87"/>
         <rect height="24.09" id="svg_14" transform="matrix(1, 0, 0, 1, 0, 0)" width="29.14" x="10.44" y="13.64"/>
         <rect height="7.72" id="svg_20" width="41.1" x="4.44" y="5.72"/>
     </g>
 
-    <g { ...groupAttributes } class="{ state.color }-piece" if={props.pieceName == 'knight'}>
+    <g x=100 y=100 class="chess-piece { props.color }-piece" if={props.pieceName == 'knight'}>
         <path d="m16.92,46.91c-1.83,0.05 -4.52,-0.71 -2.64,-2.4c2.04,-0.64 -0.36,-2.78 1.68,-3.78c1.64,-1.87 3.87,-3.58 4.55,-5.86c-0.1,-1.55 -2.42,-2.47 -1.31,-4.18c-1.08,-2.74 -0.83,-5.9 1.14,-8.37c1.68,-2.29 3.71,-4.72 3.5,-7.49c-2.1,0.7 -4.33,1.32 -6.64,1c-2.18,-0.16 -4.13,1.25 -6.35,0.48c-2.25,-0.37 -3.59,-2.78 -1.91,-4.19c1.83,-1.25 4.53,-1.29 6.27,-2.69c2.31,-1.53 4.44,-3.6 7.62,-3.87c1.4,-0.26 2.01,-1.39 2.79,-2.23c0.65,1.34 1.77,2.53 3.46,3.12c3.44,1.59 4.3,4.96 5.56,7.74c0.94,2.17 1.72,4.44 3.29,6.37c0.02,0.93 -1.75,1.32 -0.56,2.41c0.62,2.96 0.65,5.98 0.59,8.97c-1.04,1.46 -2,3.1 -0.6,4.78c0.93,2.05 3.25,3.4 4.39,5.34c0.64,1 -1.26,2.46 1.11,2.21c2.16,0.92 0.42,3.15 -1.74,2.5c-8.06,0.16 -16.14,0.33 -24.21,0.13z" />
     </g>
 
-    <g { ...groupAttributes } class="{ state.color }-piece" if={props.pieceName == 'bishop'}>
+    <g x=100 y=100 class="chess-piece { props.color }-piece" if={props.pieceName == 'bishop'}>
         <rect height="2.5" width="39.04" x="5.12" y="43.3"/>
         <ellipse cx="24.29" cy="38.31" rx="7.75" ry="4.63" />
         <ellipse cx="24.73" cy="21.29" rx="8.02" ry="12.21" />
@@ -29,7 +29,7 @@
         <line x1="20.81" x2="27.41" y1="17.63" y2="17.63"/>
     </g>
 
-    <g { ...groupAttributes } class="{ state.color }-piece" if={props.pieceName == 'king'}>
+    <g x=100 y=100 class="chess-piece { props.color }-piece" if={props.pieceName == 'king'}>
         <rect height="12.8" width="22.2" x="14" y="32.3"/>
         <ellipse cx="13.45" cy="22.4" rx="12.38" ry="7.52" transform="rotate(53.4475, 13.45, 22.4)"/>
         <ellipse cx="36.5" cy="23.15" rx="12.38" ry="7.52" transform="rotate(130.184, 36.5, 23.15)"/>
@@ -39,7 +39,7 @@
         <rect height="3.4" width="21.9" x="14.1" y="30.4"/>
     </g>
 
-    <g { ...groupAttributes } class="{ state.color }-piece" if={props.pieceName == 'queen'}>
+    <g x=100 y=100 class="chess-piece { props.color }-piece" if={props.pieceName == 'queen'}>
         <rect height="5.3" id="svg_8" width="38.6" x="5.4" y="41.2"/>
         <rect height="3.8" id="svg_9" width="31.5" x="9.1" y="37.3"/>
         <rect height="4.9" id="svg_10" width="43.5" x="3.3" y="32.4"/>
@@ -56,20 +56,28 @@
         <ellipse cx="47.4" cy="11.25" rx="1.3" ry="1.3" />
     </g>
 
-    <script>
-        export default {
-            groupAttributes: {
-                x: 100,
-                y: 100,
-                style: "stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;",
-            },
-            onBeforeMount(props) {
+    <script lang="ts">
 
-            },
-            onMounted(props,state) {
-                this.update(props)
-            },
+        import {RiotComponent, withTypes} from "riot"
+
+        interface PieceProps {
+            pieceName: string,
+            color: string,
+
+            width: number,
+
+            x: number,
+
+            y: number,
         }
+        interface PieceState {}
+
+        export interface Piece extends RiotComponent<PieceProps, PieceState> {}
+
+
+        // noinspection TypeScriptValidateTypes
+        export default withTypes<Piece>({})
+
     </script>
 
 </piece>

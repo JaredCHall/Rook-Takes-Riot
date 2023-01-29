@@ -75,6 +75,12 @@ module.exports = {
         test: /\.riot$/,
         exclude: /node_modules/,
         use: [{
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true,
+            appendTsSuffixTo: [/\.riot$/]
+          }
+        },{
           loader: '@riotjs/webpack-loader',
           options: {
             hot: true,
@@ -91,7 +97,6 @@ module.exports = {
           loader: 'ts-loader',
           options: {
             transpileOnly: true,
-            appendTsSuffixTo: [/\.riot$/],
           }
         }]
       }
