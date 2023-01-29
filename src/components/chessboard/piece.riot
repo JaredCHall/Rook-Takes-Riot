@@ -59,10 +59,7 @@
     <script lang="ts">
 
         import {RiotComponent, withTypes} from "riot"
-        import {PieceProps, PieceState} from "./piece.d";
-
-        export interface Piece extends RiotComponent<PieceProps, PieceState> {}
-
+        import {Piece, PieceProps, PieceState} from "./piece.d";
 
         // noinspection TypeScriptValidateTypes
         export default withTypes<Piece>({})

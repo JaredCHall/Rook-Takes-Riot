@@ -6,12 +6,12 @@
         <div class="column">
             <svg viewBox="0 0 800 800" style="min-width:20rem;max-width:70rem">
                 <svg
-                        each={ (name, index) in getSquareNames() }
-                        is="square" name={name}
-                        index={index}
-                        selected={state.selectedSquare === name}
-                        width=100
-                        ></svg>
+                    each={ (name, index) in getSquareNames() }
+                    is="square" name={name}
+                    index={index}
+                    selected={state.selectedSquare === name}
+                    width=100
+                    ></svg>
             </svg>
         </div>
 
@@ -26,33 +26,14 @@
         import ChessGamePosition from "ChessGamePosition"
         import BoardOptions from "./board-options"
 
-        import {RiotComponent, withTypes} from 'riot';
-        import {ChessboardProps, ChessboardState} from "Chessboard/chessboard.d";
+        import {withTypes} from 'riot'
+        import {ChessboardComponent, ChessboardProps, ChessboardState} from "Chessboard/chessboard.d"
 
-        export interface ChessboardComponent extends RiotComponent<ChessboardProps, ChessboardState> {
-
-            squares: Array<Element>,
-
-            gamePosition: ChessGamePosition,
-
-            flipBoard(): void,
-            toggleLabels(): void,
-
-            getFen(): string,
-
-            orientBoard(color: string): void,
-
-            setPosition(fen: string): void,
-
-            getSquare(name: string): Element,
-
-            getSquareNames(): Array<string>,
-
-
-        }
 
         // noinspection TypeScriptValidateTypes
         export default withTypes<ChessboardComponent>({
+            gamePosition: null,
+            squares: null,
             components: {Square, BoardOptions},
             state: {
               orientation: 'white',
@@ -72,7 +53,7 @@
             getSquareNames() {
                 return ChessGamePosition.squareNames;
             },
-            getSquare(key) {
+            getSquare(key): Element {
                 if(typeof key === 'string'){
                     return this.squares[this.getSquareNames().indexOf(key)];
                 }
@@ -82,7 +63,7 @@
             orientBoard(color){
                 for(let i=0; i<this.squares.length; i++){
                     const square = this.squares[i]
-                    square.setOrientation(color)
+                    square.riot.setOrientation(color)
                 }
                 this.update({
                     orientation: color
@@ -91,15 +72,19 @@
             getFen() {
                 return this.gamePosition.fen;
             },
+            getPosition(): ChessGamePosition {
+               return this.gamePosition;
+            },
             setPosition(fen) {
                 this.gamePosition.setPosition(fen)
-                for(const squareName in this.gamePosition.positions){
-                    const position = this.gamePosition.positions[squareName];
+                const positions = this.getPosition().positions;
+                for(const squareName in positions){
+                    const position = positions[squareName];
                     const square = this.getSquare(squareName);
                     if(position === null){
-                        square.setPiece(null)
+                        square.riot.setPiece(null)
                     }else{
-                        square.setPiece(position[0],position[1])
+                        square.riot.setPiece(position[0],position[1])
                     }
                 }
             },
@@ -117,7 +102,7 @@
             toggleLabels() {
                 for(let i=0; i<this.squares.length; i++){
                     const square = this.squares[i]
-                    square.toggleLabel();
+                    square.riot.toggleLabel();
                 }
                 this.update({
                     showLabels: !this.state.showLabels,

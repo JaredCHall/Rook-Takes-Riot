@@ -15,6 +15,11 @@ export interface ChessboardState {
 }
 
 export interface ChessboardComponent extends RiotComponent<ChessboardProps, ChessboardState> {
+
+    squares: Array<Element>,
+
+    gamePosition: ChessGamePosition,
+
     flipBoard(): void,
     toggleLabels(): void,
 
@@ -22,7 +27,13 @@ export interface ChessboardComponent extends RiotComponent<ChessboardProps, Ches
 
     orientBoard(color: string): void,
 
+    getPosition(): ChessGamePosition,
+
     setPosition(fen: string): void,
 
     getSquare(name: string): Element,
+
+    getSquareNames(): Array<string>,
+
+
 }

@@ -37,11 +37,25 @@
 
     </div>
 
-    <script>
-        import ChessGamePosition from "ChessGamePosition";
+    <script lang="ts">
+        import ChessGamePosition from "ChessGamePosition"
+        import {withTypes} from 'riot'
+        import {BoardOptionsComponent, BoardOptionsProps, BoardOptionsState} from "Chessboard/board-options.d"
 
-        export default {
+        // noinspection TypeScriptValidateTypes
+        export default withTypes<BoardOptionsComponent>({
             board: null,
+            onBeforeMount(props: BoardOptionsProps){
+                if(props.board === null){
+                    throw new Error("must set board property")
+                }
+                this.board = props.board
+            },
+            randomPuzzle() {
+                const puzzles = ChessGamePosition.puzzles;
+                const fen = puzzles[Math.floor(Math.random() * puzzles.length)];
+                this.setFen(fen)
+            },
             setFen(fen) {
                 fen = fen ?? this.$('input[name="fenNumber"]').value;
                 try {
@@ -54,19 +68,7 @@
             clearFenError() {
                 this.update({fenError: null})
             },
-            randomPuzzle() {
-                const puzzles = ChessGamePosition.puzzles;
-                const fen = puzzles[Math.floor(Math.random() * puzzles.length)];
-                this.setFen(fen)
-
-            },
-            onBeforeMount(props){
-                if(props.board === 'undefined'){
-                    throw new Error("must set board property")
-                }
-                this.board = props.board
-            }
-        }
+        })
     </script>
 
 </board-options>

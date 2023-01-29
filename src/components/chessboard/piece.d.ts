@@ -9,3 +9,5 @@ export interface PieceProps {
     y: number,
 }
 export interface PieceState {}
+
+export interface Piece extends RiotComponent<PieceProps, PieceState> {}
