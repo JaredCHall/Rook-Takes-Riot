@@ -1,3 +1,5 @@
+import {RiotComponent} from "riot";
+
 export interface PieceProps {
     pieceName: string,
     color: string,

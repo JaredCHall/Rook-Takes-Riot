@@ -24,27 +24,31 @@
 
     </main>
 
-    <script>
-        import Chessboard from 'Chessboard/chessboard';
-        import Visualization from 'Visualization/visualization'
-        import Piece from 'Chessboard/piece'
-        export default {
+    <script lang="ts">
+        import Chessboard from 'Chessboard/chessboard.riot';
+        import Visualization from 'Visualization/visualization.riot'
+        import Piece from 'Chessboard/piece/piece.riot'
+
+        import {withTypes} from "riot";
+        import {AppComponent} from "./app.d.ts";
+
+        // noinspection TypeScriptValidateTypes
+        export default withTypes<AppComponent>({
+            state: {
+              page: 'chessboard',
+            },
             components: {
                 Chessboard,
                 Piece,
                 Visualization,
-            },
-            onBeforeMount() {
-              this.state = {
-                  page: 'chessboard'
-              }
             },
             changePage(page) {
                 this.update({
                     page: page
                 })
             },
-        }
+        });
+
     </script>
 
 </app>

@@ -7,10 +7,10 @@
 
             <div style="text-align: center">
                 <h3> Select Your Game, Champion </h3>
-                <button class="button button-white" onclick={() => toggleGame('what-color-is-the-square')}>
+                <button class="button button-white" onclick={() => selectGame('what-color-is-the-square')}>
                     What Color Is The Square
                 </button>
-                <button class='button button-black margin-left' onclick={() => toggleGame('what-does-the-piece-see')}>
+                <button class='button button-black margin-left' onclick={() => selectGame('what-does-the-piece-see')}>
                      What Does The Piece See
                 </button>
             </div>
@@ -21,7 +21,7 @@
     <div class="row" if={state.selectedGame}>
         <div class="column">
             <div style="text-align: left">
-                <button class="button button-small button-white" onclick={() => toggleGame(null)}>
+                <button class="button button-small button-white" onclick={() => selectGame(null)}>
                     Back
                 </button>
             </div>
@@ -32,10 +32,15 @@
         </div>
     </div>
 
-    <script>
-        import WhatColorIsTheSquare from "./exercises/what-color-is-the-square"
-        import WhatDoesThePieceSee from "./exercises/what-does-the-piece-see"
-        export default {
+    <script lang="ts">
+        import WhatColorIsTheSquare from "./exercises/what-color-is-the-square/what-color-is-the-square.riot"
+        import WhatDoesThePieceSee from "./exercises/what-does-the-piece-see/what-does-the-piece-see.riot"
+
+        import {withTypes} from "riot";
+        import {VisualizationComponent} from "Visualization/visualization.d.ts";
+
+        // noinspection TypeScriptValidateTypes
+        export default withTypes<VisualizationComponent>({
             components: {
                 WhatColorIsTheSquare,
                 WhatDoesThePieceSee
@@ -45,12 +50,12 @@
                     selectedGame: null,
                 }
             },
-            toggleGame(gameName) {
+            selectGame(gameName) {
               this.update({
                   selectedGame: gameName,
               })
             },
-        }
+        })
     </script>
 
 

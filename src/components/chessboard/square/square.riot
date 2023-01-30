@@ -17,11 +17,11 @@
     <svg is="piece" piece-name={state.gamePiece}  width="40" x="4" y="5" color={state.gamePieceColor} if={state.gamePiece}></svg>
 
     <script lang="ts">
-        import Piece from "./piece"
+        import Piece from "../piece/piece"
         import ChessGamePosition from "ChessGamePosition";
 
         import {withTypes} from 'riot'
-        import {SquareComponent, SquareProps, SquareState} from "Chessboard/square.d";
+        import {SquareComponent, SquareProps, SquareState} from "Chessboard/square/square.d";
 
         // noinspection TypeScriptValidateTypes
         export default withTypes<SquareComponent>({
@@ -40,11 +40,14 @@
                     color: ChessGamePosition.squareColors[props.index] === 1 ? 'black' : 'white',
                     gamePiece: null,
                     gamePieceColor: null,
-                    selected: false,
+                    selected: props.selected,
                 }
             },
             onMounted(props: SquareProps) {
                 this.root.riot = this;
+                if(props.name == 'e4'){
+                    console.log(this)
+                }
             },
             getXYPosition(index, orientation) {
                 let y = Math.floor(index / 8) * -1 + 8
@@ -80,69 +83,6 @@
                 this.update({showLabel: !this.state.showLabel})
             },
         })
-        //
-        // export default {
-        //     components: {Piece},
-        //     onBeforeMount(props) {
-        //         if(props.index === undefined || props.name === undefined){
-        //             throw new Error("Must set id and index properties")
-        //         }
-        //
-        //         const orientation = 'white'
-        //         const coords = this.getXYPosition(props.index, orientation);
-        //         this.state = {
-        //             orientation: orientation,
-        //             x: coords[0],
-        //             y: coords[1],
-        //             color: ChessGamePosition.squareColors[props.index] === 1 ? 'black' : 'white',
-        //             gamePiece: null,
-        //             gamePieceColor: null,
-        //             selected: false,
-        //         }
-        //     },
-        //     onMounted(props) {
-        //         this.update(props)
-        //         this.root.riot = this;
-        //     },
-        //     toggleLabel() {
-        //         this.update({showLabel: !this.state.showLabel})
-        //     },
-        //     setPiece(type=null,color=null) {
-        //         this.update({
-        //             gamePiece: type,
-        //             gamePieceColor: color,
-        //         })
-        //     },
-        //     select(isSelected) {
-        //       this.update({selected: isSelected ?? false})
-        //     },
-        //
-        //     setOrientation(orientation) {
-        //         const coords = this.getXYPosition(this.props.index, orientation);
-        //         this.update({
-        //             x: coords[0],
-        //             y: coords[1],
-        //         })
-        //     },
-        //     getName() {
-        //       return this.name
-        //     },
-        //
-        //     getXYPosition(index, orientation) {
-        //         let y = Math.floor(index / 8) * -1 + 8
-        //         let x = index % 8 + 1
-        //
-        //         if(orientation === 'black'){
-        //             x = x * -1 + 9
-        //             y = y * -1 + 9
-        //         }
-        //
-        //         x = (x - 1) * 100;
-        //         y = (8 - y) * 100;
-        //
-        //         return [x, y]
-        //     },
-        // }
     </script>
 
     <style type="sass">

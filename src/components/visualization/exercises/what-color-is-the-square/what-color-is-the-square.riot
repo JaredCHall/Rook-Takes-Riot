@@ -4,46 +4,47 @@
     <div class="column square-name" if={!state.isAnswered}>
         { state.square }
     </div>
-    <div class="row" style=" align-items: center; width:120rem">
-        <div class="column correct-answer" if={state.isAnswered && state.isAnswerCorrect}>
+    <div class="row" style=" align-items: center; width:120rem" if={state.isAnswered}>
+        <div class="column correct-answer" if={state.isAnswerCorrect}>
             !!
         </div>
-        <div class="column wrong-answer" if={state.isAnswered && !state.isAnswerCorrect}>
+        <div class="column wrong-answer" if={!state.isAnswerCorrect}>
             ??
         </div>
-        <div class="column" if={state.isAnswered}>
+        <div class="column">
             <chessboard selected-square={state.square}></chessboard>
         </div>
     </div>
-
 
     <div class="column prompt" if={!state.isAnswered}>
         <button class="button button-white" onclick={() => answerQuestion('white')}>It's white</button>
         <button class="button button-black" onclick={() => answerQuestion('black')}>It's black</button>
     </div>
 
-
-
-
     <div class="column result" if="{state.isAnswered}">
         <button class="button margin-top2" onclick={() => askQuestion()}>Go Again!</button>
     </div>
 
 
-    <script>
+    <script lang="ts">
         import ChessGamePosition from "ChessGamePosition";
-        import Chessboard from "Chessboard/chessboard"
-        export default {
+        import Chessboard from "Chessboard/chessboard.riot"
+
+        import {withTypes} from "riot";
+        import {
+            WhatColorIsTheSquareComponent
+        } from "Visualization/exercises/what-color-is-the-square/what-color-is-the-square.d.ts";
+
+        // noinspection TypeScriptValidateTypes
+        export default withTypes<WhatColorIsTheSquareComponent>({
             components: {
                 Chessboard,
             },
-            onBeforeMount() {
-                this.state = {
-                    isAnswered: false,
-                    expectedAnswer: null,
-                    isAnswerCorrect: null,
-                    square: null,
-                }
+            state: {
+                isAnswered: false,
+                expectedAnswer: null,
+                isAnswerCorrect: null,
+                square: null,
             },
             onMounted() {
               this.askQuestion()
@@ -67,7 +68,7 @@
                     isAnswerCorrect: answer === this.state.expectedAnswer
                 })
             },
-        }
+        })
     </script>
 
     <style>

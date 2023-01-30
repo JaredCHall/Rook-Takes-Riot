@@ -5,6 +5,8 @@ export interface SquareProps {
     width: number,
     index: number,
 
+    selected: boolean,
+
     color: string,
 
 }

@@ -1,4 +1,4 @@
-import {ChessboardComponent} from "./chessboard";
+import {ChessboardComponent} from "Chessboard/chessboard.d";
 import {RiotComponent} from "riot";
 
 export interface BoardOptionsProps {
