@@ -18,7 +18,7 @@
 
     <script lang="ts">
         import Piece from "../piece/piece"
-        import ChessGamePosition from "ChessGamePosition";
+        import ChessGame from 'ChessGame/ChessGame.ts'
 
         import {withTypes} from 'riot'
         import {SquareComponent, SquareProps, SquareState} from "Chessboard/square/square.d";
@@ -26,28 +26,26 @@
         // noinspection TypeScriptValidateTypes
         export default withTypes<SquareComponent>({
             components: {Piece},
-            onBeforeMount(props: SquareProps) {
+            state: {
+                orientation: 'white',
+                gamePiece: null,
+                gamePieceColor: null,
+            },
+            onBeforeMount(props: SquareProps, state: SquareState) {
                 if(props.index === null || props.name === null){
                     throw new Error("Must set name and index properties")
                 }
 
                 const orientation = 'white'
-                const coords = this.getXYPosition(props.index, orientation);
-                this.state = {
-                    orientation: orientation,
-                    x: coords[0],
-                    y: coords[1],
-                    color: ChessGamePosition.squareColors[props.index] === 1 ? 'black' : 'white',
-                    gamePiece: null,
-                    gamePieceColor: null,
-                    selected: props.selected,
-                }
+                const coords = this.getXYPosition(props.index, orientation)
+                state.x = coords[0]
+                state.y = coords[1]
+                state.color = ChessGame.squareColors[props.index] === 1 ? 'black' : 'white'
+                state.selected = props.selected;
+
             },
             onMounted(props: SquareProps) {
                 this.root.riot = this;
-                if(props.name == 'e4'){
-                    console.log(this)
-                }
             },
             getXYPosition(index, orientation) {
                 let y = Math.floor(index / 8) * -1 + 8

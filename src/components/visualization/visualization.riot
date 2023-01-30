@@ -26,7 +26,6 @@
                 </button>
             </div>
 
-
             <what-color-is-the-square if={state.selectedGame === 'what-color-is-the-square'}></what-color-is-the-square>
             <what-does-the-piece-see if={state.selectedGame === 'what-does-the-piece-see'}></what-does-the-piece-see>
         </div>
@@ -45,10 +44,8 @@
                 WhatColorIsTheSquare,
                 WhatDoesThePieceSee
             },
-            onBeforeMount() {
-                this.state = {
-                    selectedGame: null,
-                }
+            state: {
+                selectedGame: null,
             },
             selectGame(gameName) {
               this.update({

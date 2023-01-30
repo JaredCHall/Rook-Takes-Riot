@@ -38,7 +38,7 @@
     </div>
 
     <script lang="ts">
-        import ChessGamePosition from "ChessGamePosition"
+        import ChessGame from 'ChessGame/ChessGame.ts'
         import {withTypes} from 'riot'
         import {BoardOptionsComponent, BoardOptionsProps, BoardOptionsState} from "Chessboard/board-options/board-options.d"
 
@@ -52,7 +52,7 @@
                 this.board = props.board
             },
             randomPuzzle() {
-                const puzzles = ChessGamePosition.puzzles;
+                const puzzles = ChessGame.puzzles;
                 const fen = puzzles[Math.floor(Math.random() * puzzles.length)];
                 this.setFen(fen)
             },

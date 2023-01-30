@@ -1,49 +1,49 @@
-export default class ChessGamePosition {
+import {PiecePositions} from './ChessGame.d'
 
-    constructor(fen) {
+export default class ChessGame {
+
+    fen: string;
+
+    positions: PiecePositions = {};
+
+    piecePlacement: string = '';
+
+    sideToMove: string|null = null;
+
+    castleRights: string|null = null;
+
+    enPassantTarget: string|null = null;
+
+    halfMoveClock: number|null = null;
+
+    fullMoveCounter: number|null = null;
+
+    constructor(fen: string) {
+        this.fen = fen;
         this.setPosition(fen)
     }
 
-    parseFEN(fen) {
+    parseFEN(fen: string) {
         this.fen = fen
 
         // parse the FEN
         // @see https://www.chessprogramming.org/Forsyth-Edwards_Notation
         const parts = fen.split(' ')
-        this.piecePlacement = parts[0]
+        this.positions = this.#parsePiecePlacements(parts[0])
         this.sideToMove = parts[1] ?? null
         this.castleRights = parts[2] ?? null
         this.enPassantTarget = parts[3] ?? null
-        this.halfMoveClock = parts[4] ?? null
-        this.fullMoveCounter = parts[5] ?? null
+        this.halfMoveClock = parseInt(parts[4]) ?? null
+        this.fullMoveCounter = parseInt(parts[5]) ?? null
     }
 
-    setPosition(fen) {
+    setPosition(fen: string) {
         this.parseFEN(fen)
-        this.#initPositions(this.piecePlacement)
     }
 
-    fen;
-    positions;
-
-    piecePlacement;
-
-    sideToMove;
-
-    castleRights;
-
-    enPassantTarget;
-
-    halfMoveClock;
-
-    fullMoveCounter;
-
-    parse(fen){
-        this.fen = fen;
-    }
-    #initPositions(fenPart)
+    #parsePiecePlacements(fenPart: string): PiecePositions
     {
-        this.positions = {};
+        const positions: PiecePositions = {}
 
         // process piece placement
         const rows = fenPart.split('/')
@@ -53,7 +53,7 @@ export default class ChessGamePosition {
 
         // loop through each row
         const columnNames = ['a','b','c','d','e','f','g','h']
-        const piecesMap = {
+        const piecesMap: {[key: string]: string} = {
             r: 'rook',
             b: 'bishop',
             n: 'knight',
@@ -62,33 +62,34 @@ export default class ChessGamePosition {
             p: 'pawn'
         }
         for(let rowNumber=8;rowNumber>0;rowNumber--){
-            const chars = rows[rowNumber-1].split('');
+            const chars = rows[rowNumber-1].split('')
             let columnNumber=1;
             for(let i=0;i<chars.length;i++){
                 const character = chars[i]
                 if(/[1-8]/.test(character)){
                     const emptySpaces = parseInt(character)
-                    const lastEmptySpace = columnNumber + emptySpaces - 1;
+                    const lastEmptySpace = columnNumber + emptySpaces - 1
                     while(columnNumber <= lastEmptySpace){
                         const squareName = columnNames[columnNumber-1]+rowNumber.toString()
-                        this.positions[squareName] = null;
+                        positions[squareName] = null;
                         columnNumber++
                     }
                 }else if(/[rbnqkpRBNQKP]/.test(character)) {
-                    const color = character.toUpperCase() === character ? 'white' : 'black';
-                    const piece = piecesMap[character.toLowerCase()];
+                    const color = character.toUpperCase() === character ? 'white' : 'black'
+                    const piece = piecesMap[character.toLowerCase()]
                     const squareName = columnNames[columnNumber-1]+rowNumber.toString()
-                    this.positions[squareName] = [piece, color];
+                    positions[squareName] = [piece, color]
                     columnNumber++
                 }else{
                     throw new Error("Unrecognized position character: "+character)
                 }
             }
         }
+        return positions
     }
 
     // data maps for faster access
-    static squareNames = [
+    static squareNames: Array<string> = [
         'a8', 'b8', 'c8', 'd8', 'e8','f8', 'g8', 'h8',
         'a7', 'b7', 'c7', 'd7', 'e7','f7', 'g7', 'h7',
         'a6', 'b6', 'c6', 'd6', 'e6','f6', 'g6', 'h6',
@@ -102,7 +103,7 @@ export default class ChessGamePosition {
      * 0 - white
      * 1 - black
      */
-    static squareColors = [
+    static squareColors: Array<number> = [
         0,1,0,1,0,1,0,1,
         1,0,1,0,1,0,1,0,
         0,1,0,1,0,1,0,1,
@@ -117,7 +118,7 @@ export default class ChessGamePosition {
      * TAKE THE PUZZLES!!!
      * https://chess.stackexchange.com/questions/19633/chess-problem-database-with-pgn-or-fen
      */
-    static puzzles = [
+    static puzzles: Array<string> = [
         '4R3/8/8/2Pkp3/N7/4rnKB/1nb5/b1r5',
         'b1B3Q1/5K2/5NP1/n7/2p2k1P/3pN2R/1B1P4/4qn2',
         '1k6/1P5Q/8/7B/8/5K2/8/8',

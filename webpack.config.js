@@ -28,11 +28,10 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js','.ts','.riot'],
-    modules: [path.resolve(__dirname, 'src'), 'node_modules'],
+    modules: [path.resolve(__dirname, 'src/classes/'), path.resolve(__dirname, 'src/components/'), 'node_modules'],
     alias: {
       Chessboard: path.resolve(__dirname, 'src/components/chessboard/'),
       Visualization: path.resolve(__dirname, 'src/components/visualization/'),
-      ChessGamePosition$: path.resolve(__dirname, 'src/classes/ChessGamePosition.js'),
     }
   },
   devtool: 'source-map',

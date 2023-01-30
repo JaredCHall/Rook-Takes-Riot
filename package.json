@@ -17,7 +17,6 @@
     "@riotjs/compiler": "^6.3.2",
     "@riotjs/register": "^6.0.1",
     "@riotjs/webpack-loader": "^6.0.0",
-    "@tsconfig/node18": "^1.0.1",
     "chai": "^4.3.6",
     "css-loader": "^6.7.1",
     "esm": "^3.2.25",

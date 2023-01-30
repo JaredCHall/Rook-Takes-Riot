@@ -27,7 +27,7 @@
 
 
     <script lang="ts">
-        import ChessGamePosition from "ChessGamePosition";
+        import ChessGame from "ChessGame/ChessGame.ts";
         import Chessboard from "Chessboard/chessboard.riot"
 
         import {withTypes} from "riot";
@@ -51,9 +51,9 @@
             },
             askQuestion() {
 
-                const squareAddress = Math.floor(Math.random() * ChessGamePosition.squareNames.length);
-                const squareName = ChessGamePosition.squareNames[squareAddress];
-                const squareColor = ChessGamePosition.squareColors[squareAddress] === 0 ? 'white' : 'black';
+                const squareAddress = Math.floor(Math.random() * ChessGame.squareNames.length);
+                const squareName = ChessGame.squareNames[squareAddress];
+                const squareColor = ChessGame.squareColors[squareAddress] === 0 ? 'white' : 'black';
 
                 this.update({
                     isAnswered: false,

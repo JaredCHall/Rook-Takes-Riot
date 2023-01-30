@@ -1,3 +1,7 @@
+// @ts-ignore
+import ChessGame from 'ChessGame/ChessGame.ts'
+import {RiotComponent} from "riot";
+import {SquareComponent} from "./square/square";
 export interface ChessboardProps {
     title: string,
 
@@ -16,9 +20,9 @@ export interface ChessboardState {
 
 export interface ChessboardComponent extends RiotComponent<ChessboardProps, ChessboardState> {
 
-    squares: Array<Element>,
+    squares: Array<SquareComponent>,
 
-    gamePosition: ChessGamePosition,
+    gamePosition: ChessGame,
 
     flipBoard(): void,
     toggleLabels(): void,
@@ -27,11 +31,11 @@ export interface ChessboardComponent extends RiotComponent<ChessboardProps, Ches
 
     orientBoard(color: string): void,
 
-    getPosition(): ChessGamePosition,
+    getPosition(): ChessGame,
 
     setPosition(fen: string): void,
 
-    getSquare(name: string): Element,
+    getSquare(name: string): SquareComponent,
 
     getSquareNames(): Array<string>,
 

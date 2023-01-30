@@ -23,7 +23,7 @@
 
     <script lang="ts">
         import Square from "./square/square"
-        import ChessGamePosition from "ChessGamePosition"
+        import ChessGame from 'ChessGame/ChessGame.ts'
         import BoardOptions from "./board-options/board-options"
 
         import {withTypes} from 'riot'
@@ -33,7 +33,7 @@
         // noinspection TypeScriptValidateTypes
         export default withTypes<ChessboardComponent>({
             gamePosition: null,
-            squares: null,
+            squares: [],
             components: {Square, BoardOptions},
             state: {
               orientation: 'white',
@@ -41,17 +41,23 @@
               showPieces: false,
             },
             onBeforeMount(props: ChessboardProps, state: ChessboardState) {
-                this.gamePosition = new ChessGamePosition('8/8/8/8/8/8/8/8 w KQkq -')
+                this.gamePosition = new ChessGame('8/8/8/8/8/8/8/8 w KQkq -')
+
                 state.title = props.title;
                 state.showOptions = props.showOptions;
                 state.selectedSquare = props.selectedSquare;
             },
             onMounted() {
-                this.squares = this.root.querySelectorAll('svg.square');
+
+                const squareElements = this.root.querySelectorAll('svg.square')
+                for(let i = 0; i < squareElements.length; i++){
+                    const el = squareElements[i];
+                    this.squares.push(el.riot)
+                }
                 this.setPosition(this.gamePosition.fen)
             },
             getSquareNames() {
-                return ChessGamePosition.squareNames;
+                return ChessGame.squareNames;
             },
             getSquare(key): Element {
                 if(typeof key === 'string'){
@@ -63,7 +69,7 @@
             orientBoard(color){
                 for(let i=0; i<this.squares.length; i++){
                     const square = this.squares[i]
-                    square.riot.setOrientation(color)
+                    square.setOrientation(color)
                 }
                 this.update({
                     orientation: color
@@ -72,7 +78,7 @@
             getFen() {
                 return this.gamePosition.fen;
             },
-            getPosition(): ChessGamePosition {
+            getPosition(): ChessGame {
                return this.gamePosition;
             },
             setPosition(fen) {
@@ -82,9 +88,9 @@
                     const position = positions[squareName];
                     const square = this.getSquare(squareName);
                     if(position === null){
-                        square.riot.setPiece(null)
+                        square.setPiece(null)
                     }else{
-                        square.riot.setPiece(position[0],position[1])
+                        square.setPiece(position[0],position[1])
                     }
                 }
             },
@@ -102,7 +108,7 @@
             toggleLabels() {
                 for(let i=0; i<this.squares.length; i++){
                     const square = this.squares[i]
-                    square.riot.toggleLabel();
+                    square.toggleLabel();
                 }
                 this.update({
                     showLabels: !this.state.showLabels,
@@ -113,10 +119,5 @@
             },
         })
     </script>
-
-
-    <style>
-
-    </style>
 
 </chessboard>
