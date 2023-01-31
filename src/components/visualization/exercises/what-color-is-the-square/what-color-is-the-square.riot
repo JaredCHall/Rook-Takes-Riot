@@ -51,14 +51,13 @@
             },
             askQuestion() {
 
-                const squareAddress = Math.floor(Math.random() * ChessGame.squareNames.length);
-                const squareName = ChessGame.squareNames[squareAddress];
-                const squareColor = ChessGame.squareColors[squareAddress] === 0 ? 'white' : 'black';
+                const index = Math.floor(Math.random() * ChessGame.squareNames.length);
+                const name = ChessGame.getSquareName(index);
 
                 this.update({
                     isAnswered: false,
-                    expectedAnswer: squareColor,
-                    square: squareName,
+                    expectedAnswer: ChessGame.getSquareColor(name),
+                    square: name,
                 })
 
             },

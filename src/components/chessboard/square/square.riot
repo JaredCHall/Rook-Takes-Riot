@@ -5,7 +5,7 @@
         x={state.x}
         y={state.y}
         viewBox="0 0 50 50"
-        class="square square-{props.name}" onclick={() => select(!state.selected)}>
+        class="square" onclick={() => select(!state.selected)}>
 
     <rect width="50" height="50" class="{state.color}-square"></rect>
     <rect width="50" height="50" class="square-{state.color}-selected" if={state.selected}></rect>
@@ -30,39 +30,37 @@
                 orientation: 'white',
                 gamePiece: null,
                 gamePieceColor: null,
+                showLabel: false,
             },
             onBeforeMount(props: SquareProps, state: SquareState) {
                 if(props.index === null || props.name === null){
                     throw new Error("Must set name and index properties")
                 }
 
+                const squareInfo: object = ChessGame.squareInfo[props.name]
+
                 const orientation = 'white'
-                const coords = this.getXYPosition(props.index, orientation)
+                const coords = this.getXYPosition(props.name, orientation)
                 state.x = coords[0]
                 state.y = coords[1]
-                state.color = ChessGame.squareColors[props.index] === 1 ? 'black' : 'white'
+                state.color = ChessGame.getSquareColor(props.name)
                 state.selected = props.selected
 
             },
             onMounted(props: SquareProps) {
                 this.root.riot = this
             },
-            getXYPosition(index, orientation) {
-                let y = Math.floor(index / 8) * -1 + 8
-                let x = index % 8 + 1
+            getXYPosition(name, orientation) {
 
-                if(orientation === 'black'){
-                    x = x * -1 + 9
-                    y = y * -1 + 9
-                }
+                const position = ChessGame.getSquarePosition(name, orientation)
 
-                x = (x - 1) * 100
-                y = (8 - y) * 100
+                const x = position[0] * 100;
+                const y = position[1] * 100;
 
                 return [x, y]
             },
             setOrientation(orientation) {
-                const coords = this.getXYPosition(this.props.index, orientation)
+                const coords = this.getXYPosition(this.props.name, orientation)
                 this.update({
                     x: coords[0],
                     y: coords[1],

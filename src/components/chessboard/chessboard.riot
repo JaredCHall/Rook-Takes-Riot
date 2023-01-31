@@ -61,7 +61,7 @@
             },
             getSquare(key): Element {
                 if(typeof key === 'string'){
-                    return this.squares[ChessGame.squareIndexes[key]]
+                    return this.squares[ChessGame.getSquareIndex(key)]
                 }
 
                 return this.squares[key];

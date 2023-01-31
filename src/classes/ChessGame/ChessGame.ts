@@ -1,4 +1,5 @@
-import {PiecePositions} from './ChessGame.d'
+// @ts-ignore
+import {PiecePositions, SquareInfo} from './ChessGame.d.ts'
 
 export default class ChessGame {
 
@@ -98,20 +99,6 @@ export default class ChessGame {
         'a2', 'b2', 'c2', 'd2', 'e2','f2', 'g2', 'h2',
         'a1', 'b1', 'c1', 'd1', 'e1','f1', 'g1', 'h1',
     ];
-    /**
-     * 0 - white
-     * 1 - black
-     */
-    static squareColors: Array<number> = [
-        0,1,0,1,0,1,0,1,
-        1,0,1,0,1,0,1,0,
-        0,1,0,1,0,1,0,1,
-        1,0,1,0,1,0,1,0,
-        0,1,0,1,0,1,0,1,
-        1,0,1,0,1,0,1,0,
-        0,1,0,1,0,1,0,1,
-        1,0,1,0,1,0,1,0,
-    ];
 
     static squareIndexes: {[key: string]: number};
 
@@ -122,6 +109,66 @@ export default class ChessGame {
             const name = this.squareNames[i]
             this.squareIndexes[name] = i
         }
+    }
+
+    static getSquareColor(name: string): string {
+        return this.getSquareInfo(name).color
+    }
+
+    static getSquareIndex(name: string): number {
+        return this.getSquareInfo(name).index
+    }
+
+    static getSquarePosition(name: string, orientation: string): [number, number]{
+        const position = this.getSquareInfo(name).position[orientation] ?? null
+        if(position == null){
+            throw new Error("square orientation '"+position+"' does not exist")
+        }
+        return position
+    }
+
+    static squareInfo: {[key:string]: SquareInfo};
+    static getSquareInfo(name: string): SquareInfo {
+        const square = this.squareInfo[name] ?? null
+        if(square == null){
+            throw new Error("square with name '"+name+"' does not exist")
+        }
+        return square
+    };
+
+    static getSquareName(index: number): string {
+        const name = this.squareNames[index] ?? null
+        if(index == null){
+            throw new Error("square with index '"+index+"' does not exist")
+        }
+        return name
+    }
+
+    static {
+        this.squareInfo = {}
+        let currentColor = 0; // 0 white, 1 black
+        for(let index = 0; index < this.squareNames.length; index++){
+            const name = this.squareNames[index]
+
+            // white
+            const col = index % 8
+            const row = Math.floor(index / 8)
+
+            this.squareInfo[name] = {
+                index: index,
+                name: name,
+                color: currentColor == 1 ? 'black' : 'white',
+                position: {
+                    'white' : [col,row],
+                    'black' : [col * -1 + 7,row * -1 + 7]
+                }
+            }
+            if(col !== 7){
+                currentColor = currentColor == 1 ? 0 : 1;
+            }
+
+        }
+        console.log(this.squareInfo)
     }
 
 
