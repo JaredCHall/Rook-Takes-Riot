@@ -40,7 +40,7 @@
     <script lang="ts">
         import ChessGame from 'ChessGame/ChessGame.ts'
         import {withTypes} from 'riot'
-        import {BoardOptionsComponent, BoardOptionsProps, BoardOptionsState} from "Chessboard/board-options/board-options.d"
+        import {BoardOptionsComponent, BoardOptionsProps, BoardOptionsState} from "Chessboard/board-options/board-options.d.ts"
 
         // noinspection TypeScriptValidateTypes
         export default withTypes<BoardOptionsComponent>({
@@ -52,18 +52,18 @@
                 this.board = props.board
             },
             randomPuzzle() {
-                const puzzles = ChessGame.puzzles;
-                const fen = puzzles[Math.floor(Math.random() * puzzles.length)];
+                const puzzles = ChessGame.puzzles
+                const fen = puzzles[Math.floor(Math.random() * puzzles.length)]
                 this.setFen(fen)
             },
             setFen(fen) {
-                fen = fen ?? this.$('input[name="fenNumber"]').value;
+                fen = fen ?? this.$('input[name="fenNumber"]').value
                 try {
                     this.board.setPosition(fen)
                 }catch (e) {
                     this.update({fenError: e.message})
                 }
-                this.update();
+                this.update()
             },
             clearFenError() {
                 this.update({fenError: null})

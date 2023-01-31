@@ -22,12 +22,12 @@
     </div>
 
     <script lang="ts">
-        import Square from "./square/square"
+        import Square from "./square/square.riot"
+        import BoardOptions from "./board-options/board-options.riot"
         import ChessGame from 'ChessGame/ChessGame.ts'
-        import BoardOptions from "./board-options/board-options"
 
         import {withTypes} from 'riot'
-        import {ChessboardComponent, ChessboardProps, ChessboardState} from "Chessboard/chessboard.d"
+        import {ChessboardComponent, ChessboardProps, ChessboardState} from "Chessboard/chessboard.d.ts"
 
 
         // noinspection TypeScriptValidateTypes
@@ -43,15 +43,15 @@
             onBeforeMount(props: ChessboardProps, state: ChessboardState) {
                 this.gamePosition = new ChessGame('8/8/8/8/8/8/8/8 w KQkq -')
 
-                state.title = props.title;
-                state.showOptions = props.showOptions;
-                state.selectedSquare = props.selectedSquare;
+                state.title = props.title
+                state.showOptions = props.showOptions
+                state.selectedSquare = props.selectedSquare
             },
             onMounted() {
 
                 const squareElements = this.root.querySelectorAll('svg.square')
                 for(let i = 0; i < squareElements.length; i++){
-                    const el = squareElements[i];
+                    const el = squareElements[i]
                     this.squares.push(el.riot)
                 }
                 this.setPosition(this.gamePosition.fen)
@@ -61,7 +61,7 @@
             },
             getSquare(key): Element {
                 if(typeof key === 'string'){
-                    return this.squares[this.getSquareNames().indexOf(key)];
+                    return this.squares[ChessGame.squareIndexes[key]]
                 }
 
                 return this.squares[key];
@@ -76,17 +76,17 @@
                 })
             },
             getFen() {
-                return this.gamePosition.fen;
+                return this.gamePosition.fen
             },
             getPosition(): ChessGame {
-               return this.gamePosition;
+               return this.gamePosition
             },
             setPosition(fen) {
                 this.gamePosition.setPosition(fen)
-                const positions = this.getPosition().positions;
+                const positions = this.getPosition().positions
                 for(const squareName in positions){
-                    const position = positions[squareName];
-                    const square = this.getSquare(squareName);
+                    const position = positions[squareName]
+                    const square = this.getSquare(squareName)
                     if(position === null){
                         square.setPiece(null)
                     }else{
@@ -95,7 +95,7 @@
                 }
             },
             togglePieces() {
-                const showPieces = !this.state.showPieces;
+                const showPieces = !this.state.showPieces
                 if(showPieces){
                     this.setPosition('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
                 }else{
@@ -108,14 +108,14 @@
             toggleLabels() {
                 for(let i=0; i<this.squares.length; i++){
                     const square = this.squares[i]
-                    square.toggleLabel();
+                    square.toggleLabel()
                 }
                 this.update({
                     showLabels: !this.state.showLabels,
                 })
             },
             flipBoard() {
-                this.orientBoard(this.state.orientation === 'white' ? 'black' : 'white');
+                this.orientBoard(this.state.orientation === 'white' ? 'black' : 'white')
             },
         })
     </script>

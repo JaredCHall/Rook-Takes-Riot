@@ -45,13 +45,11 @@ export default class ChessGame {
     {
         const positions: PiecePositions = {}
 
-        // process piece placement
         const rows = fenPart.split('/')
         if(rows.length !== 8){
             throw new Error('FEN piece placement must include all eight rows')
         }
 
-        // loop through each row
         const columnNames = ['a','b','c','d','e','f','g','h']
         const piecesMap: {[key: string]: string} = {
             r: 'rook',
@@ -61,6 +59,7 @@ export default class ChessGame {
             k: 'king',
             p: 'pawn'
         }
+
         for(let rowNumber=8;rowNumber>0;rowNumber--){
             const chars = rows[rowNumber-1].split('')
             let columnNumber=1;
@@ -113,6 +112,18 @@ export default class ChessGame {
         0,1,0,1,0,1,0,1,
         1,0,1,0,1,0,1,0,
     ];
+
+    static squareIndexes: {[key: string]: number};
+
+    static {
+        // flip the squareNames array
+        this.squareIndexes = {}
+        for(let i = 0; i < this.squareNames.length; i++){
+            const name = this.squareNames[i]
+            this.squareIndexes[name] = i
+        }
+    }
+
 
     /**
      * TAKE THE PUZZLES!!!

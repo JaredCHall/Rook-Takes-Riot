@@ -17,11 +17,11 @@
     <svg is="piece" piece-name={state.gamePiece}  width="40" x="4" y="5" color={state.gamePieceColor} if={state.gamePiece}></svg>
 
     <script lang="ts">
-        import Piece from "../piece/piece"
+        import Piece from "Chessboard/piece/piece.riot"
         import ChessGame from 'ChessGame/ChessGame.ts'
 
         import {withTypes} from 'riot'
-        import {SquareComponent, SquareProps, SquareState} from "Chessboard/square/square.d";
+        import {SquareComponent, SquareProps, SquareState} from "Chessboard/square/square.d.ts"
 
         // noinspection TypeScriptValidateTypes
         export default withTypes<SquareComponent>({
@@ -41,11 +41,11 @@
                 state.x = coords[0]
                 state.y = coords[1]
                 state.color = ChessGame.squareColors[props.index] === 1 ? 'black' : 'white'
-                state.selected = props.selected;
+                state.selected = props.selected
 
             },
             onMounted(props: SquareProps) {
-                this.root.riot = this;
+                this.root.riot = this
             },
             getXYPosition(index, orientation) {
                 let y = Math.floor(index / 8) * -1 + 8
@@ -56,13 +56,13 @@
                     y = y * -1 + 9
                 }
 
-                x = (x - 1) * 100;
-                y = (8 - y) * 100;
+                x = (x - 1) * 100
+                y = (8 - y) * 100
 
                 return [x, y]
             },
             setOrientation(orientation) {
-                const coords = this.getXYPosition(this.props.index, orientation);
+                const coords = this.getXYPosition(this.props.index, orientation)
                 this.update({
                     x: coords[0],
                     y: coords[1],
