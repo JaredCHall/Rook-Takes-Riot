@@ -45,7 +45,7 @@ export default class ChessGame {
     {
         const positions: PiecePositions = {}
 
-        const rows = fenPart.split('/')
+        const rows = fenPart.split('/').reverse()
         if(rows.length !== 8){
             throw new Error('FEN piece placement must include all eight rows')
         }
