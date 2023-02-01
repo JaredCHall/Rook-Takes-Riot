@@ -51,7 +51,7 @@
             },
             askQuestion() {
 
-                const index = Math.floor(Math.random() * ChessGame.squareNames.length);
+                const index = Math.floor(Math.random() * ChessGame.allSquareNames().length);
                 const name = ChessGame.getSquareName(index);
 
                 this.update({
@@ -92,7 +92,7 @@
         }
 
         .correct-answer {
-            color: greenyellow;
+            color: lightgreen;
             font-size: 40rem;
         }
 

@@ -34,6 +34,7 @@
     "@riotjs/hot-reload": "^6.0.1",
     "@riotjs/lazy": "^2.0.2",
     "@riotjs/route": "^8.0.2",
+    "milligram": "^1.4.1",
     "riot": "^7.0.3",
     "sass": "^1.57.1",
     "sass-loader": "^13.2.0",

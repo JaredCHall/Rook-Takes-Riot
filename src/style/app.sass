@@ -1,3 +1,5 @@
+@use 'colors.sass'
+
 .container
   display: flex
   justify-content: center
@@ -11,7 +13,7 @@
   min-height: 100vh
 
 body
-  background-color: darkslategray
+  background-color: colors.$primary
 
 .chess-piece
   stroke-linecap: round
@@ -50,7 +52,7 @@ body
 #app-header
   width: 100%
   height: 4.5rem
-  background: cadetblue
+  background: colors.$secondary
   min-width: 80rem
   overflow: hidden
 
@@ -98,34 +100,34 @@ body
 .button-black
   background-color: black
   border-color: white
-  color: gainsboro
+  color: colors.$light
 
 .button-white
-  background-color: gainsboro
-  color: darkslategray
+  background-color: colors.$light
+  color: colors.$primary
   border-color: black
 
 .button-red
-  background-color: darkred
+  background-color: colors.$danger
   border-color: white
   color: white
 
 
 .button-green
-  background-color: lightgreen
+  background-color: colors.$success
   color: black
   border-color: black
 
 
 .selected
   text-decoration: underline
-  color: cadetblue
-  background-color: darkslategray
+  color: colors.$secondary
+  background-color: colors.$primary
 
 
 .selected .app-link
   text-decoration: underline
-  color: cadetblue
+  color: colors.$secondary
 
 
 #app-header .selected .app-link
@@ -134,7 +136,7 @@ body
 
 
 .error-text
-  color: orangered
+  color: colors.$danger
   font-size: smaller
   font-weight: bold
 
@@ -149,21 +151,21 @@ input[type="text"]
 
 
 input[type="text"]:focus
-  border-color: lightgreen
-
-
-/* Larger than mobile screen */
-@media (min-width: 40.0rem)
-  #app-header .row
-    /*min-width: 12rem*/
-
-
-/* Larger than tablet screen */
-@media (min-width: 80.0rem)
-  #app-header .row
-    /*min-width: 12rem*/
-
-/* Larger than desktop screen */
-@media (min-width: 120.0rem)
-  #app-header .row
-    /*min-width: 12rem*/
+  border-color: colors.$secondary
+//
+//
+///* Larger than mobile screen */
+//@media (min-width: 40.0rem)
+//  #app-header .row
+///*min-width: 12rem*/
+//
+//
+///* Larger than tablet screen */
+//@media (min-width: 80.0rem)
+//  #app-header .row
+///*min-width: 12rem*/
+//
+///* Larger than desktop screen */
+//@media (min-width: 120.0rem)
+//  #app-header .row
+///*min-width: 12rem*/
