@@ -50,6 +50,7 @@
             onMounted() {
 
                 const squareElements = this.root.querySelectorAll('svg.square')
+                this.squares = [];
                 for(let i = 0; i < squareElements.length; i++){
                     const el = squareElements[i]
                     this.squares.push(el.riot)
