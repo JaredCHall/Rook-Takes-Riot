@@ -58,7 +58,7 @@
                 this.setPosition(this.gamePosition.fen)
             },
             getSquareNames() {
-                return ChessGame.squareNames;
+                return ChessGame.allSquareNames();
             },
             getSquare(key): Element {
                 if(typeof key === 'string'){

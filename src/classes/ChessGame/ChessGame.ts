@@ -1,5 +1,7 @@
 // @ts-ignore
 import {PiecePositions, SquareInfo} from './ChessGame.d.ts'
+// @ts-ignore
+import BoardSquares from './BoardSquares.ts'
 
 export default class ChessGame {
 
@@ -88,87 +90,24 @@ export default class ChessGame {
         return positions
     }
 
-    // data maps for faster access
-    static squareNames: Array<string> = [
-        'a8', 'b8', 'c8', 'd8', 'e8','f8', 'g8', 'h8',
-        'a7', 'b7', 'c7', 'd7', 'e7','f7', 'g7', 'h7',
-        'a6', 'b6', 'c6', 'd6', 'e6','f6', 'g6', 'h6',
-        'a5', 'b5', 'c5', 'd5', 'e5','f5', 'g5', 'h5',
-        'a4', 'b4', 'c4', 'd4', 'e4','f4', 'g4', 'h4',
-        'a3', 'b3', 'c3', 'd3', 'e3','f3', 'g3', 'h3',
-        'a2', 'b2', 'c2', 'd2', 'e2','f2', 'g2', 'h2',
-        'a1', 'b1', 'c1', 'd1', 'e1','f1', 'g1', 'h1',
-    ];
-
-    static squareIndexes: {[key: string]: number};
-
-    static {
-        // flip the squareNames array
-        this.squareIndexes = {}
-        for(let i = 0; i < this.squareNames.length; i++){
-            const name = this.squareNames[i]
-            this.squareIndexes[name] = i
-        }
+    static allSquareNames(): Array<string> {
+        return BoardSquares.names;
     }
 
     static getSquareColor(name: string): string {
-        return this.getSquareInfo(name).color
+        return BoardSquares.getColor(name)
     }
 
     static getSquareIndex(name: string): number {
-        return this.getSquareInfo(name).index
+        return BoardSquares.getIndex(name)
     }
 
     static getSquarePosition(name: string, orientation: string): [number, number]{
-        const position = this.getSquareInfo(name).position[orientation] ?? null
-        if(position == null){
-            throw new Error("square orientation '"+position+"' does not exist")
-        }
-        return position
+        return BoardSquares.getPosition(name, orientation)
     }
-
-    static squareInfo: {[key:string]: SquareInfo};
-    static getSquareInfo(name: string): SquareInfo {
-        const square = this.squareInfo[name] ?? null
-        if(square == null){
-            throw new Error("square with name '"+name+"' does not exist")
-        }
-        return square
-    };
 
     static getSquareName(index: number): string {
-        const name = this.squareNames[index] ?? null
-        if(index == null){
-            throw new Error("square with index '"+index+"' does not exist")
-        }
-        return name
-    }
-
-    static {
-        this.squareInfo = {}
-        let currentColor = 0; // 0 white, 1 black
-        for(let index = 0; index < this.squareNames.length; index++){
-            const name = this.squareNames[index]
-
-            // white
-            const col = index % 8
-            const row = Math.floor(index / 8)
-
-            this.squareInfo[name] = {
-                index: index,
-                name: name,
-                color: currentColor == 1 ? 'black' : 'white',
-                position: {
-                    'white' : [col,row],
-                    'black' : [col * -1 + 7,row * -1 + 7]
-                }
-            }
-            if(col !== 7){
-                currentColor = currentColor == 1 ? 0 : 1;
-            }
-
-        }
-        console.log(this.squareInfo)
+       return BoardSquares.getName(index)
     }
 
 

@@ -37,8 +37,6 @@
                     throw new Error("Must set name and index properties")
                 }
 
-                const squareInfo: object = ChessGame.squareInfo[props.name]
-
                 const orientation = 'white'
                 const coords = this.getXYPosition(props.name, orientation)
                 state.x = coords[0]
