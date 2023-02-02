@@ -1,0 +1,40 @@
+@use 'colors.sass'
+
+#app-header
+  display: flex
+  justify-content: space-between
+  height: 4.5rem !important
+  background: colors.$secondary
+  min-width: 80rem !important
+  overflow: hidden
+
+#app-header .row
+  text-align: center
+  height: 100%
+
+.header-logo
+  margin: .2rem 0 .2rem 2rem
+  height: 4.5rem
+
+.header-title
+  font-size: 2.6rem
+  color: black
+  display: inline-block
+  vertical-align: top
+  padding-left: 2rem
+  margin-top: .2rem
+
+.app-link
+  font-size: 1.6rem
+  color: black
+  font-weight: bold
+
+.app-link:hover
+  text-decoration: underline
+  cursor: pointer
+
+#app-header .app-link
+  display: inline-block
+  vertical-align: top
+  padding-left: 2rem
+  margin-top: 1.1rem

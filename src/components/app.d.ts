@@ -7,5 +7,5 @@ export interface AppState {
 }
 
 export interface AppComponent extends RiotComponent<AppProps,AppState> {
-    changePage(page: string): void,
+    setCurrentRoute(path: string): void,
 }

@@ -1,0 +1,29 @@
+<app-header id='app-header'>
+
+    <div class="row">
+        <div class="column" id="header-logo-column">
+                <svg x=0 y=0 is="piece" piece-name="rook" color="black" width="40" class="header-logo"></svg>
+            <strong class="header-title">Rook Takes</strong>
+        </div>
+        <div class="column { props.app.currentRoute === '/' ? 'selected' : ''}">
+            <a href='/' class="app-link ">Chessboard</a>
+        </div>
+        <div class="column { props.app.currentRoute === '/visualize' ? 'selected' : ''}">
+            <a  href='/visualize' class="app-link" >Visualization Practice</a>
+        </div>
+    </div>
+
+    <script lang="ts">
+        import Piece from "Chessboard/piece/piece.riot";
+        import {withTypes} from "riot"
+        import {AppHeaderComponent} from "./app-header.d.ts"
+
+        // noinspection TypeScriptValidateTypes
+        export default withTypes<AppHeaderComponent>({
+            components: {
+                Piece
+            }
+        })
+    </script>
+
+</app-header>

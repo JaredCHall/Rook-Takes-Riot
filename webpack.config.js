@@ -4,15 +4,31 @@ const webpack = require('webpack')
 const path = require('path')
 const sass = require('sass')
 const compiler = require('@riotjs/compiler')
+const {pathToFileURL} = require('url')
 
 compiler.registerPreprocessor('css', 'sass', function(code, { options }) {
 
   // dart sass api docs:  https://sass-lang.com/documentation/js-api/
-  const sassOptions = {syntax: 'indented'}
+  const sassOptions = {
+    syntax: 'indented',
+    sourceMap: true,
+    // TODO: make use/import statements work within riot components
+    // importers: [{
+    //   sync: "sync",
+    //   findFileUrl(url) {
+    //     const pathToStyles = path.resolve(__dirname, 'src/style/')
+    //     const aliasToStyles = 'Style'
+    //     const filePath=pathToStyles + url.replace(aliasToStyles,'')
+    //     return pathToFileURL(filePath)
+    //   }
+    // }]
+  }
+
+  const result = sass.compileString(code,sassOptions);
 
   return {
-    code: sass.compileString(code,sassOptions).css,
-    map: null
+    code: result.css,
+    map: result.sourceMap
   }
 
 });
@@ -28,11 +44,15 @@ module.exports = {
     clean: true
   },
   resolve: {
-    extensions: ['.js','.ts','.riot'],
+    extensions: ['.js','.ts','.riot', '.sass'],
     modules: [path.resolve(__dirname, 'src/classes/'), path.resolve(__dirname, 'src/components/'), 'node_modules'],
     alias: {
+      App: path.resolve(__dirname, 'src/components/'),
       Chessboard: path.resolve(__dirname, 'src/components/chessboard/'),
       Visualization: path.resolve(__dirname, 'src/components/visualization/'),
+      Navigation: path.resolve(__dirname, 'src/components/navigation/'),
+      Style: path.resolve(__dirname, 'src/style/')
+
     }
   },
   devtool: 'source-map',

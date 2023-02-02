@@ -1,28 +1,15 @@
 <app>
     <router>
 
-        <div id='app-header'>
-            <div class="row">
-                <div class="column" id="header-logo-column">
-                    <svg x=0 y=0 is="piece" piece-name="rook" color="black" width="40" class="header-logo"></svg>
-                    <strong class="header-title">Rook Takes</strong>
-                </div>
-                <div class="column { this.state.page === 'chessboard' ? 'selected' : ''}">
-                    <a href='/' class="app-link ">Chessboard</a>
-                </div>
-                <div class="column { this.state.page === 'visualization' ? 'selected' : ''}">
-                    <a  href='/visualize' class="app-link" >Visualization Practice</a>
-                </div>
-            </div>
-        </div>
+        <div is="app-header" app={this}></div>
 
         <main class="container">
 
-            <route path="/">
+            <route path="/" on-mounted={ () => setCurrentRoute("/")}>
                 <chessboard title="How about a nice game of chess?" show-options=true></chessboard>
             </route>
 
-            <route path="/visualize">
+            <route path="/visualize" on-mounted={ () => setCurrentRoute("/visualize")}>
                 <visualization></visualization>
             </route>
         </main>
@@ -30,23 +17,28 @@
     </router>
 
     <script lang="ts">
+        import AppHeader from 'Navigation/app-header/app-header.riot'
         import Chessboard from 'Chessboard/chessboard.riot'
         import Visualization from 'Visualization/visualization.riot'
-        import Piece from 'Chessboard/piece/piece.riot'
 
         import {withTypes} from "riot"
         import {AppComponent} from "./app.d.ts"
 
         // noinspection TypeScriptValidateTypes
         export default withTypes<AppComponent>({
+            currentRoute: '/',
             state: {
               page: 'chessboard',
             },
             components: {
+                AppHeader,
                 Chessboard,
-                Piece,
                 Visualization,
             },
+            setCurrentRoute(path) {
+                this.currentRoute = path;
+                this.update();
+            }
         })
 
     </script>
