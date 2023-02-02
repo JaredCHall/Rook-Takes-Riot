@@ -22,6 +22,7 @@ module.exports = {
     app: './src/app.ts',
   },
   output: {
+    publicPath: "/",
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].bundle.js',
     clean: true
@@ -64,9 +65,7 @@ module.exports = {
   devServer: {
     hot: true,
     open: true,
-    historyApiFallback: {
-      index: 'index.html'
-    }
+    historyApiFallback: true
   },
   module: {
     rules: [
