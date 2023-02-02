@@ -19,6 +19,9 @@
     </div>
 
     <div class="row" if={state.selectedGame}>
+
+        <side-bar></side-bar>
+
         <div class="column">
             <div style="text-align: left">
                 <button class="button button-small" onclick={() => selectGame(null)}>
@@ -35,6 +38,8 @@
         import WhatColorIsTheSquare from "./exercises/what-color-is-the-square/what-color-is-the-square.riot"
         import WhatDoesThePieceSee from "./exercises/what-does-the-piece-see/what-does-the-piece-see.riot"
 
+        import SideBar from 'Navigation/side-bar/side-bar.riot'
+
         import {withTypes} from "riot";
         import {VisualizationComponent} from "Visualization/visualization.d.ts";
 
@@ -42,7 +47,8 @@
         export default withTypes<VisualizationComponent>({
             components: {
                 WhatColorIsTheSquare,
-                WhatDoesThePieceSee
+                WhatDoesThePieceSee,
+                SideBar
             },
             state: {
                 selectedGame: null,

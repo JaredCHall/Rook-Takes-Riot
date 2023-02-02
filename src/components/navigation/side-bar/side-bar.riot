@@ -1,0 +1,28 @@
+<side-bar>
+    <div id="side-bar-wrapper">
+
+        <div id="side-bar-container">
+            <div class="column">
+                <a href="/visualize/what-color-is-the-square">
+                    What Color Is The Square?
+                </a>
+            </div>
+            <div class="column">
+                <a href="/visualize/what-color-is-the-square">
+                    What Does The Piece See?
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <script lang="ts">
+        import {withTypes} from "riot"
+        import {SideBarComponent} from './side-bar.d.ts'
+
+        // noinspection TypeScriptValidateTypes
+        export default withTypes<SideBarComponent>({})
+    </script>
+
+
+</side-bar>

@@ -1,0 +1,22 @@
+@use 'colors.sass'
+
+#side-bar-wrapper
+  position: fixed
+  height: calc(100vh - 14rem)
+  width: 40rem
+  left: 1rem
+  display: grid
+  align-items: start
+
+#side-bar-container
+  display: flex
+  align-items: flex-start
+  flex-direction: column
+  min-width: 30rem
+  background-color: colors.$secondary
+
+#side-bar-container .column
+  text-align: center
+  padding: .5rem
+  a
+    color: darken(colors.$primary,50%)
