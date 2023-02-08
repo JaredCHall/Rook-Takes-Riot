@@ -1,28 +1,31 @@
 <what-color-is-the-square>
-    <div class='exercise-area'  style="text-align:center;">
+    <div class='exercise-area'>
+
+
         <h1>What Color Is the Square</h1>
 
-        <div class="column square-name" if={!state.isAnswered}>
+        <div class="square-name" if={!state.isAnswered}>
             { state.square }
         </div>
-        <div class="column" style=" align-items: center; width:120rem" if={state.isAnswered}>
-            <div class="correct-answer" if={state.isAnswerCorrect}>
+
+        <div class="result" style="width:120rem; margin: 0 auto" if={state.isAnswered}>
+            <div class="result-annotation fades-out correct-answer" if={state.isAnswerCorrect}>
                 !!
             </div>
-            <div class="wrong-answer" if={!state.isAnswerCorrect}>
+            <div class="result-annotation fades-out wrong-answer" if={!state.isAnswerCorrect}>
                 ??
             </div>
-            <div class="">
+            <div class="result-chessboard hidden">
                 <chessboard selected-square={state.square}></chessboard>
             </div>
         </div>
 
-        <div class="column prompt" if={!state.isAnswered}>
+        <div class="prompt" if={!state.isAnswered}>
             <button class="button button-white" onclick={() => answerQuestion('white')}>It's white</button>
             <button class="button button-black" onclick={() => answerQuestion('black')}>It's black</button>
         </div>
 
-        <div class="column result" if="{state.isAnswered}">
+        <div if="{state.isAnswered}">
             <button class="button margin-top2" onclick={() => askQuestion()}>Go Again!</button>
         </div>
 
@@ -84,6 +87,16 @@
                     isAnswered: true,
                     isAnswerCorrect: answer === this.state.expectedAnswer
                 })
+                const resultAnnotation = this.$('.result-annotation')
+                setTimeout(function(){
+                    resultAnnotation.classList.add('faded')
+                }, 0);
+
+                const resultVisualDemonstration = this.$('.result-chessboard')
+                setTimeout(function(){
+                    resultAnnotation.classList.add('hidden')
+                    resultVisualDemonstration.classList.remove('hidden')
+                }, 500);
             },
         })
     </script>
@@ -117,6 +130,10 @@
         .wrong-answer {
             color: indianred;
             font-size: 40rem;
+        }
+
+        .prompt {
+            /*display: grid;*/
         }
 
     </style>

@@ -16,6 +16,24 @@
 .container-content
   min-height: 100vh
 
+.hidden
+  display: none
+
+.invisible
+  opacity: 0
+
+.visible
+ opacity: 1
+
+.fades-out
+  opacity: 1
+  visibility: visible
+  transition: opacity 500ms ease-in, visibility 0s 500ms
+
+  &.faded
+    visibility: hidden
+    opacity: 0
+
 body
   background-color: colors.$primary
 
