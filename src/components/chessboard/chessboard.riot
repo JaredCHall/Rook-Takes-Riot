@@ -4,7 +4,7 @@
     <div class="row">
 
         <div class="column">
-            <svg viewBox="0 0 800 800" style="min-width:20rem;max-width:70rem">
+            <svg viewBox="0 0 800 800" style="min-width:60rem;max-width:90rem;width: auto">
                 <svg
                     each={ (name, index) in getSquareNames() }
                     is="square" name={name}
@@ -16,7 +16,7 @@
         </div>
 
 
-        <div class="column options" style="width:40rem; text-align: left;" if={state.showOptions}>
+        <div class="column options" style="width:20rem; text-align: left;" if={state.showOptions}>
             <board-options board={this}></board-options>
         </div>
     </div>

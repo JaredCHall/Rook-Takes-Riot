@@ -8,7 +8,7 @@
         <div class="column { props.app.currentRoute === '/' ? 'selected' : ''}">
             <a href='/' class="app-link ">Chessboard</a>
         </div>
-        <div class="column { props.app.currentRoute === '/visualize' ? 'selected' : ''}">
+        <div class="column { props.app.currentRoute.startsWith('/visualize') ? 'selected' : ''}">
             <a  href='/visualize' class="app-link" >Visualization Practice</a>
         </div>
     </div>

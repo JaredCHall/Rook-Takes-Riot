@@ -45,18 +45,28 @@ body
   stroke-opacity: 1
   fill-opacity: 1
   fill-rule: evenodd
-  stroke-width: .5
+  stroke-width: 1
+
+  .piece-fill
+    stroke-width: 0
 
   text
-    font: 100 6.9rem FreeSerif
+    font: 100 6.5rem FreeSerif
 
   &.black-piece
     fill: #000000
-    stroke: #ffffff
+    stroke: aquamarine
+
+    .piece-fill
+      fill: aquamarine
 
   &.white-piece
     fill: #ffffff
-    stroke: #000000
+    stroke: #00CCCC
+
+    .piece-fill
+      stroke-width: 0
+      fill: #00CCCC
 
 
 .margin-left
