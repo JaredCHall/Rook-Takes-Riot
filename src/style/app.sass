@@ -37,20 +37,27 @@
 body
   background-color: colors.$primary
 
-.chess-piece
-  stroke-linecap: round
-  stroke-linejoin: round
-  stroke-miterlimit: 4
-  stroke-dasharray: none
-  stroke-opacity: 1
+@font-face
+  font-family: 'FreeSerif'
+  src: url('../../public/fonts/FreeSerif.woff')
 
-.black-piece
-  opacity: 1
-  fill: #000000
+.chess-piece
+  stroke-opacity: 1
   fill-opacity: 1
   fill-rule: evenodd
-  stroke: #ffffff
-  stroke-width: 1
+  stroke-width: .5
+
+  text
+    font: 100 6.9rem FreeSerif
+
+  &.black-piece
+    fill: #000000
+    stroke: #ffffff
+
+  &.white-piece
+    fill: #ffffff
+    stroke: #000000
+
 
 .margin-left
   margin-left: 2rem
@@ -62,13 +69,7 @@ body
   margin-top: 4rem
 
 
-.white-piece
-  opacity: 1
-  fill: #ffffff
-  fill-opacity: 1
-  fill-rule: evenodd
-  stroke: #000000
-  stroke-width: 1
+
 
 .button-small
   font-size: 1rem

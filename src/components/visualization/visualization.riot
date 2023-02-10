@@ -7,49 +7,25 @@
 
             <div style="text-align: center">
                 <h3> Select Your Game, Champion </h3>
-                <button class="button button-white" onclick={() => selectGame('what-color-is-the-square')}>
+                <a class="button button-white" href="/visualize/what-color-is-the-square">
                     What Color Is The Square
-                </button>
-                <button class='button button-black margin-left' onclick={() => selectGame('what-does-the-piece-see')}>
+                </a>
+                <a class='button button-black margin-left' href="/visualize/what-does-the-piece-see">
                      What Does The Piece See
-                </button>
+                </a>
             </div>
 
-        </div>
-    </div>
-
-    <div class="row" if={state.selectedGame}>
-
-        <side-bar></side-bar>
-
-        <div class="column">
-            <div style="text-align: left">
-                <button class="button button-small" onclick={() => selectGame(null)}>
-                    Back
-                </button>
-            </div>
-
-            <what-color-is-the-square if={state.selectedGame === 'what-color-is-the-square'}></what-color-is-the-square>
-            <what-does-the-piece-see if={state.selectedGame === 'what-does-the-piece-see'}></what-does-the-piece-see>
         </div>
     </div>
 
     <script lang="ts">
-        import WhatColorIsTheSquare from "./exercises/what-color-is-the-square/what-color-is-the-square.riot"
-        import WhatDoesThePieceSee from "./exercises/what-does-the-piece-see/what-does-the-piece-see.riot"
 
-        import SideBar from 'Navigation/side-bar/side-bar.riot'
 
         import {withTypes} from "riot";
         import {VisualizationComponent} from "Visualization/visualization.d.ts";
 
         // noinspection TypeScriptValidateTypes
         export default withTypes<VisualizationComponent>({
-            components: {
-                WhatColorIsTheSquare,
-                WhatDoesThePieceSee,
-                SideBar
-            },
             state: {
                 selectedGame: null,
             },

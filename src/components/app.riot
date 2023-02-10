@@ -12,6 +12,15 @@
             <route path="/visualize" on-mounted={ () => setCurrentRoute("/visualize")}>
                 <visualization></visualization>
             </route>
+
+            <route path="/visualize/what-color-is-the-square" on-mounted={ () => setCurrentRoute("/visualize/what-color-is-the-square")}>
+                <what-color-is-the-square></what-color-is-the-square>
+            </route>
+
+            <route path="/visualize/what-does-the-piece-see" on-mounted={ () => setCurrentRoute("/visualize/what-does-the-piece-see")}>
+                <what-does-the-piece-see></what-does-the-piece-see>
+            </route>
+
         </main>
 
     </router>
@@ -20,6 +29,8 @@
         import AppHeader from 'Navigation/app-header/app-header.riot'
         import Chessboard from 'Chessboard/chessboard.riot'
         import Visualization from 'Visualization/visualization.riot'
+        import WhatColorIsTheSquare from 'Visualization/exercises/what-color-is-the-square/what-color-is-the-square.riot'
+        import WhatDoesThePieceSee from 'Visualization/exercises/what-does-the-piece-see/what-does-the-piece-see.riot'
 
         import {withTypes} from "riot"
         import {AppComponent} from "./app.d.ts"
@@ -34,6 +45,8 @@
                 AppHeader,
                 Chessboard,
                 Visualization,
+                WhatColorIsTheSquare,
+                WhatDoesThePieceSee,
             },
             setCurrentRoute(path) {
                 this.currentRoute = path;
