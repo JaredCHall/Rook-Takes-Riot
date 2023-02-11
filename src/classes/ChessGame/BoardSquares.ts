@@ -13,6 +13,7 @@ export default class BoardSquares {
         'a1', 'b1', 'c1', 'd1', 'e1','f1', 'g1', 'h1',
     ];
 
+
     static getColor(name: string): string {
         return this.getInfo(name).color
     }
@@ -65,6 +66,7 @@ export default class BoardSquares {
                     'black': [col * -1 + 7, row * -1 + 7]
                 }
             }
+
             if (col !== 7) {
                 currentColor = currentColor == 1 ? 0 : 1
             }

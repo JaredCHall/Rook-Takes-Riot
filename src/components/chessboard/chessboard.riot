@@ -11,6 +11,7 @@
                     index={index}
                     selected={state.selectedSquare === name}
                     width=100
+                    board={this}
                     ></svg>
             </svg>
         </div>
@@ -85,14 +86,15 @@
             setPosition(fen) {
                 this.gamePosition.setPosition(fen)
                 const positions = this.getPosition().positions
+
                 for(const squareName in positions){
-                    const position = positions[squareName]
-                    const square = this.getSquare(squareName)
-                    if(position === null){
-                        square.setPiece(null)
-                    }else{
-                        square.setPiece(position[0],position[1])
-                    }
+                    const piece = positions[squareName]
+                    this.getSquare(squareName).setPiece(piece)
+                }
+            },
+            selectSquares(squares: Array<string>) {
+                for(let i = 0; i<squares.length; i++){
+                    this.getSquare(squares[i]).select(true)
                 }
             },
             togglePieces() {

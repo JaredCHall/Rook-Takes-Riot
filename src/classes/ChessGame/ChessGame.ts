@@ -2,6 +2,8 @@
 import {PiecePositions, SquareInfo} from './ChessGame.d.ts'
 // @ts-ignore
 import BoardSquares from './BoardSquares.ts'
+import Mailbox144 from "./Mailbox144";
+import ChessPiece from "./ChessPiece";
 
 export default class ChessGame {
 
@@ -21,8 +23,11 @@ export default class ChessGame {
 
     fullMoveCounter: number|null = null;
 
+    mailbox: Mailbox144;
+
     constructor(fen: string) {
         this.fen = fen;
+        this.mailbox = new Mailbox144()
         this.setPosition(fen)
     }
 
@@ -42,10 +47,32 @@ export default class ChessGame {
 
     setPosition(fen: string) {
         this.parseFEN(fen)
+
+    }
+
+    getMoves(squareName: string): Array<string> {
+
+        const mailboxIndex = Mailbox144.getAddressIndex(squareName)
+        const address = this.mailbox.get(mailboxIndex)
+
+        console.log('square '+squareName+' at mailbox index '+mailboxIndex)
+
+        const piece = address.piece
+        if(piece == null){
+            console.log('empty square')
+            return []
+        }
+
+        console.log('calculating moves for '+piece.color+' '+piece.type)
+
+
+        return piece.getMoves(mailboxIndex, this.mailbox)
+
     }
 
     #parsePiecePlacements(fenPart: string): PiecePositions
     {
+        this.mailbox.clear() // start with a clean mailbox
         const positions: PiecePositions = {}
 
         const rows = fenPart.split('/').reverse()
@@ -54,14 +81,7 @@ export default class ChessGame {
         }
 
         const columnNames = ['a','b','c','d','e','f','g','h']
-        const piecesMap: {[key: string]: string} = {
-            r: 'rook',
-            b: 'bishop',
-            n: 'knight',
-            q: 'queen',
-            k: 'king',
-            p: 'pawn'
-        }
+
 
         for(let rowNumber=8;rowNumber>0;rowNumber--){
             const chars = rows[rowNumber-1].split('')
@@ -77,10 +97,11 @@ export default class ChessGame {
                         columnNumber++
                     }
                 }else if(/[rbnqkpRBNQKP]/.test(character)) {
-                    const color = character.toUpperCase() === character ? 'white' : 'black'
-                    const piece = piecesMap[character.toLowerCase()]
+                    const piece = new ChessPiece(character)
                     const squareName = columnNames[columnNumber-1]+rowNumber.toString()
-                    positions[squareName] = [piece, color]
+                    positions[squareName] = piece
+                    const mailboxIndex = Mailbox144.getAddressIndex(squareName)
+                    this.mailbox.set(mailboxIndex, false, piece)
                     columnNumber++
                 }else{
                     throw new Error("Unrecognized position character: "+character)

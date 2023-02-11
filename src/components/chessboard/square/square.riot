@@ -14,7 +14,7 @@
         {props.name}
     </text>
 
-    <svg is="piece" piece-name={state.gamePiece}  width="40" x="4" y="5" color={state.gamePieceColor} if={state.gamePiece}></svg>
+    <svg is="piece" piece-name={state.piece.type}  width="40" x="4" y="5" color={state.piece.color} if={state.piece}></svg>
 
     <script lang="ts">
         import Piece from "Chessboard/piece/piece.riot"
@@ -22,14 +22,14 @@
 
         import {withTypes} from 'riot'
         import {SquareComponent, SquareProps, SquareState} from "Chessboard/square/square.d.ts"
+        import ChessPiece from "../../../classes/ChessGame/ChessPiece";
 
         // noinspection TypeScriptValidateTypes
         export default withTypes<SquareComponent>({
             components: {Piece},
             state: {
                 orientation: 'white',
-                gamePiece: null,
-                gamePieceColor: null,
+                piece: null,
                 showLabel: false,
             },
             onBeforeMount(props: SquareProps, state: SquareState) {
@@ -64,14 +64,16 @@
                     y: coords[1],
                 })
             },
-            setPiece(type=null, color=null) {
+            setPiece(piece: ChessPiece|null) {
                 this.update({
-                    gamePiece: type,
-                    gamePieceColor: color,
+                    piece: piece,
                 })
             },
             select(isSelected) {
                 this.update({selected: isSelected ?? false})
+                const board = this.props.board
+                const moves = board.gamePosition.getMoves(this.props.name)
+                board.selectSquares(moves)
             },
             toggleLabel() {
                 this.update({showLabel: !this.state.showLabel})
