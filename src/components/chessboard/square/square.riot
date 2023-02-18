@@ -5,7 +5,7 @@
         x={state.x}
         y={state.y}
         viewBox="0 0 50 50"
-        class="square" onclick={() => select(!state.selected)}>
+        class="square" onclick={() => toggleSelected()}>
 
     <rect width="50" height="50" class="{state.color}-square"></rect>
     <rect width="50" height="50" class="square-{state.color}-selected" if={state.selected}></rect>
@@ -15,6 +15,8 @@
     </text>
 
     <svg is="piece" piece-name={state.piece.type}  width="40" x="4" y="5" color={state.piece.color} if={state.piece}></svg>
+
+    <circle cx="25" cy="25" r="6" class="move-indicator" if={state.showMoveIndicator} />
 
     <script lang="ts">
         import Piece from "Chessboard/piece/piece.riot"
@@ -31,6 +33,7 @@
                 orientation: 'white',
                 piece: null,
                 showLabel: false,
+                showMoveIndicator: false,
             },
             onBeforeMount(props: SquareProps, state: SquareState) {
                 if(props.index === null || props.name === null){
@@ -69,11 +72,32 @@
                     piece: piece,
                 })
             },
-            select(isSelected) {
-                this.update({selected: isSelected ?? false})
+            showSelected(show: boolean){
+                this.update({selected: show ?? false})
+            },
+            toggleSelected() {
+                const newSelected = !this.state.selected
                 const board = this.props.board
+                if(!newSelected){
+                    board.clearSelections()
+                    board.clearMoveIndicators()
+                    this.showSelected(false)
+                    return
+                }
+
+                this.select()
+            },
+            select() {
+                const board = this.props.board
+
+                board.clearSelections()
+                this.showSelected(true)
+
                 const moves = board.gamePosition.getMoves(this.props.name)
-                board.selectSquares(moves)
+                board.showMoveIndicators(moves)
+            },
+            showMoveIndicator(show: boolean){
+                  this.update({showMoveIndicator: show})
             },
             toggleLabel() {
                 this.update({showLabel: !this.state.showLabel})

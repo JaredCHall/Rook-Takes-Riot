@@ -92,9 +92,21 @@
                     this.getSquare(squareName).setPiece(piece)
                 }
             },
-            selectSquares(squares: Array<string>) {
+            showMoveIndicators(squares: Array<string>) {
+                this.clearMoveIndicators()
+
                 for(let i = 0; i<squares.length; i++){
-                    this.getSquare(squares[i]).select(true)
+                    this.getSquare(squares[i]).showMoveIndicator(true)
+                }
+            },
+            clearSelections() {
+                for(let i = 0; i<this.squares.length; i++){
+                    this.squares[i].showSelected(false)
+                }
+            },
+            clearMoveIndicators() {
+                for(let i = 0; i<this.squares.length; i++){
+                    this.squares[i].showMoveIndicator(false)
                 }
             },
             togglePieces() {
