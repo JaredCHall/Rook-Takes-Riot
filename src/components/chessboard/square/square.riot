@@ -21,13 +21,28 @@
     <script lang="ts">
         import Piece from "Chessboard/piece/piece.riot"
         import ChessGame from 'ChessGame/ChessGame.ts'
+        import ChessPiece from "ChessGame/ChessPiece.ts";
 
-        import {withTypes} from 'riot'
-        import {SquareComponent, SquareProps, SquareState} from "Chessboard/square/square.d.ts"
-        import ChessPiece from "../../../classes/ChessGame/ChessPiece";
+        interface Props {
+            name: string,
+            width: number,
+            index: number,
+            selected: boolean,
+            color: string,
+        }
 
-        // noinspection TypeScriptValidateTypes
-        export default withTypes<SquareComponent>({
+        interface State {
+            x: number,
+            y: number,
+            selected: boolean,
+            showLabel: boolean,
+            gamePiece: string,
+            gamePieceColor: string,
+            color: string,
+            orientation: string,
+        }
+
+        export default {
             components: {Piece},
             state: {
                 orientation: 'white',
@@ -35,7 +50,7 @@
                 showLabel: false,
                 showMoveIndicator: false,
             },
-            onBeforeMount(props: SquareProps, state: SquareState) {
+            onBeforeMount(props: Props, state: State) {
                 if(props.index === null || props.name === null){
                     throw new Error("Must set name and index properties")
                 }
@@ -48,7 +63,7 @@
                 state.selected = props.selected
 
             },
-            onMounted(props: SquareProps) {
+            onMounted(props: Props) {
                 this.root.riot = this
             },
             getXYPosition(name, orientation) {
@@ -102,7 +117,7 @@
             toggleLabel() {
                 this.update({showLabel: !this.state.showLabel})
             },
-        })
+        }
     </script>
 
     <style type="sass">

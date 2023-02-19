@@ -43,11 +43,15 @@
 
     <script lang="ts">
 
-        import {RiotComponent, withTypes} from "riot"
-        import {Piece, PieceProps, PieceState} from "./piece.d.ts"
+        export interface Props {
+            pieceName: string,
+            color: string,
+            width: number,
+            x: number,
+            y: number,
+        }
 
-        // noinspection TypeScriptValidateTypes
-        export default withTypes<Piece>({})
+        export default {}
 
     </script>
 

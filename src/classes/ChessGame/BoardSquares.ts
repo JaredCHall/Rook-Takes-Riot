@@ -15,15 +15,15 @@ export default class BoardSquares {
 
 
     static getColor(name: string): string {
-        return this.getInfo(name).color
+        return BoardSquares.getInfo(name).color
     }
 
     static getIndex(name: string): number {
-        return this.getInfo(name).index
+        return BoardSquares.getInfo(name).index
     }
 
     static getPosition(name: string, orientation: string): [number, number]{
-        const position = this.getInfo(name).position[orientation] ?? null
+        const position = BoardSquares.getInfo(name).position[orientation] ?? null
         if(position == null){
             throw new Error("board orientation '"+orientation+"' does not exist")
         }
@@ -32,7 +32,7 @@ export default class BoardSquares {
 
     static squares: {[key:string]: SquareInfo};
     static getInfo(name: string): SquareInfo {
-        const square = this.squares[name] ?? null
+        const square = BoardSquares.squares[name] ?? null
         if(square == null){
             throw new Error("square with name '"+name+"' does not exist")
         }
@@ -40,7 +40,7 @@ export default class BoardSquares {
     };
 
     static getName(index: number): string {
-        const name = this.names[index] ?? null
+        const name = BoardSquares.names[index] ?? null
         if(index == null){
             throw new Error("square with index '"+index+"' does not exist")
         }
@@ -48,10 +48,10 @@ export default class BoardSquares {
     }
 
     static {
-        this.squares = {}
+        BoardSquares.squares = {}
         let currentColor = 0; // 0 white, 1 black
-        for (let index = 0; index < this.names.length; index++) {
-            const name = this.names[index]
+        for (let index = 0; index < BoardSquares.names.length; index++) {
+            const name = BoardSquares.names[index]
 
             // white
             const col = index % 8

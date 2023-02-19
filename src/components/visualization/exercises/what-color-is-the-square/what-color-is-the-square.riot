@@ -35,13 +35,16 @@
         import ChessGame from "ChessGame/ChessGame.ts";
         import Chessboard from "Chessboard/chessboard.riot"
 
-        import {withTypes} from "riot";
-        import {
-            WhatColorIsTheSquareComponent
-        } from "Visualization/exercises/what-color-is-the-square/what-color-is-the-square.d.ts";
+        interface Props {}
 
-        // noinspection TypeScriptValidateTypes
-        export default withTypes<WhatColorIsTheSquareComponent>({
+        interface State {
+            isAnswered: boolean,
+            expectedAnswer: string,
+            isAnswerCorrect: boolean,
+            square: string,
+        }
+
+        export default {
             components: {
                 Chessboard,
             },
@@ -51,7 +54,7 @@
                 isAnswerCorrect: null,
                 square: null,
             },
-            onMounted() {
+            onMounted(props: Props, state: State) {
                 this.askQuestion()
                 this.openFullScreen()
             },
@@ -97,7 +100,7 @@
                     resultVisualDemonstration.classList.remove('hidden')
                 }, 500);
             },
-        })
+        }
     </script>
 
     <style>

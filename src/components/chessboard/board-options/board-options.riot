@@ -39,13 +39,15 @@
 
     <script lang="ts">
         import ChessGame from 'ChessGame/ChessGame.ts'
-        import {withTypes} from 'riot'
-        import {BoardOptionsComponent, BoardOptionsProps, BoardOptionsState} from "Chessboard/board-options/board-options.d.ts"
+        import {RiotComponent} from "riot";
 
-        // noinspection TypeScriptValidateTypes
-        export default withTypes<BoardOptionsComponent>({
+        interface Props {
+            board: RiotComponent
+        }
+
+        export default {
             board: null,
-            onBeforeMount(props: BoardOptionsProps){
+            onBeforeMount(props: Props){
                 if(props.board === null){
                     throw new Error("must set board property")
                 }
@@ -68,7 +70,7 @@
             clearFenError() {
                 this.update({fenError: null})
             },
-        })
+        }
     </script>
 
 </board-options>

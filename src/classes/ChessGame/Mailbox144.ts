@@ -18,7 +18,7 @@ export default class Mailbox144 {
     static addressesBySquare: {[name: string]: number};
 
     static {
-        this.addressesBySquare = Object.fromEntries(Object.entries(this.addressesByIndex).map(([key, value]) => [value, parseInt(key)]))
+        Mailbox144.addressesBySquare = Object.fromEntries(Object.entries(this.addressesByIndex).map(([key, value]) => [value, parseInt(key)]))
     }
 
     

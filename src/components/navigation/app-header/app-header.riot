@@ -15,15 +15,12 @@
 
     <script lang="ts">
         import Piece from "Chessboard/piece/piece.riot";
-        import {withTypes} from "riot"
-        import {AppHeaderComponent} from "./app-header.d.ts"
 
-        // noinspection TypeScriptValidateTypes
-        export default withTypes<AppHeaderComponent>({
+        export default {
             components: {
                 Piece
             }
-        })
+        }
     </script>
 
 </app-header>

@@ -35,12 +35,20 @@
         import {withTypes} from "riot"
         import {AppComponent} from "./app.d.ts"
 
+
+        interface Props {}
+
+        interface State {
+            page: string,
+        }
+
         // noinspection TypeScriptValidateTypes
-        export default withTypes<AppComponent>({
+        export default {
             currentRoute: '/',
             state: {
               page: 'chessboard',
             },
+            onMounted(props: Props, state: State){},
             components: {
                 AppHeader,
                 Chessboard,
@@ -52,7 +60,7 @@
                 this.currentRoute = path;
                 this.update();
             }
-        })
+        }
 
     </script>
 

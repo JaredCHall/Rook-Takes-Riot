@@ -1,5 +1,5 @@
 <visualization class="container-content">
-    <div class="row" if={!state.selectedGame}>
+    <div class="row">
         <div class="column">
 
             <h1>Let's Visualize!</h1>
@@ -19,24 +19,8 @@
     </div>
 
     <script lang="ts">
-
-
-        import {withTypes} from "riot";
-        import {VisualizationComponent} from "Visualization/visualization.d.ts";
-
-        // noinspection TypeScriptValidateTypes
-        export default withTypes<VisualizationComponent>({
-            state: {
-                selectedGame: null,
-            },
-            selectGame(gameName) {
-              this.update({
-                  selectedGame: gameName,
-              })
-            },
-        })
+        export default {}
     </script>
-
 
     <style>
 
