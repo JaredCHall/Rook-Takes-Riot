@@ -59,7 +59,7 @@
             setFen(fen) {
                 fen = fen ?? this.$('input[name="fenNumber"]').value
                 try {
-                    this.board.setPosition(fen)
+                    this.board.setGamePosition(fen)
                 }catch (e) {
                     this.update({fenError: e.message})
                 }

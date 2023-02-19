@@ -31,9 +31,7 @@ export interface ChessboardComponent extends RiotComponent<ChessboardProps, Ches
 
     orientBoard(color: string): void,
 
-    getPosition(): ChessGame,
-
-    setPosition(fen: string): void,
+    setGamePosition(fen: string): void,
 
     getSquare(name: string): SquareComponent,
 

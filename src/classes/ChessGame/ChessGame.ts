@@ -7,9 +7,10 @@ import ChessPiece from "./ChessPiece";
 
 export default class ChessGame {
 
+    // @ts-ignore
     fen: string;
 
-    positions: PiecePositions = {};
+    piecePositions: PiecePositions = {};
 
     piecePlacement: string = '';
 
@@ -25,29 +26,23 @@ export default class ChessGame {
 
     mailbox: Mailbox144;
 
-    constructor(fen: string) {
-        this.fen = fen;
+    constructor(fen: string|null = null) {
         this.mailbox = new Mailbox144()
-        this.setPosition(fen)
+        this.setGameState(fen ?? ChessGame.getEmptyBoardFEN())
     }
 
-    parseFEN(fen: string) {
-        this.fen = fen
+    setGameState(fen: string) {
 
+        this.fen = fen
         // parse the FEN
         // @see https://www.chessprogramming.org/Forsyth-Edwards_Notation
         const parts = fen.split(' ')
-        this.positions = this.#parsePiecePlacements(parts[0])
+        this.piecePositions = this.#parsePiecePlacements(parts[0])
         this.sideToMove = parts[1] ?? null
         this.castleRights = parts[2] ?? null
         this.enPassantTarget = parts[3] ?? null
         this.halfMoveClock = parseInt(parts[4]) ?? null
         this.fullMoveCounter = parseInt(parts[5]) ?? null
-    }
-
-    setPosition(fen: string) {
-        this.parseFEN(fen)
-
     }
 
     getMoves(squareName: string): Array<string> {
@@ -109,6 +104,14 @@ export default class ChessGame {
             }
         }
         return positions
+    }
+
+    static getEmptyBoardFEN(): string {
+        return '8/8/8/8/8/8/8/8 w KQkq -'
+    }
+
+    static getNewGameFEN(): string {
+        return 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
     }
 
     static allSquareNames(): Array<string> {

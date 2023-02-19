@@ -42,7 +42,7 @@
               showPieces: false,
             },
             onBeforeMount(props: ChessboardProps, state: ChessboardState) {
-                this.gamePosition = new ChessGame('8/8/8/8/8/8/8/8 w KQkq -')
+                this.gamePosition = new ChessGame()
 
                 state.title = props.title
                 state.showOptions = props.showOptions
@@ -50,13 +50,16 @@
             },
             onMounted() {
 
+                // register square elements in the squares property
                 const squareElements = this.root.querySelectorAll('svg.square')
                 this.squares = [];
                 for(let i = 0; i < squareElements.length; i++){
                     const el = squareElements[i]
                     this.squares.push(el.riot)
                 }
-                this.setPosition(this.gamePosition.fen)
+
+                // set game position
+                this.setGamePosition(null)
             },
             getSquareNames() {
                 return ChessGame.allSquareNames();
@@ -80,12 +83,12 @@
             getFen() {
                 return this.gamePosition.fen
             },
-            getPosition(): ChessGame {
-               return this.gamePosition
-            },
-            setPosition(fen) {
-                this.gamePosition.setPosition(fen)
-                const positions = this.getPosition().positions
+            setGamePosition(fen: string|null) {
+                if(fen !== null){
+                    this.gamePosition.setGameState(fen)
+                }
+
+                const positions = this.gamePosition.piecePositions
 
                 for(const squareName in positions){
                     const piece = positions[squareName]
@@ -112,9 +115,9 @@
             togglePieces() {
                 const showPieces = !this.state.showPieces
                 if(showPieces){
-                    this.setPosition('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+                    this.setGamePosition(ChessGame.getNewGameFEN())
                 }else{
-                    this.setPosition('8/8/8/8/8/8/8/8 w KQkq -')
+                    this.setGamePosition(ChessGame.getEmptyBoardFEN())
                 }
                 this.update({
                     showPieces: showPieces,
