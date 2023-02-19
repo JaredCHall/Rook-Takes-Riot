@@ -46,12 +46,14 @@ body
   fill-opacity: 1
   fill-rule: evenodd
   stroke-width: 1
+  cursor: pointer
 
   .piece-fill
     stroke-width: 0
 
   text
     font: 100 6.5rem FreeSerif
+    user-select: none
 
   &.black-piece
     fill: #000000
@@ -83,6 +85,9 @@ body
     stroke: darken(#dedede,50%)
     stroke-width: 1
     stroke-opacity: 80%
+
+  circle.move-indicator
+    cursor: pointer
 
 .margin-left
   margin-left: 2rem

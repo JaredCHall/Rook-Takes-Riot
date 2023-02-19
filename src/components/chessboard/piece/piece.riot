@@ -43,7 +43,7 @@
 
     <script lang="ts">
 
-        export interface Props {
+        interface Props {
             pieceName: string,
             color: string,
             width: number,
@@ -51,7 +51,12 @@
             y: number,
         }
 
-        export default {}
+        interface State {
+        }
+
+        export default {
+            onBeforeMount(props: Props, state: State) {},
+        }
 
     </script>
 

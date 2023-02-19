@@ -6,7 +6,7 @@
         <main class="container">
 
             <route path="/" on-mounted={ () => setCurrentRoute("/")}>
-                <chessboard title="How about a nice game of chess?" show-options=true></chessboard>
+                <chessboard greeting='How about a nice game of chess?' show-options=true></chessboard>
             </route>
 
             <route path="/visualize" on-mounted={ () => setCurrentRoute("/visualize")}>
@@ -31,10 +31,6 @@
         import Visualization from 'Visualization/visualization.riot'
         import WhatColorIsTheSquare from 'Visualization/exercises/what-color-is-the-square/what-color-is-the-square.riot'
         import WhatDoesThePieceSee from 'Visualization/exercises/what-does-the-piece-see/what-does-the-piece-see.riot'
-
-        import {withTypes} from "riot"
-        import {AppComponent} from "./app.d.ts"
-
 
         interface Props {}
 

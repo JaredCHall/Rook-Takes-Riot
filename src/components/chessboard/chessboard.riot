@@ -1,6 +1,6 @@
 <chessboard class="container-content">
 
-    <h1 if={state.title}>{state.title}</h1>
+    <h1 if={state.greeting}>{state.greeting}</h1>
     <div class="row">
 
         <div class="column">
@@ -29,7 +29,7 @@
         import ChessGame from 'ChessGame/ChessGame.ts'
 
         interface Props {
-            title: string,
+            greeting: string,
             showOptions: boolean,
             selectedSquare: string,
         }
@@ -37,7 +37,7 @@
             orientation: string,
             showLabels: boolean,
             showPieces: boolean,
-            title: string,
+            greeting: string,
             showOptions: boolean,
             selectedSquare: string,
         }
@@ -54,7 +54,7 @@
             onBeforeMount(props: Props, state: State) {
                 this.gamePosition = new ChessGame()
 
-                state.title = props.title
+                state.greeting = props.greeting
                 state.showOptions = props.showOptions
                 state.selectedSquare = props.selectedSquare
             },
