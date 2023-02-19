@@ -16,7 +16,14 @@
 
     <svg is="piece" piece-name={state.piece.type}  width="40" x="4" y="5" color={state.piece.color} if={state.piece}></svg>
 
-    <circle cx="25" cy="25" r="6" class="move-indicator" if={state.showMoveIndicator} />
+    <g class="move-indicator" if={state.showMoveIndicator && state.piece}>
+        <polygon points="0,0 0,10 10,0"></polygon>
+        <polygon points="50,0 40,0 50,10"></polygon>
+        <polygon points="0,50 0,40 10,50"></polygon>
+        <polygon points="50,50 40,50 50,40"></polygon>
+    </g>
+
+    <circle cx="25" cy="25" r="6" class="move-indicator" if={state.showMoveIndicator && !state.piece} />
 
     <script lang="ts">
         import Piece from "Chessboard/piece/piece.riot"
