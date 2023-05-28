@@ -140,7 +140,7 @@ export default class ChessPiece {
         return this.getMovesFromRayVectors(pieceIndex, mailbox, rayVectors)
     }
 
-    getKingMoves(pieceIndex: number, mailbox: Mailbox144): Array<string>
+    getKingMoves(pieceIndex: number, mailbox: Mailbox144, castleRights:string|null): Array<string>
     {
         let moves = []
         const rayVectors = [
@@ -153,8 +153,89 @@ export default class ChessPiece {
             [-1,-1], // 225%
             [1,-1], // 315%
         ]
-        return this.getMovesFromRayVectors(pieceIndex, mailbox, rayVectors, 1)
+        moves = this.getMovesFromRayVectors(pieceIndex, mailbox, rayVectors, 1)
+
+        // no castle rights, this is a full list of moves
+        if(castleRights === null){
+            return moves
+        }
+
+        // can castle queenside
+        if(castleRights.indexOf('q') !== -1){
+
+            // ensure castling is really possible
+            if(this.color == 'white'){
+                const a1 = mailbox.get(Mailbox144.getAddressIndex('a1'));
+                const b1 = mailbox.get(Mailbox144.getAddressIndex('b1'));
+                const c1 = mailbox.get(Mailbox144.getAddressIndex('c1'));
+                const d1 = mailbox.get(Mailbox144.getAddressIndex('d1'));
+
+                if(
+                    a1.piece != null
+                    && a1.piece.type == 'rook'
+                    && b1.piece == null
+                    && c1.piece == null
+                    && d1.piece == null
+                ){
+                    moves.push('c1')
+                }
+            }else{
+                const a8 = mailbox.get(Mailbox144.getAddressIndex('a8'));
+                const b8 = mailbox.get(Mailbox144.getAddressIndex('b8'));
+                const c8 = mailbox.get(Mailbox144.getAddressIndex('c8'));
+                const d8 = mailbox.get(Mailbox144.getAddressIndex('d8'));
+
+                if(
+                    a8.piece != null
+                    && a8.piece.type == 'rook'
+                    && b8.piece == null
+                    && c8.piece == null
+                    && d8.piece == null
+                ){
+                    moves.push('c8')
+                }
+            }
+        }
+        // can castle kingside
+        if(castleRights.indexOf('k') !== -1){
+            // ensure castling is really possible
+            if(this.color == 'white'){
+                const h1 = mailbox.get(Mailbox144.getAddressIndex('h1'));
+                const g1 = mailbox.get(Mailbox144.getAddressIndex('g1'));
+                const f1 = mailbox.get(Mailbox144.getAddressIndex('f1'));
+
+
+
+                if(
+                    h1.piece != null
+                    && h1.piece.type == 'rook'
+                    && g1.piece == null
+                    && f1.piece == null
+                ){
+                    moves.push('g1')
+                }
+            }else{
+                const h8 = mailbox.get(Mailbox144.getAddressIndex('h8'));
+                const g8 = mailbox.get(Mailbox144.getAddressIndex('g8'));
+                const f8 = mailbox.get(Mailbox144.getAddressIndex('f8'));
+
+                if(
+                    h8.piece != null
+                    && h8.piece.type == 'rook'
+                    && g8.piece == null
+                    && f8.piece == null
+                ){
+                    moves.push('g8')
+                }
+            }
+        }
+
+
+        return moves
+
     }
+
+
 
 
     getMovesFromRayVectors(pieceIndex:number, mailbox: Mailbox144, rayVectors: number[][], maxRayLength: number = 7): string[]
@@ -189,14 +270,14 @@ export default class ChessPiece {
     }
 
 
-    getMoves(pieceIndex: number, mailbox: Mailbox144): Array<string> {
+    getMoves(pieceIndex: number, mailbox: Mailbox144, castleRights: string|null): Array<string> {
         switch(this.type){
             case 'pawn': return this.getPawnMoves(pieceIndex, mailbox)
             case 'rook': return this.getRookMoves(pieceIndex, mailbox)
             case 'knight': return this.getKnightMoves(pieceIndex, mailbox)
             case 'bishop': return this.getBishopMoves(pieceIndex, mailbox)
             case 'queen': return this.getQueenMoves(pieceIndex, mailbox)
-            case 'king': return this.getKingMoves(pieceIndex, mailbox)
+            case 'king': return this.getKingMoves(pieceIndex, mailbox, castleRights)
         }
         return []
     }

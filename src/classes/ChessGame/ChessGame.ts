@@ -137,7 +137,7 @@ export default class ChessGame {
         console.log('calculating moves for '+piece.color+' '+piece.type)
 
 
-        return piece.getMoves(mailboxIndex, this.mailbox)
+        return piece.getMoves(mailboxIndex, this.mailbox, this.castleRights)
 
     }
 
