@@ -94,15 +94,21 @@
                     piece: piece,
                 })
             },
+            getPiece(): Piece|null {
+                return this.state.piece
+            },
             showSelected(show: boolean){
+                const board = this.props.board
+                board.setSelectedSquare(this.props.name);
                 this.update({selected: show ?? false})
             },
             toggleSelected() {
-                const newSelected = !this.state.selected
+
                 const board = this.props.board
-                if(!newSelected){
+
+                // if clicking selected square, de-select it
+                if(this.state.selected){
                     board.clearSelections()
-                    board.clearMoveIndicators()
                     this.showSelected(false)
                     return
                 }
@@ -111,6 +117,11 @@
             },
             select() {
                 const board = this.props.board
+
+                if(board.isSelectionAnIndicatedMove(this.props.name)){
+                    board.moveSelectedPiece(this.props.name)
+                    return;
+                }
 
                 board.clearSelections()
                 this.showSelected(true)

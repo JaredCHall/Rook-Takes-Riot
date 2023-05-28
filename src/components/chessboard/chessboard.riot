@@ -40,16 +40,20 @@
             greeting: string,
             showOptions: boolean,
             selectedSquare: string,
+            indicatedMoves: Array<string>,
         }
 
         export default {
             chessGame: undefined, // ChessGame
             squares: [], // Array<Square>
+
+
             components: {Square, BoardOptions},
             state: {
               orientation: 'white',
               showLabels: false,
               showPieces: false,
+              indicatedMoves: [],
             },
             onBeforeMount(props: Props, state: State) {
                 this.gamePosition = new ChessGame()
@@ -105,22 +109,43 @@
                     this.getSquare(squareName).setPiece(piece)
                 }
             },
+            setSelectedSquare(squareName: string): void {
+                this.update({
+                    selectedSquare: squareName,
+                })
+            },
             showMoveIndicators(squares: Array<string>): void {
                 this.clearMoveIndicators()
 
                 for(let i = 0; i<squares.length; i++){
                     this.getSquare(squares[i]).showMoveIndicator(true)
                 }
+                this.state.indicatedMoves = squares
             },
             clearSelections() {
                 for(let i = 0; i<this.squares.length; i++){
                     this.squares[i].showSelected(false)
                 }
+                this.clearMoveIndicators()
+            },
+            isSelectionAnIndicatedMove(squareName: string): boolean{
+                return this.state.indicatedMoves.indexOf(squareName) !== -1;
+            },
+            moveSelectedPiece(squareName: string){
+                const oldSquare = this.getSquare(this.state.selectedSquare)
+                const newSquare = this.getSquare(squareName)
+                const piece = oldSquare.getPiece()
+
+                newSquare.setPiece(piece)
+                oldSquare.setPiece(null)
+
+                this.clearSelections()
             },
             clearMoveIndicators() {
                 for(let i = 0; i<this.squares.length; i++){
                     this.squares[i].showMoveIndicator(false)
                 }
+                this.state.indicatedMoves = [];
             },
             togglePieces() {
                 const showPieces = !this.state.showPieces
