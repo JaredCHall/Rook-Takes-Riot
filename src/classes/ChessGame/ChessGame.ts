@@ -52,6 +52,7 @@ export default class ChessGame {
         this.piecePositions[oldSquare] = null;
         this.piecePositions[newSquare] = piece;
 
+
         // update mailbox addresses
         this.mailbox.set(Mailbox144.getAddressIndex(oldSquare), false, null)
         this.mailbox.set(Mailbox144.getAddressIndex(newSquare), false, piece)
@@ -59,13 +60,53 @@ export default class ChessGame {
         // change sides and update clock
         this.sideToMove = this.sideToMove == 'w' ? 'b' : 'w';
 
+
+        // revoke castling rights, if necessary
+        if(this.castleRights != null){
+            let revocations: Array<string> = [];
+
+            if(piece.color == 'white'){
+                if(piece.type == 'king' && oldSquare == 'e1'){
+                    revocations.push('K')
+                    revocations.push('Q')
+                }
+                else if(piece.type == 'rook'){
+                    if(oldSquare == 'a1'){
+                        revocations.push('Q')
+                    }else if(oldSquare == 'h1'){
+                        revocations.push('K')
+                    }
+                }
+            }
+
+            if(piece.color == 'black'){
+                if(piece.type == 'king' && oldSquare == 'e8'){
+                    revocations.push('k')
+                    revocations.push('q')
+                }
+                else if(piece.type == 'rook'){
+                    if(oldSquare == 'a8'){
+                        revocations.push('q')
+                    }else if(oldSquare == 'h8'){
+                        revocations.push('k')
+                    }
+                }
+            }
+
+            for(let i in revocations){
+                this.castleRights = this.castleRights.replace(revocations[i],'');
+            }
+            if(this.castleRights === ''){
+                this.castleRights = null;
+            }
+        }
+
+
         // update the move counters
         this.halfMoveClock++;
         this.fullMoveCounter = Math.floor(this.halfMoveClock / 2);
 
         this.fen = this.calculateFen();
-
-
 
     }
 
@@ -107,9 +148,9 @@ export default class ChessGame {
         fen += ' '
         fen += this.sideToMove
         fen += ' '
-        fen += this.castleRights
+        fen += this.castleRights == null ? '-' : this.castleRights;
         fen += ' '
-        fen += this.enPassantTarget
+        fen += this.enPassantTarget == null ? '-' : this.enPassantTarget;
         fen += ' '
         fen += this.halfMoveClock
         fen += ' '
