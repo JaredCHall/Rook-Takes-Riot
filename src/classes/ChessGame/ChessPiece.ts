@@ -7,6 +7,8 @@ export default class ChessPiece {
 
     color: string;
 
+    fenType: string;
+
     static piecesMap: {[key: string]: string} = {
         r: 'rook',
         b: 'bishop',
@@ -16,9 +18,16 @@ export default class ChessPiece {
         p: 'pawn'
     }
 
-    constructor(pieceType: string){
-        this.type = ChessPiece.piecesMap[pieceType.toLowerCase()]
-        this.color = pieceType == pieceType.toLowerCase() ? 'black' : 'white'
+    constructor(fenType: string){
+        this.fenType = fenType;
+        this.type = ChessPiece.piecesMap[fenType.toLowerCase()]
+        this.color = fenType == fenType.toLowerCase() ? 'black' : 'white'
+    }
+
+    // the representation of the piece in a FEN number
+    toFen(): string
+    {
+        return this.fenType
     }
 
     getPawnMoves(pieceIndex: number, mailbox: Mailbox144): Array<string>

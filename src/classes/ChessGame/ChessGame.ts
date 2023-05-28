@@ -20,9 +20,9 @@ export default class ChessGame {
 
     enPassantTarget: string|null = null;
 
-    halfMoveClock: number|null = null;
+    halfMoveClock: number = 0;
 
-    fullMoveCounter: number|null = null;
+    fullMoveCounter: number = 0;
 
     mailbox: Mailbox144;
 
@@ -41,9 +41,85 @@ export default class ChessGame {
         this.sideToMove = parts[1] ?? null
         this.castleRights = parts[2] ?? null
         this.enPassantTarget = parts[3] ?? null
-        this.halfMoveClock = parseInt(parts[4]) ?? null
-        this.fullMoveCounter = parseInt(parts[5]) ?? null
+        this.halfMoveClock = parseInt(parts[4]) ?? 0
+        this.fullMoveCounter = parseInt(parts[5]) ?? 0
     }
+
+    makeMove(oldSquare: string, newSquare: string): void {
+        const piece = this.piecePositions[oldSquare];
+
+        // move piece TODO: add special logic for castling and en-passant
+        this.piecePositions[oldSquare] = null;
+        this.piecePositions[newSquare] = piece;
+
+        // update mailbox addresses
+        this.mailbox.set(Mailbox144.getAddressIndex(oldSquare), false, null)
+        this.mailbox.set(Mailbox144.getAddressIndex(newSquare), false, piece)
+
+        // change sides and update clock
+        this.sideToMove = this.sideToMove == 'w' ? 'b' : 'w';
+
+        // update the move counters
+        this.halfMoveClock++;
+        this.fullMoveCounter = Math.floor(this.halfMoveClock / 2);
+
+        this.fen = this.calculateFen();
+
+
+
+    }
+
+    /**
+     * Calculate FEN from game state
+     */
+    calculateFen(): string
+    {
+
+        const columnNames = ['a','b','c','d','e','f','g','h']
+        let emptySquares = 0
+
+        let fen = ''
+        for(let row=8;row>=1;row--){
+            for(let col =1; col<=8;col++){
+                const squareName = columnNames[col - 1] + row.toString()
+                const piece = this.piecePositions[squareName]
+
+                if(piece) {
+                    if(emptySquares > 0){
+                        fen += emptySquares.toString()
+                        emptySquares = 0
+                    }
+                    fen += piece.toFen()
+                }else{
+                    emptySquares++
+                }
+            }
+
+            if(emptySquares > 0){
+                fen += emptySquares.toString()
+                emptySquares = 0
+            }
+            if(row > 1){
+                fen += '/'
+            }
+        }
+
+        fen += ' '
+        fen += this.sideToMove
+        fen += ' '
+        fen += this.castleRights
+        fen += ' '
+        fen += this.enPassantTarget
+        fen += ' '
+        fen += this.halfMoveClock
+        fen += ' '
+        fen += this.fullMoveCounter
+
+        console.log(fen);
+
+        return fen;
+    }
+
 
     getMoves(squareName: string): Array<string> {
 
@@ -76,8 +152,6 @@ export default class ChessGame {
         }
 
         const columnNames = ['a','b','c','d','e','f','g','h']
-
-
         for(let rowNumber=8;rowNumber>0;rowNumber--){
             const chars = rows[rowNumber-1].split('')
             let columnNumber=1;

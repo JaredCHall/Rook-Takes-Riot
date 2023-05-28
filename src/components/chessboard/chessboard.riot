@@ -132,9 +132,13 @@
                 return this.state.indicatedMoves.indexOf(squareName) !== -1;
             },
             moveSelectedPiece(squareName: string){
+                this.gamePosition.makeMove(this.state.selectedSquare,squareName)
+
                 const oldSquare = this.getSquare(this.state.selectedSquare)
                 const newSquare = this.getSquare(squareName)
                 const piece = oldSquare.getPiece()
+
+
 
                 newSquare.setPiece(piece)
                 oldSquare.setPiece(null)
