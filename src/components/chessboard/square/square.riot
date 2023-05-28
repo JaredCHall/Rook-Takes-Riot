@@ -102,7 +102,7 @@
                 board.setSelectedSquare(this.props.name);
                 this.update({selected: show ?? false})
             },
-            toggleSelected() {
+            toggleSelected(): void {
 
                 const board = this.props.board
 
@@ -118,14 +118,34 @@
             select() {
                 const board = this.props.board
 
-                if(board.isSelectionAnIndicatedMove(this.props.name)){
-                    board.moveSelectedPiece(this.props.name)
-                    return;
+                if(board.getMode() == 'play'){
+
+                    // allow legal moves
+                    if(board.isSelectionAnIndicatedMove(this.props.name)){
+                        board.moveSelectedPiece(this.props.name)
+                        return;
+                    }
+
+                    // don't select empty squares
+                    if(board.getMode() == 'play'){
+                        if(this.state.piece === null){
+                            board.clearSelections()
+                            return;
+                        }
+                    }
+
+                    // don't select wrong color pieces
+                    const movingPieceColor = this.state.piece.color.charAt(0)
+                    const colorToMove = board.getGamePosition().sideToMove
+                    if(colorToMove != movingPieceColor){
+                        board.clearSelections()
+                        return
+                    }
                 }
 
+                // select and indicate legal moves
                 board.clearSelections()
                 this.showSelected(true)
-
                 const moves = board.gamePosition.getMoves(this.props.name)
                 board.showMoveIndicators(moves)
             },

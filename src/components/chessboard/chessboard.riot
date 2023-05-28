@@ -34,6 +34,7 @@
             selectedSquare: string,
         }
         interface State {
+            mode: string, // 'play' or 'edit'
             orientation: string,
             showLabels: boolean,
             showPieces: boolean,
@@ -47,13 +48,13 @@
             chessGame: undefined, // ChessGame
             squares: [], // Array<Square>
 
-
             components: {Square, BoardOptions},
             state: {
-              orientation: 'white',
-              showLabels: false,
-              showPieces: false,
-              indicatedMoves: [],
+                mode: 'play',
+                orientation: 'white',
+                showLabels: false,
+                showPieces: false,
+                indicatedMoves: [],
             },
             onBeforeMount(props: Props, state: State) {
                 this.gamePosition = new ChessGame()
@@ -97,6 +98,10 @@
             getFen(): string {
                 return this.gamePosition.fen
             },
+            getGamePosition(): ChessGame
+            {
+                return this.gamePosition;
+            },
             setGamePosition(fen: string|null): void {
                 if(fen !== null){
                     this.gamePosition.setGameState(fen)
@@ -121,6 +126,9 @@
                     this.getSquare(squares[i]).showMoveIndicator(true)
                 }
                 this.state.indicatedMoves = squares
+            },
+            getMode(): string {
+                return this.state.mode;
             },
             clearSelections() {
                 for(let i = 0; i<this.squares.length; i++){
