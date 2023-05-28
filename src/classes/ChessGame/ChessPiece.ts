@@ -160,11 +160,9 @@ export default class ChessPiece {
             return moves
         }
 
-        // can castle queenside
-        if(castleRights.indexOf('q') !== -1){
+        if(this.color == 'white' && Mailbox144.getAddressName(pieceIndex) === 'e1'){
 
-            // ensure castling is really possible
-            if(this.color == 'white'){
+            if(castleRights.indexOf('Q') != -1){
                 const a1 = mailbox.get(Mailbox144.getAddressIndex('a1'));
                 const b1 = mailbox.get(Mailbox144.getAddressIndex('b1'));
                 const c1 = mailbox.get(Mailbox144.getAddressIndex('c1'));
@@ -179,7 +177,26 @@ export default class ChessPiece {
                 ){
                     moves.push('c1')
                 }
-            }else{
+            }
+
+            if(castleRights.indexOf('K') != -1) {
+                const h1 = mailbox.get(Mailbox144.getAddressIndex('h1'));
+                const g1 = mailbox.get(Mailbox144.getAddressIndex('g1'));
+                const f1 = mailbox.get(Mailbox144.getAddressIndex('f1'));
+
+                if (
+                    h1.piece != null
+                    && h1.piece.type == 'rook'
+                    && g1.piece == null
+                    && f1.piece == null
+                ) {
+                    moves.push('g1')
+                }
+            }
+        }
+
+        if(this.color == 'black' && Mailbox144.getAddressName(pieceIndex) === 'e8'){
+            if(castleRights.indexOf('q') != -1){
                 const a8 = mailbox.get(Mailbox144.getAddressIndex('a8'));
                 const b8 = mailbox.get(Mailbox144.getAddressIndex('b8'));
                 const c8 = mailbox.get(Mailbox144.getAddressIndex('c8'));
@@ -195,36 +212,18 @@ export default class ChessPiece {
                     moves.push('c8')
                 }
             }
-        }
-        // can castle kingside
-        if(castleRights.indexOf('k') !== -1){
-            // ensure castling is really possible
-            if(this.color == 'white'){
-                const h1 = mailbox.get(Mailbox144.getAddressIndex('h1'));
-                const g1 = mailbox.get(Mailbox144.getAddressIndex('g1'));
-                const f1 = mailbox.get(Mailbox144.getAddressIndex('f1'));
 
-
-
-                if(
-                    h1.piece != null
-                    && h1.piece.type == 'rook'
-                    && g1.piece == null
-                    && f1.piece == null
-                ){
-                    moves.push('g1')
-                }
-            }else{
+            if(castleRights.indexOf('k') != -1) {
                 const h8 = mailbox.get(Mailbox144.getAddressIndex('h8'));
                 const g8 = mailbox.get(Mailbox144.getAddressIndex('g8'));
                 const f8 = mailbox.get(Mailbox144.getAddressIndex('f8'));
 
-                if(
+                if (
                     h8.piece != null
                     && h8.piece.type == 'rook'
                     && g8.piece == null
                     && f8.piece == null
-                ){
+                ) {
                     moves.push('g8')
                 }
             }
