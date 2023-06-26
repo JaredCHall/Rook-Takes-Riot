@@ -1,8 +1,4 @@
-export interface PiecePositions {
-    [key: string]: [piece: string, color: string]|null;
-}
-
-export interface SquareInfo {
+export default interface SquareInfo {
     index: number,
     name: string,
 

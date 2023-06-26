@@ -1,9 +1,12 @@
-// @ts-ignore
-import {PiecePositions, SquareInfo} from './ChessGame.d.ts'
-// @ts-ignore
-import BoardSquares from './BoardSquares.ts'
+
+
+import BoardSquares from './BoardSquares'
 import Mailbox144 from "./Mailbox144";
 import ChessPiece from "./ChessPiece";
+import BasicMove from "./Moves/BasicMove";
+import CastlingMove from "./Moves/CastlingMove"
+import PiecePositions from "./PiecePositions";
+import MoveFactory from "./Moves/MoveFactory";
 
 export default class ChessGame {
 
@@ -45,82 +48,55 @@ export default class ChessGame {
         this.fullMoveCounter = parseInt(parts[5]) ?? 0
     }
 
-
-    getCastlesType(oldSquare:string, newSquare: string): string|null {
-        const piece = this.piecePositions[oldSquare]
-        const isKing = piece.type === 'king'
-        const isWhite = piece.color === 'white'
-
-        if (!isKing) {
-            return null
-        }
-
-        if( isWhite && oldSquare === 'e1') {
-            switch(newSquare){
-                case 'g1': return 'K'
-                case 'c1': return 'Q'
-            }
-        }else if (!isWhite && oldSquare === 'e8') {
-            switch(newSquare){
-                case 'g8': return 'k'
-                case 'c8': return 'q'
-            }
-        }
-
-        return null
-    }
-
-
-    moveCastlingRook(castlesType: string): void {
-        let oldSquare: string = '';
-        let newSquare: string = '';
-        switch(castlesType) {
-            case 'K': // white castles king-side
-                oldSquare = 'h1'
-                newSquare = 'f1'
-                break
-            case 'Q': // white castles queen-side
-                oldSquare = 'a1'
-                newSquare = 'd1'
-                break
-            case 'k': // black castles king-side
-                oldSquare = 'h8'
-                newSquare = 'f8'
-                break
-            case 'q': // black castles  queen-side
-                oldSquare = 'a8'
-                newSquare = 'd8'
-                break
-        }
-        this.makeBasicMove(oldSquare, newSquare)
-    }
-
-    makeBasicMove(oldSquare: string, newSquare: string): void
+    makeBasicMove(oldSquare: string|null, newSquare: string|null, piece: ChessPiece|null = null): void
     {
-        const piece = this.piecePositions[oldSquare]
-        this.setPosition(oldSquare, null)
-        this.setPosition(newSquare, piece)
+        if(oldSquare === null && piece === null){
+            throw new Error('newPiece must be provided if not moving from an \'old square\'')
+        }else if(oldSquare !== null && piece !== null){
+            throw new Error('when providing oldSquare, piece must be null') // we'll assign this from the PiecePositions
+        }
+
+        if(oldSquare !== null){
+            piece = this.piecePositions[oldSquare]
+            this.setPosition(oldSquare, null)
+
+            if(newSquare !== null){
+                this.setPosition(newSquare, piece)
+            }
+        }else{
+            if(newSquare === null){
+                throw new Error('newSquare must be provided if not providing oldSquare')
+            }
+
+            this.setPosition(newSquare, piece)
+        }
+
+
     }
 
     makeMove(oldSquare: string, newSquare: string): boolean {
         const piece = this.piecePositions[oldSquare]
 
-        const castlesType = this.getCastlesType(oldSquare, newSquare)
 
         let resetRequired = false
-        if(castlesType != null){
-            resetRequired = true
-            this.moveCastlingRook(castlesType)
+
+        const chessMove = MoveFactory.make(oldSquare, newSquare, this.piecePositions)
+        const moves = chessMove.getMoves()
+
+        for(let i = 0; i < moves.length; i++){
+            const move = moves[i]
+            this.makeBasicMove(move.oldSquare, move.newSquare)
         }
 
-        this.makeBasicMove(oldSquare, newSquare)
+        const whiteIsMoving = this.sideToMove == 'w';
+
+        if(chessMove instanceof CastlingMove){
+            resetRequired = true
+            this.revokeCastlingRights(whiteIsMoving)
+        }
 
         // change sides and update clock
-        this.sideToMove = this.sideToMove == 'w' ? 'b' : 'w';
-
-        // revoke castling rights, if necessary
-        this.revokeCastlingRights(oldSquare, piece)
-
+        this.sideToMove = whiteIsMoving ? 'b' : 'w';
 
         // update the move counters
         this.halfMoveClock++;
@@ -138,40 +114,19 @@ export default class ChessGame {
         this.mailbox.set(Mailbox144.getAddressIndex(squareName), false, piece)
     }
 
-    revokeCastlingRights(oldSquare:string, piece: ChessPiece): void
+    revokeCastlingRights(whiteIsMoving: boolean): void
     {
         if(this.castleRights == null){
             return
         }
 
         let revocations: Array<string> = [];
-
-        if(piece.color == 'white'){
-            if(piece.type == 'king' && oldSquare == 'e1'){
-                revocations.push('K')
-                revocations.push('Q')
-            }
-            else if(piece.type == 'rook'){
-                if(oldSquare == 'a1'){
-                    revocations.push('Q')
-                }else if(oldSquare == 'h1'){
-                    revocations.push('K')
-                }
-            }
-        }
-
-        if(piece.color == 'black'){
-            if(piece.type == 'king' && oldSquare == 'e8'){
-                revocations.push('k')
-                revocations.push('q')
-            }
-            else if(piece.type == 'rook'){
-                if(oldSquare == 'a8'){
-                    revocations.push('q')
-                }else if(oldSquare == 'h8'){
-                    revocations.push('k')
-                }
-            }
+        if(whiteIsMoving){
+            revocations.push(CastlingMove.KING_SIDE_WHITE)
+            revocations.push(CastlingMove.QUEEN_SIDE_WHITE)
+        }else{
+            revocations.push(CastlingMove.KING_SIDE_BLACK)
+            revocations.push(CastlingMove.QUEEN_SIDE_BLACK)
         }
 
         for(let i in revocations){
@@ -180,7 +135,6 @@ export default class ChessGame {
         if(this.castleRights === ''){
             this.castleRights = null;
         }
-
     }
 
 
