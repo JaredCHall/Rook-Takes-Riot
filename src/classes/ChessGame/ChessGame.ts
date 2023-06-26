@@ -45,61 +45,81 @@ export default class ChessGame {
         this.fullMoveCounter = parseInt(parts[5]) ?? 0
     }
 
-    makeMove(oldSquare: string, newSquare: string): void {
-        const piece = this.piecePositions[oldSquare];
 
-        // move piece TODO: add special logic for castling and en-passant
-        this.piecePositions[oldSquare] = null;
-        this.piecePositions[newSquare] = piece;
+    getCastlesType(oldSquare:string, newSquare: string): string|null {
+        const piece = this.piecePositions[oldSquare]
+        const isKing = piece.type === 'king'
+        const isWhite = piece.color === 'white'
+
+        if (!isKing) {
+            return null
+        }
+
+        if( isWhite && oldSquare === 'e1') {
+            switch(newSquare){
+                case 'g1': return 'K'
+                case 'c1': return 'Q'
+            }
+        }else if (!isWhite && oldSquare === 'e8') {
+            switch(newSquare){
+                case 'g8': return 'k'
+                case 'c8': return 'q'
+            }
+        }
+
+        return null
+    }
 
 
-        // update mailbox addresses
-        this.mailbox.set(Mailbox144.getAddressIndex(oldSquare), false, null)
-        this.mailbox.set(Mailbox144.getAddressIndex(newSquare), false, piece)
+    moveCastlingRook(castlesType: string): void {
+        let oldSquare: string = '';
+        let newSquare: string = '';
+        switch(castlesType) {
+            case 'K': // white castles king-side
+                oldSquare = 'h1'
+                newSquare = 'f1'
+                break
+            case 'Q': // white castles queen-side
+                oldSquare = 'a1'
+                newSquare = 'd1'
+                break
+            case 'k': // black castles king-side
+                oldSquare = 'h8'
+                newSquare = 'f8'
+                break
+            case 'q': // black castles  queen-side
+                oldSquare = 'a8'
+                newSquare = 'd8'
+                break
+        }
+        this.makeBasicMove(oldSquare, newSquare)
+    }
+
+    makeBasicMove(oldSquare: string, newSquare: string): void
+    {
+        const piece = this.piecePositions[oldSquare]
+        this.setPosition(oldSquare, null)
+        this.setPosition(newSquare, piece)
+    }
+
+    makeMove(oldSquare: string, newSquare: string): boolean {
+        const piece = this.piecePositions[oldSquare]
+
+        const castlesType = this.getCastlesType(oldSquare, newSquare)
+
+        let resetRequired = false
+        if(castlesType != null){
+            resetRequired = true
+            this.moveCastlingRook(castlesType)
+        }
+
+        this.makeBasicMove(oldSquare, newSquare)
 
         // change sides and update clock
         this.sideToMove = this.sideToMove == 'w' ? 'b' : 'w';
 
-
         // revoke castling rights, if necessary
-        if(this.castleRights != null){
-            let revocations: Array<string> = [];
-
-            if(piece.color == 'white'){
-                if(piece.type == 'king' && oldSquare == 'e1'){
-                    revocations.push('K')
-                    revocations.push('Q')
-                }
-                else if(piece.type == 'rook'){
-                    if(oldSquare == 'a1'){
-                        revocations.push('Q')
-                    }else if(oldSquare == 'h1'){
-                        revocations.push('K')
-                    }
-                }
-            }
-
-            if(piece.color == 'black'){
-                if(piece.type == 'king' && oldSquare == 'e8'){
-                    revocations.push('k')
-                    revocations.push('q')
-                }
-                else if(piece.type == 'rook'){
-                    if(oldSquare == 'a8'){
-                        revocations.push('q')
-                    }else if(oldSquare == 'h8'){
-                        revocations.push('k')
-                    }
-                }
-            }
-
-            for(let i in revocations){
-                this.castleRights = this.castleRights.replace(revocations[i],'');
-            }
-            if(this.castleRights === ''){
-                this.castleRights = null;
-            }
-        }
+        this.revokeCastlingRights(oldSquare, piece)
 
 
         // update the move counters
@@ -108,7 +128,62 @@ export default class ChessGame {
 
         this.fen = this.calculateFen();
 
+        return resetRequired
+
     }
+
+    setPosition(squareName: string, piece: ChessPiece|null): void
+    {
+        this.piecePositions[squareName] = piece;
+        this.mailbox.set(Mailbox144.getAddressIndex(squareName), false, piece)
+    }
+
+    revokeCastlingRights(oldSquare:string, piece: ChessPiece): void
+    {
+        if(this.castleRights == null){
+            return
+        }
+
+        let revocations: Array<string> = [];
+
+        if(piece.color == 'white'){
+            if(piece.type == 'king' && oldSquare == 'e1'){
+                revocations.push('K')
+                revocations.push('Q')
+            }
+            else if(piece.type == 'rook'){
+                if(oldSquare == 'a1'){
+                    revocations.push('Q')
+                }else if(oldSquare == 'h1'){
+                    revocations.push('K')
+                }
+            }
+        }
+
+        if(piece.color == 'black'){
+            if(piece.type == 'king' && oldSquare == 'e8'){
+                revocations.push('k')
+                revocations.push('q')
+            }
+            else if(piece.type == 'rook'){
+                if(oldSquare == 'a8'){
+                    revocations.push('q')
+                }else if(oldSquare == 'h8'){
+                    revocations.push('k')
+                }
+            }
+        }
+
+        for(let i in revocations){
+            this.castleRights = this.castleRights.replace(revocations[i],'');
+        }
+        if(this.castleRights === ''){
+            this.castleRights = null;
+        }
+
+    }
+
+
 
     /**
      * Calculate FEN from game state
@@ -116,6 +191,7 @@ export default class ChessGame {
     calculateFen(): string
     {
 
+        console.log(this.piecePositions)
         const columnNames = ['a','b','c','d','e','f','g','h']
         let emptySquares = 0
 
