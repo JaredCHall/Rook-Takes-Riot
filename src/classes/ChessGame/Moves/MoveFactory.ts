@@ -1,6 +1,7 @@
 import BasicMove from "./BasicMove";
 import PiecePositions from "../PiecePositions";
 import CastlingMove from "./CastlingMove";
+import EnPassantMove from "./EnPassantMove";
 
 export default class MoveFactory
 {
@@ -20,6 +21,11 @@ export default class MoveFactory
 
             return new CastlingMove(move, rook)
         }
+
+        if(EnPassantMove.isEnPassantMove(move)){
+            return new EnPassantMove(move)
+        }
+
 
         return move
     }
