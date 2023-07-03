@@ -7,6 +7,7 @@ import BasicMove from "./Moves/BasicMove";
 import CastlingMove from "./Moves/CastlingMove"
 import PiecePositions from "./PiecePositions";
 import MoveFactory from "./Moves/MoveFactory";
+import {OnMoveCallback} from "./OnMoveCallback";
 
 export default class ChessGame {
 
@@ -29,7 +30,10 @@ export default class ChessGame {
 
     mailbox: Mailbox144;
 
-    constructor(fen: string|null = null) {
+    onMoveCallback: OnMoveCallback;
+
+    constructor(fen: string|null = null, onMoveCallback: OnMoveCallback | null) {
+        this.onMoveCallback = onMoveCallback ?? function(move:BasicMove){}
         this.mailbox = new Mailbox144()
         this.setGameState(fen ?? ChessGame.getEmptyBoardFEN())
     }
@@ -86,6 +90,7 @@ export default class ChessGame {
         for(let i = 0; i < moves.length; i++){
             const move = moves[i]
             this.makeBasicMove(move.oldSquare, move.newSquare)
+            this.onMoveCallback(move);
         }
 
         const whiteIsMoving = this.sideToMove == 'w';

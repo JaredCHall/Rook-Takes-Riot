@@ -27,6 +27,7 @@
         import Square from "./square/square.riot"
         import BoardOptions from "./board-options/board-options.riot"
         import ChessGame from 'ChessGame/ChessGame.ts'
+        import BasicMove from "../../classes/ChessGame/Moves/BasicMove";
 
         interface Props {
             greeting: string,
@@ -57,7 +58,7 @@
                 indicatedMoves: [],
             },
             onBeforeMount(props: Props, state: State) {
-                this.gamePosition = new ChessGame()
+                this.gamePosition = new ChessGame(null, this.onMove)
 
                 state.greeting = props.greeting
                 state.showOptions = props.showOptions
@@ -140,22 +141,15 @@
             isSelectionAnIndicatedMove(squareName: string): boolean{
                 return this.state.indicatedMoves.indexOf(squareName) !== -1;
             },
+            onMove(move: BasicMove){
+                const oldSquare = this.getSquare(move.oldSquare)
+                const newSquare = this.getSquare(move.newSquare)
+                const piece = move.piece ?? oldSquare.getPiece()
+                oldSquare.setPiece(null)
+                newSquare.setPiece(piece)
+            },
             moveSelectedPiece(squareName: string){
-                const resetRequired = this.gamePosition.makeMove(this.state.selectedSquare, squareName)
-
-                if(resetRequired){
-                    console.log(this.gamePosition.fen)
-
-                    this.setGamePosition(this.gamePosition.fen)
-                }else{
-                    const oldSquare = this.getSquare(this.state.selectedSquare)
-                    const newSquare = this.getSquare(squareName)
-                    const piece = oldSquare.getPiece()
-
-                    newSquare.setPiece(piece)
-                    oldSquare.setPiece(null)
-                }
-
+                this.gamePosition.makeMove(this.state.selectedSquare, squareName)
                 this.clearSelections()
             },
             clearMoveIndicators() {
