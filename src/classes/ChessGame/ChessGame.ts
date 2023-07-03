@@ -62,11 +62,6 @@ export default class ChessGame {
         if(move.newSquare !== null){
             this.setPosition(move.newSquare, move.piece)
         }
-
-        if(move instanceof DoublePawnMove){
-            this.enPassantTarget = move.getEnPassantTargetSquare()
-        }
-
     }
 
     makeMove(oldSquare: string, newSquare: string): boolean {
@@ -89,6 +84,12 @@ export default class ChessGame {
         if(chessMove instanceof CastlingMove){
             resetRequired = true
             this.revokeCastlingRights(whiteIsMoving)
+        }
+
+        if(chessMove instanceof DoublePawnMove){
+            this.enPassantTarget = chessMove.getEnPassantTargetSquare()
+        }else{
+            this.enPassantTarget = null
         }
 
         // change sides and update clock
