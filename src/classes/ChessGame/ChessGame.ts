@@ -52,30 +52,15 @@ export default class ChessGame {
         this.fullMoveCounter = parseInt(parts[5]) ?? 0
     }
 
-    makeBasicMove(oldSquare: string|null, newSquare: string|null, piece: ChessPiece|null = null): void
+    makeBasicMove(move: BasicMove): void
     {
-        if(oldSquare === null && piece === null){
-            throw new Error('newPiece must be provided if not moving from an \'old square\'')
-        }else if(oldSquare !== null && piece !== null){
-            throw new Error('when providing oldSquare, piece must be null') // we'll assign this from the PiecePositions
+        if(move.oldSquare !== null){
+            this.setPosition(move.oldSquare, null)
         }
 
-        if(oldSquare !== null){
-            piece = this.piecePositions[oldSquare]
-            this.setPosition(oldSquare, null)
-
-            if(newSquare !== null){
-                this.setPosition(newSquare, piece)
-            }
-        }else{
-            if(newSquare === null){
-                throw new Error('newSquare must be provided if not providing oldSquare')
-            }
-
-            this.setPosition(newSquare, piece)
+        if(move.newSquare !== null){
+            this.setPosition(move.newSquare, move.piece)
         }
-
-
     }
 
     makeMove(oldSquare: string, newSquare: string): boolean {
@@ -84,12 +69,12 @@ export default class ChessGame {
 
         let resetRequired = false
 
-        const chessMove = MoveFactory.make(oldSquare, newSquare, this.piecePositions)
+        const chessMove = MoveFactory.make(oldSquare, newSquare, piece, this.piecePositions)
         const moves = chessMove.getMoves()
 
         for(let i = 0; i < moves.length; i++){
             const move = moves[i]
-            this.makeBasicMove(move.oldSquare, move.newSquare)
+            this.makeBasicMove(move)
             this.onMoveCallback(move);
         }
 

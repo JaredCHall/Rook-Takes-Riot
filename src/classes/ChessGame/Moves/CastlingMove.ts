@@ -51,7 +51,7 @@ export default class CastlingMove extends BasicMove
     }
 
     constructor(move: BasicMove, rook: ChessPiece) {
-        super(move.oldSquare, move.newSquare, move.positions);
+        super(move.oldSquare, move.newSquare, move.piece);
         const castlesType = CastlingMove.getCastlingType(this);
         if(castlesType === null){
             throw new Error('Invalid castlesType')
@@ -66,7 +66,7 @@ export default class CastlingMove extends BasicMove
         moves.push(new BasicMove(
             CastlingMove.rookMoves[this.castlesType][0],
             CastlingMove.rookMoves[this.castlesType][1],
-            this.positions
+            this.rook
         ))
 
         return moves

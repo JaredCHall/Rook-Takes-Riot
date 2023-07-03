@@ -15,17 +15,12 @@ export default class BasicMove {
 
     newSquare: string|null
 
-    positions: PiecePositions
-
     piece: ChessPiece|null = null
 
-    constructor(oldSquare: string|null, newSquare:string|null, positions: PiecePositions) {
+    constructor(oldSquare: string|null, newSquare:string|null, piece: ChessPiece|null) {
         this.oldSquare = oldSquare
         this.newSquare = newSquare
-        this.positions = positions
-        if(oldSquare !== null){
-            this.piece = positions[oldSquare]
-        }
+        this.piece = piece
     }
     getMoves(): Array<BasicMove>
     {

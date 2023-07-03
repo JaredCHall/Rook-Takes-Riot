@@ -1,5 +1,6 @@
 import BasicMove from './BasicMove'
 import ChessPiece from "../ChessPiece";
+import PiecePositions from "../PiecePositions";
 export default class EnPassantMove extends BasicMove
 {
 
@@ -7,16 +8,12 @@ export default class EnPassantMove extends BasicMove
 
 
     constructor(move: BasicMove) {
-        super(move.oldSquare, move.newSquare, move.positions);
-
-        if(!EnPassantMove.isEnPassantMove(move)){
-            throw new Error('not an en passant move')
-        }
+        super(move.oldSquare, move.newSquare, move.piece);
 
         this.opponentPawnSquare = this.getOpponentPawnSquare()
     }
 
-    static isEnPassantMove(move: BasicMove): boolean {
+    static isEnPassantMove(move: BasicMove, positions: PiecePositions): boolean {
         if(
             move.piece === null
             || move.piece.type !== 'pawn'
@@ -26,7 +23,7 @@ export default class EnPassantMove extends BasicMove
             return false
         }
         const isWhite = move.piece.color === 'white'
-        const isCapture = move.positions[move.newSquare] !== null
+        const isCapture = positions[move.newSquare] !== null
         const oldFile = move.oldSquare.split('')[0]
         const newFile = move.newSquare.split('')[0]
         const startingRank = move.oldSquare.split('')[1]
@@ -67,7 +64,7 @@ export default class EnPassantMove extends BasicMove
         moves.push(new BasicMove(
             this.opponentPawnSquare,
             null,
-            this.positions
+            this.piece
         ))
 
         return moves
