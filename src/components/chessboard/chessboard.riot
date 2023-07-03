@@ -121,13 +121,13 @@
                     selectedSquare: squareName,
                 })
             },
-            showMoveIndicators(squares: Array<string>): void {
+            showMoveIndicators(moves: Array<BasicMove>): void {
                 this.clearMoveIndicators()
 
-                for(let i = 0; i<squares.length; i++){
-                    this.getSquare(squares[i]).showMoveIndicator(true)
+                for(let i = 0; i<moves.length; i++){
+                    this.getSquare(moves[i].newSquare).showMoveIndicator(true)
                 }
-                this.state.indicatedMoves = squares
+                this.state.indicatedMoves = moves.map((move: BasicMove) => move.newSquare)
             },
             getMode(): string {
                 return this.state.mode;

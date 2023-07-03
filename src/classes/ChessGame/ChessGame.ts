@@ -189,7 +189,7 @@ export default class ChessGame {
     }
 
 
-    getMoves(squareName: string): Array<string> {
+    getMoves(squareName: string): Array<BasicMove> {
 
         const mailboxIndex = Mailbox144.getAddressIndex(squareName)
         const address = this.mailbox.get(mailboxIndex)
