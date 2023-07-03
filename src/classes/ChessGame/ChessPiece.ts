@@ -30,7 +30,7 @@ export default class ChessPiece {
         return this.fenType
     }
 
-    getPawnMoves(pieceIndex: number, mailbox: Mailbox144): Array<string>
+    getPawnMoves(pieceIndex: number, mailbox: Mailbox144, enPassantTarget: string|null): Array<string>
     {
 
         const pieceAddress = mailbox.get(pieceIndex)
@@ -56,6 +56,8 @@ export default class ChessPiece {
             const testSquare: MailboxAddress = mailbox.get(newIndex)
             // test if square has an enemy piece
             if(testSquare.piece && testSquare.piece.color != this.color){
+                moves.push(testSquare.squareName)
+            }else if(testSquare.squareName === enPassantTarget){
                 moves.push(testSquare.squareName)
             }
         }
@@ -269,9 +271,9 @@ export default class ChessPiece {
     }
 
 
-    getMoves(pieceIndex: number, mailbox: Mailbox144, castleRights: string|null): Array<string> {
+    getMoves(pieceIndex: number, mailbox: Mailbox144, castleRights: string|null, enPassantTarget: string|null): Array<string> {
         switch(this.type){
-            case 'pawn': return this.getPawnMoves(pieceIndex, mailbox)
+            case 'pawn': return this.getPawnMoves(pieceIndex, mailbox, enPassantTarget)
             case 'rook': return this.getRookMoves(pieceIndex, mailbox)
             case 'knight': return this.getKnightMoves(pieceIndex, mailbox)
             case 'bishop': return this.getBishopMoves(pieceIndex, mailbox)

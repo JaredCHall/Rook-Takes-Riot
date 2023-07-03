@@ -142,11 +142,10 @@
                 return this.state.indicatedMoves.indexOf(squareName) !== -1;
             },
             onMove(move: BasicMove){
-                const oldSquare = this.getSquare(move.oldSquare)
-                const newSquare = this.getSquare(move.newSquare)
-                const piece = move.piece ?? oldSquare.getPiece()
-                oldSquare.setPiece(null)
-                newSquare.setPiece(piece)
+                this.getSquare(move.oldSquare).setPiece(null)
+                if(move.newSquare !== null){
+                    this.getSquare(move.newSquare).setPiece(move.piece);
+                }
             },
             moveSelectedPiece(squareName: string){
                 this.gamePosition.makeMove(this.state.selectedSquare, squareName)

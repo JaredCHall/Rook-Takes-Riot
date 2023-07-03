@@ -3,12 +3,17 @@ import PiecePositions from "../PiecePositions";
 import CastlingMove from "./CastlingMove";
 import EnPassantMove from "./EnPassantMove";
 import ChessPiece from "../ChessPiece";
+import DoublePawnMove from "./DoublePawnMove";
 
 export default class MoveFactory
 {
     static make(oldSquare: string, newSquare:string, piece: ChessPiece|null, positions: PiecePositions): BasicMove
     {
         let move = new BasicMove(oldSquare, newSquare, piece)
+
+        if(DoublePawnMove.isDoublePawnMove(move)){
+            return new DoublePawnMove(move);
+        }
 
         // Handle castling moves
         const castlesType = CastlingMove.getCastlingType(move)

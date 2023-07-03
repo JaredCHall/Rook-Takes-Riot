@@ -8,6 +8,7 @@ import CastlingMove from "./Moves/CastlingMove"
 import PiecePositions from "./PiecePositions";
 import MoveFactory from "./Moves/MoveFactory";
 import {OnMoveCallback} from "./OnMoveCallback";
+import DoublePawnMove from "./Moves/DoublePawnMove";
 
 export default class ChessGame {
 
@@ -61,6 +62,11 @@ export default class ChessGame {
         if(move.newSquare !== null){
             this.setPosition(move.newSquare, move.piece)
         }
+
+        if(move instanceof DoublePawnMove){
+            this.enPassantTarget = move.getEnPassantTargetSquare()
+        }
+
     }
 
     makeMove(oldSquare: string, newSquare: string): boolean {
@@ -198,7 +204,7 @@ export default class ChessGame {
         console.log('calculating moves for '+piece.color+' '+piece.type)
 
 
-        return piece.getMoves(mailboxIndex, this.mailbox, this.castleRights)
+        return piece.getMoves(mailboxIndex, this.mailbox, this.castleRights, this.enPassantTarget)
 
     }
 
