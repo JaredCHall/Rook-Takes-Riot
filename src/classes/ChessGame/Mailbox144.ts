@@ -1,8 +1,13 @@
 import MailboxAddress from "./MailboxAddress";
 import ChessPiece from "./ChessPiece";
+import ChessGame from "./ChessGame";
+import MoveList from "./Moves/MoveList";
+import PiecePositions from "./PiecePositions";
 
 export default class Mailbox144 {
     board: Array<MailboxAddress>=[];
+
+    piecePositions: PiecePositions = {}; // parallel object that stays updated with the mailboxes
 
     static addressesByIndex: {[index:number]: string} = {
         26: 'a8', 27: 'b8', 28: 'c8', 29: 'd8', 30: 'e8', 31: 'f8', 32: 'g8', 33: 'h8', // rank 8
@@ -21,7 +26,6 @@ export default class Mailbox144 {
         Mailbox144.addressesBySquare = Object.fromEntries(Object.entries(this.addressesByIndex).map(([key, value]) => [value, parseInt(key)]))
     }
 
-    
     constructor() {
         this.clear()
     }
@@ -54,15 +58,38 @@ export default class Mailbox144 {
             this.set(i, seed[i] == 'x', null)
         }
 
+        this.piecePositions = {}
+
         console.log(this.board)
     }
     
     get(address: number): MailboxAddress{
         return this.board[address]
     }
+
+    getBySquareName(squareName: string): MailboxAddress {
+        return this.get(Mailbox144.getAddressIndex(squareName))
+    }
     
     set(address: number, isOutOfBounds: boolean, piece: ChessPiece|null) {
         this.board[address] = new MailboxAddress(address, isOutOfBounds, piece)
+        this.piecePositions[Mailbox144.getAddressName(address)] = piece;
+    }
+
+    setBySquareName(squareName: string, piece: ChessPiece|null): void {
+        const index = Mailbox144.getAddressIndex(squareName)
+        this.set(index, false, piece)
+    }
+
+    getMoves(squareName: string, game: ChessGame): MoveList
+    {
+        const mailbox = this.get(Mailbox144.getAddressIndex(squareName))
+        const piece = mailbox.piece
+        if(piece == null){
+            return {}
+        }
+
+        return piece.getMoves(mailbox.address, this, game.castleRights, game.enPassantTarget)
     }
     
 }

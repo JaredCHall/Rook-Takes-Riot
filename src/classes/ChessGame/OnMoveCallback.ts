@@ -1,5 +1,5 @@
 import BasicMove from "./Moves/BasicMove";
 
-export interface OnMoveCallback {
+export default interface OnMoveCallback {
     (move: BasicMove): void;
 }

@@ -4,6 +4,7 @@ import BasicMove from "./Moves/BasicMove";
 import DoublePawnMove from "./Moves/DoublePawnMove";
 import EnPassantMove from "./Moves/EnPassantMove";
 import CastlingMove from "./Moves/CastlingMove";
+import MoveList from "./Moves/MoveList";
 
 export default class ChessPiece {
 
@@ -34,12 +35,12 @@ export default class ChessPiece {
         return this.fenType
     }
 
-    getPawnMoves(pieceIndex: number, mailbox: Mailbox144, enPassantTarget: string|null): Array<BasicMove>
+    getPawnMoves(pieceIndex: number, mailbox: Mailbox144, enPassantTarget: string|null): MoveList
     {
 
         const pieceAddress = mailbox.get(pieceIndex)
 
-        let moves = [];
+        let moves: MoveList = {};
         const sign = this.color == 'white' ? -1 : 1
         const captureOffsets = [11,13]
         let moveOffsets = [12]
@@ -61,9 +62,9 @@ export default class ChessPiece {
             // test if square has an enemy piece
             const move = new BasicMove(pieceAddress.squareName, testSquare.squareName, pieceAddress.piece);
             if(testSquare.piece && testSquare.piece.color != this.color){
-                moves.push(move)
+                moves[testSquare.squareName] = move;
             }else if(testSquare.squareName === enPassantTarget){
-                moves.push(new EnPassantMove(move))
+                moves[testSquare.squareName] = move;
             }
         }
 
@@ -83,15 +84,15 @@ export default class ChessPiece {
             if(i === 1){
                 move = new DoublePawnMove(move);
             }
-            moves.push(move)
+            moves[testSquare.squareName] = move;
         }
 
         return moves
     }
 
-    getKnightMoves(pieceIndex: number, mailbox: Mailbox144): Array<BasicMove>
+    getKnightMoves(pieceIndex: number, mailbox: Mailbox144): MoveList
     {
-        let moves = []
+        let moves: MoveList = {}
         const moveOffsets = [10, 14, 23, 25, -10, -14, -23, -25]
         const currentSquare = mailbox.get(pieceIndex)
         const currentSquareName = currentSquare.squareName
@@ -104,7 +105,7 @@ export default class ChessPiece {
 
             // test if square is not out-of-bounds and is either empty or occupied by an enemy piece
             if(!testSquare.isOutOfBounds && (!testSquare.piece || testSquare.piece.color != this.color) ){
-                moves.push(new BasicMove(currentSquareName, testSquare.squareName, piece))
+                moves[testSquare.squareName] = new BasicMove(currentSquareName, testSquare.squareName, piece);
             }
         }
 
@@ -112,9 +113,9 @@ export default class ChessPiece {
 
     }
 
-    getRookMoves(pieceIndex: number, mailbox: Mailbox144): Array<BasicMove>
+    getRookMoves(pieceIndex: number, mailbox: Mailbox144): MoveList
     {
-        let moves = []
+        let moves: MoveList = {}
         const rayVectors = [
             [1,0], // right
             [-1,0], // left
@@ -124,9 +125,9 @@ export default class ChessPiece {
         return this.getMovesFromRayVectors(pieceIndex, mailbox, rayVectors)
     }
 
-    getBishopMoves(pieceIndex: number, mailbox: Mailbox144): Array<BasicMove>
+    getBishopMoves(pieceIndex: number, mailbox: Mailbox144): MoveList
     {
-        let moves = []
+        let moves: MoveList = {}
         const rayVectors = [
             [1,1], // 45%
             [-1,1], // 135%
@@ -136,9 +137,9 @@ export default class ChessPiece {
         return this.getMovesFromRayVectors(pieceIndex, mailbox, rayVectors)
     }
 
-    getQueenMoves(pieceIndex: number, mailbox: Mailbox144): Array<BasicMove>
+    getQueenMoves(pieceIndex: number, mailbox: Mailbox144): MoveList
     {
-        let moves = []
+        let moves: MoveList = {}
         const rayVectors = [
             [1,0], // right
             [-1,0], // left
@@ -152,9 +153,9 @@ export default class ChessPiece {
         return this.getMovesFromRayVectors(pieceIndex, mailbox, rayVectors)
     }
 
-    getKingMoves(pieceIndex: number, mailbox: Mailbox144, castleRights:string|null): Array<BasicMove>
+    getKingMoves(pieceIndex: number, mailbox: Mailbox144, castleRights:string|null): MoveList
     {
-        let moves = []
+        let moves: MoveList = {}
         const currentSquare = mailbox.get(pieceIndex)
         const rayVectors = [
             [1,0], // right
@@ -189,7 +190,7 @@ export default class ChessPiece {
                     && d1.piece == null
                 ){
                     const basicMove = new BasicMove(currentSquare.squareName, 'c1', currentSquare.piece);
-                    moves.push(new CastlingMove(basicMove, a1.piece))
+                    moves['c1'] = new CastlingMove(basicMove, a1.piece)
                 }
             }
 
@@ -205,7 +206,7 @@ export default class ChessPiece {
                     && f1.piece == null
                 ) {
                     const basicMove = new BasicMove(currentSquare.squareName, 'g1', currentSquare.piece);
-                    moves.push(new CastlingMove(basicMove, h1.piece))
+                    moves['g1'] = new CastlingMove(basicMove, h1.piece)
                 }
             }
         }
@@ -225,7 +226,7 @@ export default class ChessPiece {
                     && d8.piece == null
                 ){
                     const basicMove = new BasicMove(currentSquare.squareName, 'c8', currentSquare.piece);
-                    moves.push(new CastlingMove(basicMove, a8.piece))
+                    moves['c8'] = new CastlingMove(basicMove, a8.piece)
                 }
             }
 
@@ -241,7 +242,7 @@ export default class ChessPiece {
                     && f8.piece == null
                 ) {
                     const basicMove = new BasicMove(currentSquare.squareName, 'g8', currentSquare.piece);
-                    moves.push(new CastlingMove(basicMove, h8.piece))
+                    moves['g8'] = new CastlingMove(basicMove, h8.piece)
                 }
             }
         }
@@ -254,9 +255,9 @@ export default class ChessPiece {
 
 
 
-    getMovesFromRayVectors(pieceIndex:number, mailbox: Mailbox144, rayVectors: number[][], maxRayLength: number = 7): BasicMove[]
+    getMovesFromRayVectors(pieceIndex:number, mailbox: Mailbox144, rayVectors: number[][], maxRayLength: number = 7): MoveList
     {
-        let moves = []
+        let moves: MoveList = {}
         const currentSquare = mailbox.get(pieceIndex)
 
         for(let i = 0; i<rayVectors.length;i++) {
@@ -269,16 +270,15 @@ export default class ChessPiece {
 
                 // if test square is out-of-bounds or occupied by a friendly piece, the ray is terminated
                 if(testSquare.isOutOfBounds || (testSquare.piece && testSquare.piece.color == this.color)){
-                    break;
+                    break
                 }
 
-                moves.push(new BasicMove(currentSquare.squareName, testSquare.squareName, currentSquare.piece))
+                moves[testSquare.squareName] = new BasicMove(currentSquare.squareName, testSquare.squareName, currentSquare.piece)
 
                 // if there's an enemy piece, the ray is terminated
                 if(testSquare.piece){
-                    break;
+                    break
                 }
-
             }
         }
 
@@ -287,7 +287,7 @@ export default class ChessPiece {
     }
 
 
-    getMoves(pieceIndex: number, mailbox: Mailbox144, castleRights: string|null, enPassantTarget: string|null): Array<BasicMove> {
+    getMoves(pieceIndex: number, mailbox: Mailbox144, castleRights: string|null, enPassantTarget: string|null): MoveList {
         switch(this.type){
             case 'pawn': return this.getPawnMoves(pieceIndex, mailbox, enPassantTarget)
             case 'rook': return this.getRookMoves(pieceIndex, mailbox)
@@ -296,6 +296,6 @@ export default class ChessPiece {
             case 'queen': return this.getQueenMoves(pieceIndex, mailbox)
             case 'king': return this.getKingMoves(pieceIndex, mailbox, castleRights)
         }
-        return []
+        return {}
     }
 }

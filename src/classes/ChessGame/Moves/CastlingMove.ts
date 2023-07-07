@@ -18,10 +18,6 @@ export default class CastlingMove extends BasicMove
         q: ['a8','d8'],
     }
 
-    static getRooksStartingSquare(castlesType: string): string {
-        return this.rookMoves[castlesType][0]
-    }
-
     static getCastlingType(move: BasicMove): string|null
     {
         if(move.piece === null){

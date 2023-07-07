@@ -1,9 +1,4 @@
-// @ts-ignore
-//import {PiecePositions} from '../ChessGame.d'
-
 import ChessPiece from "../ChessPiece";
-import PiecePositions from "../PiecePositions";
-
 
 /**
  * This is any normal move or capture

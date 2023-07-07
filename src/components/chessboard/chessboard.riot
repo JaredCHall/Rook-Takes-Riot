@@ -28,6 +28,7 @@
         import BoardOptions from "./board-options/board-options.riot"
         import ChessGame from 'ChessGame/ChessGame.ts'
         import BasicMove from "../../classes/ChessGame/Moves/BasicMove";
+        import MoveList from "../../classes/ChessGame/Moves/MoveList";
 
         interface Props {
             greeting: string,
@@ -55,7 +56,7 @@
                 orientation: 'white',
                 showLabels: false,
                 showPieces: false,
-                indicatedMoves: [],
+                indicatedMoves: {}, // MoveList
             },
             onBeforeMount(props: Props, state: State) {
                 this.gamePosition = new ChessGame(null, this.onMove)
@@ -109,7 +110,7 @@
                     this.gamePosition.setGameState(fen)
                 }
 
-                const positions = this.gamePosition.piecePositions
+                const positions = this.gamePosition.getPiecePositions()
 
                 for(const squareName in positions){
                     const piece = positions[squareName]
@@ -121,13 +122,19 @@
                     selectedSquare: squareName,
                 })
             },
-            showMoveIndicators(moves: Array<BasicMove>): void {
+            showMoveIndicators(moves: MoveList): void {
                 this.clearMoveIndicators()
 
-                for(let i = 0; i<moves.length; i++){
-                    this.getSquare(moves[i].newSquare).showMoveIndicator(true)
+                for(const targetSquare in moves){
+                    if(!moves.hasOwnProperty(targetSquare)){
+                        continue
+                    }
+
+                    this.getSquare(targetSquare).showMoveIndicator(true);
+
                 }
-                this.state.indicatedMoves = moves.map((move: BasicMove) => move.newSquare)
+
+                this.state.indicatedMoves = moves
             },
             getMode(): string {
                 return this.state.mode;
@@ -139,23 +146,23 @@
                 this.clearMoveIndicators()
             },
             isSelectionAnIndicatedMove(squareName: string): boolean{
-                return this.state.indicatedMoves.indexOf(squareName) !== -1;
+                return this.state.indicatedMoves.hasOwnProperty(squareName)
             },
             onMove(move: BasicMove){
                 this.getSquare(move.oldSquare).setPiece(null)
                 if(move.newSquare !== null){
-                    this.getSquare(move.newSquare).setPiece(move.piece);
+                    this.getSquare(move.newSquare).setPiece(move.piece)
                 }
             },
             moveSelectedPiece(squareName: string){
-                this.gamePosition.makeMove(this.state.selectedSquare, squareName)
+                this.gamePosition.makeMove(this.state.indicatedMoves[squareName])
                 this.clearSelections()
             },
             clearMoveIndicators() {
                 for(let i = 0; i<this.squares.length; i++){
                     this.squares[i].showMoveIndicator(false)
                 }
-                this.state.indicatedMoves = [];
+                this.state.indicatedMoves = {}
             },
             togglePieces() {
                 const showPieces = !this.state.showPieces
