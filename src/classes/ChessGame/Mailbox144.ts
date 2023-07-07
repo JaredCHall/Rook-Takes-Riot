@@ -30,6 +30,13 @@ export default class Mailbox144 {
         this.clear()
     }
 
+    setPiecePositions(positions: PiecePositions)
+    {
+        for(const squareName in positions){
+            this.setBySquareName(squareName,positions[squareName])
+        }
+    }
+
     static getAddressName(index: number): string {
         return Mailbox144.addressesByIndex[index] ?? null
     }
@@ -58,8 +65,6 @@ export default class Mailbox144 {
             this.set(i, seed[i] == 'x', null)
         }
 
-        this.piecePositions = {}
-
         console.log(this.board)
     }
     
@@ -73,7 +78,11 @@ export default class Mailbox144 {
     
     set(address: number, isOutOfBounds: boolean, piece: ChessPiece|null) {
         this.board[address] = new MailboxAddress(address, isOutOfBounds, piece)
-        this.piecePositions[Mailbox144.getAddressName(address)] = piece;
+        const squareName = Mailbox144.getAddressName(address)
+        if(squareName !== null){
+            this.piecePositions[squareName] = piece;
+        }
+
     }
 
     setBySquareName(squareName: string, piece: ChessPiece|null): void {
@@ -89,7 +98,7 @@ export default class Mailbox144 {
             return {}
         }
 
-        return piece.getMoves(mailbox.address, this, game.castleRights, game.enPassantTarget)
+        return piece.getMoves(mailbox.address, this, game.gameState)
     }
     
 }

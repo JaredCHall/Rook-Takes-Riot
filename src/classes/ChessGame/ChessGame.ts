@@ -9,23 +9,11 @@ import PiecePositions from "./PiecePositions";
 import OnMoveCallback from "./OnMoveCallback";
 import DoublePawnMove from "./Moves/DoublePawnMove";
 import MoveList from "./Moves/MoveList";
+import GameState from "./GameState";
 
 export default class ChessGame {
 
-    // @ts-ignore
-    fen: string;
-
-    piecePositions: PiecePositions = {};
-
-    sideToMove: string|null = null;
-
-    castleRights: string|null = null;
-
-    enPassantTarget: string|null = null;
-
-    halfMoveClock: number = 0;
-
-    fullMoveCounter: number = 0;
+    gameState: GameState;
 
     mailbox: Mailbox144;
 
@@ -34,7 +22,7 @@ export default class ChessGame {
     constructor(fen: string|null = null, onMoveCallback: OnMoveCallback | null) {
         this.onMoveCallback = onMoveCallback ?? function(move:BasicMove){}
         this.mailbox = new Mailbox144()
-        this.setGameState(fen ?? ChessGame.getEmptyBoardFEN())
+        this.gameState = new GameState(fen)
     }
 
     getPiecePositions(): PiecePositions {
@@ -42,17 +30,8 @@ export default class ChessGame {
     }
 
     setGameState(fen: string) {
-
-        this.fen = fen
-        // parse the FEN
-        // @see https://www.chessprogramming.org/Forsyth-Edwards_Notation
-        const parts = fen.split(' ')
-        this.#parsePiecePlacements(parts[0])
-        this.sideToMove = parts[1] ?? null
-        this.castleRights = parts[2] ?? null
-        this.enPassantTarget = parts[3] ?? null
-        this.halfMoveClock = parseInt(parts[4]) ?? 0
-        this.fullMoveCounter = parseInt(parts[5]) ?? 0
+        this.gameState = new GameState(fen)
+        this.mailbox.setPiecePositions(this.gameState.piecePositions)
     }
 
     makeBasicMove(move: BasicMove): void
@@ -76,148 +55,17 @@ export default class ChessGame {
             this.onMoveCallback(move);
         }
 
-        const whiteIsMoving = this.sideToMove == 'w';
-
-        if(chessMove instanceof CastlingMove){
-            this.revokeCastlingRights(whiteIsMoving)
-        }
-
-        if(chessMove instanceof DoublePawnMove){
-            this.enPassantTarget = chessMove.getEnPassantTargetSquare()
-        }else{
-            this.enPassantTarget = null
-        }
-
-        // change sides and update clock
-        this.sideToMove = whiteIsMoving ? 'b' : 'w';
-
-        // update the move counters
-        this.halfMoveClock++;
-        this.fullMoveCounter = Math.floor(this.halfMoveClock / 2);
-
-        this.fen = this.calculateFen();
+        this.gameState.recordMove(chessMove)
     }
 
     setPosition(squareName: string, piece: ChessPiece|null): void
     {
-        this.mailbox.set(Mailbox144.getAddressIndex(squareName), false, piece)
-    }
-
-    revokeCastlingRights(whiteIsMoving: boolean): void
-    {
-        if(this.castleRights == null){
-            return
-        }
-
-        let revocations: Array<string> = [];
-        if(whiteIsMoving){
-            revocations.push(CastlingMove.KING_SIDE_WHITE)
-            revocations.push(CastlingMove.QUEEN_SIDE_WHITE)
-        }else{
-            revocations.push(CastlingMove.KING_SIDE_BLACK)
-            revocations.push(CastlingMove.QUEEN_SIDE_BLACK)
-        }
-
-        for(let i in revocations){
-            this.castleRights = this.castleRights.replace(revocations[i],'');
-        }
-        if(this.castleRights === ''){
-            this.castleRights = null;
-        }
-    }
-
-
-
-    /**
-     * Calculate FEN from game state
-     */
-    calculateFen(): string
-    {
-
-        console.log(this.piecePositions)
-        const columnNames = ['a','b','c','d','e','f','g','h']
-        let emptySquares = 0
-
-        let fen = ''
-        for(let row=8;row>=1;row--){
-            for(let col =1; col<=8;col++){
-                const squareName = columnNames[col - 1] + row.toString()
-                const piece = this.piecePositions[squareName]
-
-                if(piece) {
-                    if(emptySquares > 0){
-                        fen += emptySquares.toString()
-                        emptySquares = 0
-                    }
-                    fen += piece.toFen()
-                }else{
-                    emptySquares++
-                }
-            }
-
-            if(emptySquares > 0){
-                fen += emptySquares.toString()
-                emptySquares = 0
-            }
-            if(row > 1){
-                fen += '/'
-            }
-        }
-
-        fen += ' '
-        fen += this.sideToMove
-        fen += ' '
-        fen += this.castleRights == null ? '-' : this.castleRights;
-        fen += ' '
-        fen += this.enPassantTarget == null ? '-' : this.enPassantTarget;
-        fen += ' '
-        fen += this.halfMoveClock
-        fen += ' '
-        fen += this.fullMoveCounter
-
-        console.log(fen);
-
-        return fen;
+        this.mailbox.setBySquareName(squareName, piece)
     }
 
 
     getMoves(squareName: string): MoveList {
         return this.mailbox.getMoves(squareName, this);
-    }
-
-    #parsePiecePlacements(fenPart: string): void
-    {
-        this.mailbox.clear() // start with a clean mailbox
-
-        const rows = fenPart.split('/').reverse()
-        if(rows.length !== 8){
-            throw new Error('FEN piece placement must include all eight rows')
-        }
-
-        const columnNames = ['a','b','c','d','e','f','g','h']
-        for(let rowNumber=8;rowNumber>0;rowNumber--){
-            const chars = rows[rowNumber-1].split('')
-            let columnNumber=1;
-            for(let i=0;i<chars.length;i++){
-                const character = chars[i]
-                if(/[1-8]/.test(character)){
-                    const emptySpaces = parseInt(character)
-                    const lastEmptySpace = columnNumber + emptySpaces - 1
-                    while(columnNumber <= lastEmptySpace){
-                        const squareName = columnNames[columnNumber-1]+rowNumber.toString()
-                        this.mailbox.setBySquareName(squareName, null)
-                        columnNumber++
-                    }
-                }else if(/[rbnqkpRBNQKP]/.test(character)) {
-                    const piece = new ChessPiece(character)
-                    const squareName = columnNames[columnNumber-1]+rowNumber.toString()
-                    this.mailbox.setBySquareName(squareName, piece)
-                    columnNumber++
-                }else{
-                    throw new Error("Unrecognized position character: "+character)
-                }
-            }
-        }
     }
 
     static getEmptyBoardFEN(): string {

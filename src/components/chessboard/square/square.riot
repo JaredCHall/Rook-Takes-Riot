@@ -136,7 +136,7 @@
 
                     // don't select wrong color pieces
                     const movingPieceColor = this.state.piece.color.charAt(0)
-                    const colorToMove = board.getGamePosition().sideToMove
+                    const colorToMove = board.getGamePosition().gameState.sideToMove
                     if(colorToMove != movingPieceColor){
                         board.clearSelections()
                         return

@@ -98,7 +98,7 @@
                 })
             },
             getFen(): string {
-                return this.gamePosition.fen
+                return this.gamePosition.gameState.fen
             },
             getGamePosition(): ChessGame
             {
@@ -111,6 +111,7 @@
                 }
 
                 const positions = this.gamePosition.getPiecePositions()
+                console.log(positions)
 
                 for(const squareName in positions){
                     const piece = positions[squareName]

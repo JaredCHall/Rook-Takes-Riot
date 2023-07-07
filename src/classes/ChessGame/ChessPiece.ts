@@ -5,6 +5,7 @@ import DoublePawnMove from "./Moves/DoublePawnMove";
 import EnPassantMove from "./Moves/EnPassantMove";
 import CastlingMove from "./Moves/CastlingMove";
 import MoveList from "./Moves/MoveList";
+import GameState from "./GameState";
 
 export default class ChessPiece {
 
@@ -287,14 +288,14 @@ export default class ChessPiece {
     }
 
 
-    getMoves(pieceIndex: number, mailbox: Mailbox144, castleRights: string|null, enPassantTarget: string|null): MoveList {
+    getMoves(pieceIndex: number, mailbox: Mailbox144, gameState: GameState): MoveList {
         switch(this.type){
-            case 'pawn': return this.getPawnMoves(pieceIndex, mailbox, enPassantTarget)
+            case 'pawn': return this.getPawnMoves(pieceIndex, mailbox, gameState.enPassantTarget)
             case 'rook': return this.getRookMoves(pieceIndex, mailbox)
             case 'knight': return this.getKnightMoves(pieceIndex, mailbox)
             case 'bishop': return this.getBishopMoves(pieceIndex, mailbox)
             case 'queen': return this.getQueenMoves(pieceIndex, mailbox)
-            case 'king': return this.getKingMoves(pieceIndex, mailbox, castleRights)
+            case 'king': return this.getKingMoves(pieceIndex, mailbox, gameState.castleRights)
         }
         return {}
     }
