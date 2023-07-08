@@ -1,6 +1,8 @@
 import BasicMove from './BasicMove'
 import ChessPiece from "../ChessPiece";
-export default class CastlingMove extends BasicMove
+import ChessMove from "./ChessMove";
+import MoveStep from "./MoveStep";
+export default class CastlingMove extends ChessMove
 {
     static KING_SIDE_WHITE = 'K'
     static QUEEN_SIDE_WHITE = 'Q'
@@ -16,6 +18,16 @@ export default class CastlingMove extends BasicMove
         Q: ['a1','d1'],
         k: ['h8','f8'],
         q: ['a8','d8'],
+    }
+
+    constructor(oldSquare: string, newSquare:string, movingPiece: ChessPiece, rook: ChessPiece) {
+        super(oldSquare, newSquare, movingPiece, null)
+        const castlesType = CastlingMove.getCastlingType(this);
+        if(castlesType === null){
+            throw new Error('Invalid castlesType')
+        }
+        this.castlesType = castlesType
+        this.rook = rook
     }
 
     static getCastlingType(move: BasicMove): string|null
@@ -46,26 +58,25 @@ export default class CastlingMove extends BasicMove
         return null
     }
 
-    constructor(move: BasicMove, rook: ChessPiece) {
-        super(move.oldSquare, move.newSquare, move.movingPiece);
-        const castlesType = CastlingMove.getCastlingType(this);
-        if(castlesType === null){
-            throw new Error('Invalid castlesType')
-        }
-        this.castlesType = castlesType
-        this.rook = rook
+    getMoveSteps(): Array<MoveStep> {
+        const steps = super.getMoveSteps()
+        const rookMoveSteps = this.getRookMove().getMoveSteps()
+
+        return steps.concat(rookMoveSteps)
     }
 
-    getMoves(): Array<BasicMove> {
-        let moves = super.getMoves();
+    getUndoSteps(): Array<MoveStep> {
+        const kingUndoSteps = super.getUndoSteps();
+        const rookUndoSteps = this.getRookMove().getUndoSteps()
 
-        moves.push(new BasicMove(
-            CastlingMove.rookMoves[this.castlesType][0],
-            CastlingMove.rookMoves[this.castlesType][1],
-            this.rook
-        ))
+        return kingUndoSteps.concat(rookUndoSteps)
+    }
 
-        return moves
+    getRookMove(): ChessMove
+    {
+        const oldSquare = CastlingMove.rookMoves[this.castlesType][0]
+        const newSquare = CastlingMove.rookMoves[this.castlesType][1]
+        return new ChessMove(oldSquare, newSquare, this.rook)
     }
 
 }

@@ -3,6 +3,7 @@ import ChessPiece from "../ChessPiece";
 import PiecePositions from "./PiecePositions";
 import PieceList from "./PieceList";
 import BasicMove from "../Moves/BasicMove";
+import ChessMove from "../Moves/ChessMove";
 
 export default class Mailbox144 {
     board: Array<MailboxAddress>=[];
@@ -95,46 +96,38 @@ export default class Mailbox144 {
         const index = Mailbox144.getAddressIndex(squareName)
         this.setAddress(index, false, piece)
         if(piece !== null){
+            console.log(piece)
             piece.currentSquare = squareName
         }
     }
 
-    makeMove(move: BasicMove){
+    makeMove(move: ChessMove){
 
-        const movingPiece = move.movingPiece
-        const capturedPiece = move.capturedPiece
-
-        // remove piece from old square, except for pawn promotions
-        if(move.oldSquare !== move.newSquare){
-            this.setSquare(move.oldSquare, null)
+        // execute each move step
+        const moveSteps = move.getMoveSteps()
+        for(let i = 0; i < moveSteps.length; i++){
+            const step = moveSteps[i]
+            this.setSquare(step.squareName, step.piece)
         }
 
-        // put the piece on the new square
-        if(move.newSquare !== null){
-            this.setSquare(move.newSquare, movingPiece)
-        }
-
-        if(capturedPiece !== null){
-            this.pieceList.remove(capturedPiece)
+        // handle captured pieces
+        if(move.capturedPiece){
+            this.pieceList.remove(move.capturedPiece)
         }
     }
 
-    unmakeMove(move: BasicMove){
-        const movingPiece = move.movingPiece
-        const capturedPiece = move.capturedPiece
+    undoMove(move: ChessMove){
 
-        // put piece back on its old square
-        this.setSquare(move.oldSquare, movingPiece)
-
-        // either clear the new square or put the captured piece back on it
-        if(move.newSquare !== null){
-            this.setSquare(move.newSquare, capturedPiece)
-        }else{
-            this.setSquare(move.oldSquare, capturedPiece)
+        // execute each undo step
+        const undoSteps = move.getUndoSteps()
+        for(let i = 0; i < undoSteps.length; i++){
+            const step = undoSteps[i]
+            this.setSquare(step.squareName, step.piece)
         }
 
-        if(capturedPiece !== null){
-            this.pieceList.add(capturedPiece) // add captured piece back to the list of pieces
+        // add the captured piece back to the board
+        if(move.capturedPiece){
+            this.pieceList.add(move.capturedPiece) // add captured piece back to the list of pieces
         }
     }
 }

@@ -1,15 +1,15 @@
 import BasicMove from './BasicMove'
 import ChessPiece from "../ChessPiece";
 import PiecePositions from "../GameState/PiecePositions";
-export default class EnPassantMove extends BasicMove
+import ChessMove from "./ChessMove";
+import MoveStep from "./MoveStep";
+export default class EnPassantMove extends ChessMove
 {
+    capturedPiece: ChessPiece
 
-    opponentPawnSquare: string
-
-    constructor(move: BasicMove, capturedPiece: ChessPiece) {
-        super(move.oldSquare, move.newSquare, move.movingPiece, capturedPiece);
-
-        this.opponentPawnSquare = capturedPiece.currentSquare
+    constructor(oldSquare: string, newSquare:string, movingPiece: ChessPiece, capturedPiece: ChessPiece) {
+        super(oldSquare, newSquare, movingPiece, capturedPiece)
+        this.capturedPiece = capturedPiece
     }
 
     static getOpponentPawnSquare(move: BasicMove): string
@@ -22,18 +22,19 @@ export default class EnPassantMove extends BasicMove
         return newFile + startingRank
     }
 
-    getMoves(): Array<BasicMove> {
-        let moves = super.getMoves();
+    getMoveSteps(): Array<MoveStep>
+    {
+        let steps = super.getMoveSteps();
+        steps.push(new MoveStep(this.capturedPiece.currentSquare, null))
 
-        // remove the opponent pawn by assigning its new square as null
-        moves.push(new BasicMove(
-            this.opponentPawnSquare,
-            null,
-            this.movingPiece,
-            this.capturedPiece
-        ))
-
-        return moves
+        return steps
     }
 
+    getUndoSteps(): Array<MoveStep> {
+        return [
+            new MoveStep(this.capturedPiece.currentSquare, this.capturedPiece),
+            new MoveStep(this.oldSquare, this.movingPiece),
+            new MoveStep(this.newSquare, null),
+        ]
+    }
 }

@@ -7,6 +7,7 @@ import EnPassantMove from "./EnPassantMove";
 import DoublePawnMove from "./DoublePawnMove";
 import CastlingMove from "./CastlingMove";
 import ChessPiece from "../ChessPiece";
+import ChessMove from "./ChessMove";
 
 export default class MoveListFactory {
 
@@ -66,7 +67,7 @@ export default class MoveListFactory {
             const newIndex = squareIndex + sign * offset
             const testSquare: MailboxAddress = this.mailbox144.getAddress(newIndex)
             // test if square has an enemy piece
-            const move = new BasicMove(pieceAddress.squareName, testSquare.squareName, piece, testSquare.piece);
+            const move = new ChessMove(pieceAddress.squareName, testSquare.squareName, piece, testSquare.piece);
             if(testSquare.piece && testSquare.piece.color != piece.color){
                 moves[testSquare.squareName] = move;
 
@@ -79,8 +80,7 @@ export default class MoveListFactory {
                 if(capturedPawn === null){
                     throw new Error('Expected enPassantTarget to exist')
                 }
-
-                moves[testSquare.squareName] = new EnPassantMove(move, capturedPawn);
+                moves[testSquare.squareName] = new EnPassantMove(pieceAddress.squareName, testSquare.squareName, piece, capturedPawn);
             }
         }
 
@@ -95,12 +95,11 @@ export default class MoveListFactory {
                 break;
             }
 
-            let move = new BasicMove(pieceAddress.squareName, testSquare.squareName, piece)
-
             if(i === 1){
-                move = new DoublePawnMove(move);
+                moves[testSquare.squareName] = new DoublePawnMove(pieceAddress.squareName, testSquare.squareName, piece);
+            }else{
+                moves[testSquare.squareName] = new ChessMove(pieceAddress.squareName, testSquare.squareName, piece)
             }
-            moves[testSquare.squareName] = move;
         }
 
         return moves
@@ -125,7 +124,7 @@ export default class MoveListFactory {
 
             // test if square is not out-of-bounds and is either empty or occupied by an enemy piece
             if(!testSquare.isOutOfBounds && (!testSquare.piece || testSquare.piece.color != piece.color) ){
-                moves[testSquare.squareName] = new BasicMove(squareName, testSquare.squareName, piece, capturedPiece);
+                moves[testSquare.squareName] = new ChessMove(squareName, testSquare.squareName, piece, capturedPiece);
             }
         }
 
@@ -209,8 +208,7 @@ export default class MoveListFactory {
                     && c1.piece == null
                     && d1.piece == null
                 ){
-                    const basicMove = new BasicMove(currentSquare.squareName, 'c1', piece);
-                    moves['c1'] = new CastlingMove(basicMove, a1.piece)
+                    moves['c1'] = new CastlingMove(currentSquare.squareName, 'c1', piece, a1.piece)
                 }
             }
 
@@ -225,8 +223,7 @@ export default class MoveListFactory {
                     && g1.piece == null
                     && f1.piece == null
                 ) {
-                    const basicMove = new BasicMove(currentSquare.squareName, 'g1', piece);
-                    moves['g1'] = new CastlingMove(basicMove, h1.piece)
+                    moves['g1'] = new CastlingMove(currentSquare.squareName, 'g1', piece, h1.piece)
                 }
             }
         }
@@ -245,8 +242,7 @@ export default class MoveListFactory {
                     && c8.piece == null
                     && d8.piece == null
                 ){
-                    const basicMove = new BasicMove(currentSquare.squareName, 'c8', piece);
-                    moves['c8'] = new CastlingMove(basicMove, a8.piece)
+                    moves['c8'] = new CastlingMove(currentSquare.squareName, 'c8', piece, a8.piece)
                 }
             }
 
@@ -261,8 +257,7 @@ export default class MoveListFactory {
                     && g8.piece == null
                     && f8.piece == null
                 ) {
-                    const basicMove = new BasicMove(currentSquare.squareName, 'g8', piece);
-                    moves['g8'] = new CastlingMove(basicMove, h8.piece)
+                    moves['g8'] = new CastlingMove(currentSquare.squareName, 'g8',piece, h8.piece)
                 }
             }
         }
@@ -295,7 +290,7 @@ export default class MoveListFactory {
                     capturedPiece = testSquare.piece
                 }
 
-                moves[testSquare.squareName] = new BasicMove(currentSquare.squareName, testSquare.squareName, piece, capturedPiece)
+                moves[testSquare.squareName] = new ChessMove(currentSquare.squareName, testSquare.squareName, piece, capturedPiece)
 
                 // if there's an enemy piece, the ray is terminated
                 if(testSquare.piece){

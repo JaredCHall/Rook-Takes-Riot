@@ -9,6 +9,7 @@ import OnMoveCallback from "./OnMoveCallback";
 import MoveList from "./Moves/MoveList";
 import GameState from "./GameState/GameState";
 import MoveListFactory from "./Moves/MoveListFactory";
+import ChessMove from "./Moves/ChessMove";
 
 export default class ChessGame {
 
@@ -33,20 +34,10 @@ export default class ChessGame {
         this.moveListFactory = new MoveListFactory(this.gameState)
     }
 
-    makeMove(chessMove: BasicMove): void {
-
-        const moves = chessMove.getMoves()
-
-        console.log(moves)
-
-        for(let i = 0; i < moves.length; i++){
-            const move = moves[i]
-
-            this.gameState.mailbox144.makeMove(move)
-            this.onMoveCallback(move);
-        }
-
+    makeMove(chessMove: ChessMove): void {
+        this.gameState.mailbox144.makeMove(chessMove)
         this.gameState.recordMove(chessMove)
+        this.onMoveCallback(chessMove);
     }
 
     setPosition(squareName: string, piece: ChessPiece|null): void

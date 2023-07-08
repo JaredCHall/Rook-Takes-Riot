@@ -29,6 +29,7 @@
         import ChessGame from 'ChessGame/ChessGame.ts'
         import BasicMove from "../../classes/ChessGame/Moves/BasicMove";
         import MoveList from "../../classes/ChessGame/Moves/MoveList";
+        import ChessMove from "../../classes/ChessGame/Moves/ChessMove";
 
         interface Props {
             greeting: string,
@@ -105,7 +106,7 @@
                 return this.gamePosition;
             },
             setGamePosition(fen: string|null): void {
-                console.log('set: '+fen)
+                console.log('Set FEN: '+fen)
                 if(fen !== null){
                     this.gamePosition.setGameState(fen)
                 }
@@ -149,10 +150,11 @@
             isSelectionAnIndicatedMove(squareName: string): boolean{
                 return this.state.indicatedMoves.hasOwnProperty(squareName)
             },
-            onMove(move: BasicMove){
-                this.getSquare(move.oldSquare).setPiece(null)
-                if(move.newSquare !== null){
-                    this.getSquare(move.newSquare).setPiece(move.movingPiece)
+            onMove(move: ChessMove){
+                const moveSteps = move.getMoveSteps()
+                for(let i = 0; i < moveSteps.length; i++){
+                    const step = moveSteps[i]
+                    this.getSquare(step.squareName).setPiece(step.piece)
                 }
             },
             moveSelectedPiece(squareName: string){

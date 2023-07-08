@@ -1,10 +1,12 @@
 import BasicMove from './BasicMove'
 import ChessPiece from "../ChessPiece";
 import PiecePositions from "../GameState/PiecePositions";
-export default class DoublePawnMove extends BasicMove
+import ChessMove from "./ChessMove";
+export default class DoublePawnMove extends ChessMove
 {
-    constructor(move: BasicMove) {
-        super(move.oldSquare, move.newSquare, move.movingPiece);
+
+    constructor(oldSquare: string, newSquare:string, movingPiece: ChessPiece) {
+        super(oldSquare, newSquare, movingPiece, null)
     }
 
     getEnPassantTargetSquare(): string
@@ -17,8 +19,12 @@ export default class DoublePawnMove extends BasicMove
             throw new Error('this.piece is null')
         }
 
-        const targetRank = parseInt(this.newSquare.split('')[1]) - (this.movingPiece.color == 'white' ? 1 : -1)
-        const file = this.newSquare.split('')[0];
+        const isWhiteMoving = this.movingPiece.color == 'white'
+        const newSquareChars = this.newSquare.split('')
+
+        // target square is one square back from the new square
+        const targetRank = parseInt(newSquareChars[1]) - (isWhiteMoving ? 1 : -1)
+        const file = newSquareChars[0];
         return file + targetRank.toString()
     }
 }

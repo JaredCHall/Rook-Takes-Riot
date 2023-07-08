@@ -5,6 +5,7 @@ import BasicMove from "../Moves/BasicMove";
 import CastlingMove from "../Moves/CastlingMove";
 import DoublePawnMove from "../Moves/DoublePawnMove";
 import Mailbox144 from "./Mailbox144";
+import ChessMove from "../Moves/ChessMove";
 
 export default class GameState {
 
@@ -48,13 +49,10 @@ export default class GameState {
         return this.fen = FenParser.calculateFen(this)
     }
 
-    recordMove(chessMove: BasicMove): void {
-        const whiteIsMoving = this.sideToMove == 'w';
+    recordMove(chessMove: ChessMove): void {
 
+        const whiteIsMoving = this.sideToMove == 'w';
         const piece = chessMove.movingPiece
-        if(piece === null){
-            throw new Error('expected ChessPiece')
-        }
 
         // castles logic
         if(chessMove instanceof CastlingMove || piece.type == 'king'){
