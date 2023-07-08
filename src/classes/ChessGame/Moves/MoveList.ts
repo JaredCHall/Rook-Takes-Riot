@@ -1,5 +1,5 @@
-import BasicMove from "./BasicMove";
+import ChessMove from "./ChessMove";
 
-export default interface ChessMove {
-    [squareName: string]: BasicMove;
+export default interface MoveList {
+    [squareName: string]: ChessMove;
 }

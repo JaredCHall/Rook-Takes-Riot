@@ -2,7 +2,6 @@ import MailboxAddress from "./MailboxAddress";
 import ChessPiece from "../ChessPiece";
 import PiecePositions from "./PiecePositions";
 import PieceList from "./PieceList";
-import BasicMove from "../Moves/BasicMove";
 import ChessMove from "../Moves/ChessMove";
 
 export default class Mailbox144 {

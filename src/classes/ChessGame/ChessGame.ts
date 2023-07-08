@@ -1,9 +1,7 @@
 
 
 import BoardSquares from './BoardSquares'
-import Mailbox144 from "./GameState/Mailbox144";
 import ChessPiece from "./ChessPiece";
-import BasicMove from "./Moves/BasicMove";
 import PiecePositions from "./GameState/PiecePositions";
 import OnMoveCallback from "./OnMoveCallback";
 import MoveList from "./Moves/MoveList";
@@ -20,7 +18,7 @@ export default class ChessGame {
     onMoveCallback: OnMoveCallback;
 
     constructor(fen: string|null = null, onMoveCallback: OnMoveCallback | null) {
-        this.onMoveCallback = onMoveCallback ?? function(move:BasicMove){}
+        this.onMoveCallback = onMoveCallback ?? function(move:ChessMove){}
         this.gameState = new GameState(fen)
         this.moveListFactory = new MoveListFactory(this.gameState)
     }
@@ -35,7 +33,6 @@ export default class ChessGame {
     }
 
     makeMove(chessMove: ChessMove): void {
-        this.gameState.mailbox144.makeMove(chessMove)
         this.gameState.recordMove(chessMove)
         this.onMoveCallback(chessMove);
     }

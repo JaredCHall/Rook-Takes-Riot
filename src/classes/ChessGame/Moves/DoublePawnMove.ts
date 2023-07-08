@@ -1,7 +1,8 @@
-import BasicMove from './BasicMove'
+
 import ChessPiece from "../ChessPiece";
-import PiecePositions from "../GameState/PiecePositions";
 import ChessMove from "./ChessMove";
+import GameState from "../GameState/GameState";
+import StateMutation from "../GameState/StateMutation";
 export default class DoublePawnMove extends ChessMove
 {
 
@@ -26,5 +27,11 @@ export default class DoublePawnMove extends ChessMove
         const targetRank = parseInt(newSquareChars[1]) - (isWhiteMoving ? 1 : -1)
         const file = newSquareChars[0];
         return file + targetRank.toString()
+    }
+
+    getGameStateMutations(gameState: GameState): StateMutation[] {
+        return [
+            new StateMutation('enPassantTarget', gameState.enPassantTarget, this.getEnPassantTargetSquare())
+        ]
     }
 }

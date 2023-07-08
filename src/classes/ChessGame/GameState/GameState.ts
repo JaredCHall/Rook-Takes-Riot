@@ -1,17 +1,17 @@
-import PiecePositions from "./PiecePositions";
-import ChessPiece from "../ChessPiece";
 import FenParser from "./FenParser";
-import BasicMove from "../Moves/BasicMove";
-import CastlingMove from "../Moves/CastlingMove";
-import DoublePawnMove from "../Moves/DoublePawnMove";
 import Mailbox144 from "./Mailbox144";
 import ChessMove from "../Moves/ChessMove";
+import StateMutation from "./StateMutation";
+import MoveList from "../Moves/MoveList";
+import MoveHistory from "./MoveHistory";
 
 export default class GameState {
 
-    fen: string
+    moveHistory: MoveHistory
 
     mailbox144: Mailbox144
+
+    fen: string
 
     sideToMove: string
 
@@ -24,6 +24,8 @@ export default class GameState {
     fullMoveCounter: number
 
     constructor(fen: string|null) {
+
+        this.moveHistory = new MoveHistory()
 
         this.fen = fen ?? GameState.getNewGameFen()
 
@@ -49,25 +51,48 @@ export default class GameState {
         return this.fen = FenParser.calculateFen(this)
     }
 
+    applyStateMutation(mutation: StateMutation)
+    {
+        console.log(mutation)
+        if(mutation.propertyName === 'enPassantTarget'){
+            this.enPassantTarget = mutation.newValue
+
+            return
+        }
+
+        if(mutation.propertyName === 'castleRights'){
+            this.castleRights = mutation.newValue
+
+            return
+        }
+    }
+
+    undoStateMutation(mutation: StateMutation)
+    {
+        if(mutation.propertyName === 'enPassantTarget'){
+            this.enPassantTarget = mutation.oldValue
+
+            return
+        }
+
+        if(mutation.propertyName === 'castleRights'){
+            this.castleRights = mutation.oldValue
+
+            return
+        }
+    }
+
     recordMove(chessMove: ChessMove): void {
 
         const whiteIsMoving = this.sideToMove == 'w';
-        const piece = chessMove.movingPiece
 
-        // castles logic
-        if(chessMove instanceof CastlingMove || piece.type == 'king'){
-            const castleTypes = this.sideToMove == 'w' ? 'KQ' : 'kq'
-            this.revokeCastlingRights(castleTypes)
-        }
-        if(piece.type == 'rook'){
-            this.checkRookMoveCastlingRights(chessMove.oldSquare)
+        const mutations = chessMove.getGameStateMutations(this)
+        for(let i=0;i<mutations.length;i++){
+            this.applyStateMutation(mutations[i])
         }
 
-        // en passant logic
-        this.enPassantTarget = null
-        if(chessMove instanceof DoublePawnMove){
-            this.enPassantTarget = chessMove.getEnPassantTargetSquare()
-        }
+        this.mailbox144.makeMove(chessMove)
+        this.moveHistory.add(chessMove)
 
         // change sides and update clock
         this.sideToMove = whiteIsMoving ? 'b' : 'w';
@@ -77,47 +102,23 @@ export default class GameState {
         this.fullMoveCounter = 1 + Math.floor(this.halfMoveClock / 2);
 
         this.generateFen();
+
+        console.log(this.moveHistory)
     }
 
-    isKingInCheck()
-    {
-
-    }
-
-
-    checkRookMoveCastlingRights(oldSquare: string)
-    {
-        // if rook is moving from its starting square, then revoke castling rights for that side
-        if(this.sideToMove === 'w'){
-            if(oldSquare === 'a1'){
-                this.revokeCastlingRights('Q')
-            }else if(oldSquare == 'h1'){
-                this.revokeCastlingRights('K')
-            }
-        }else{
-            if(oldSquare === 'a8'){
-                this.revokeCastlingRights('q')
-            }else if(oldSquare == 'h8'){
-                this.revokeCastlingRights('k')
-            }
-        }
-    }
-
-
-    revokeCastlingRights(castleTypes: string): void
-    {
-        if(this.castleRights == null){
+    undoLastMove(): void {
+        if(this.moveHistory.isEmpty()){
             return
         }
 
-        const revocations = castleTypes.split('')
+        const lastMove = this.moveHistory.pop()
 
-        for(const i in revocations){
-            this.castleRights = this.castleRights.replace(revocations[i],'');
+        const mutations = lastMove.getGameStateMutations(this)
+        for(let i=0;i<mutations.length;i++){
+            this.undoStateMutation(mutations[i])
         }
-        if(this.castleRights === ''){
-            this.castleRights = null;
-        }
+
+        this.mailbox144.undoMove(lastMove)
     }
 
 }

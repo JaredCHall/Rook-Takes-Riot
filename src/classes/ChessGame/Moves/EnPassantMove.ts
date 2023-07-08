@@ -1,6 +1,4 @@
-import BasicMove from './BasicMove'
 import ChessPiece from "../ChessPiece";
-import PiecePositions from "../GameState/PiecePositions";
 import ChessMove from "./ChessMove";
 import MoveStep from "./MoveStep";
 export default class EnPassantMove extends ChessMove
@@ -12,7 +10,7 @@ export default class EnPassantMove extends ChessMove
         this.capturedPiece = capturedPiece
     }
 
-    static getOpponentPawnSquare(move: BasicMove): string
+    static getOpponentPawnSquare(move: ChessMove): string
     {
         // @ts-ignore
         const newFile = move.newSquare.split('')[0]

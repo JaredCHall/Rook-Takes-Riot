@@ -1,4 +1,4 @@
-import BasicMove from './BasicMove'
+
 import ChessPiece from "../ChessPiece";
 import ChessMove from "./ChessMove";
 import MoveStep from "./MoveStep";
@@ -30,7 +30,7 @@ export default class CastlingMove extends ChessMove
         this.rook = rook
     }
 
-    static getCastlingType(move: BasicMove): string|null
+    static getCastlingType(move: ChessMove): string|null
     {
         if(move.movingPiece === null){
             return null
@@ -56,6 +56,16 @@ export default class CastlingMove extends ChessMove
         }
 
         return null
+    }
+
+    static getCastlesTypeByRook(rook: ChessPiece): string|null{
+        switch(rook.startingSquare){
+            case 'a1': return 'Q'
+            case 'h1': return 'K'
+            case 'a8': return 'q'
+            case 'h8': return 'k'
+            default: return null
+        }
     }
 
     getMoveSteps(): Array<MoveStep> {

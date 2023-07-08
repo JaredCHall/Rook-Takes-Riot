@@ -1,5 +1,5 @@
-import BasicMove from "./Moves/BasicMove";
+import ChessMove from "./Moves/ChessMove";
 
 export default interface OnMoveCallback {
-    (move: BasicMove): void;
+    (move: ChessMove): void;
 }

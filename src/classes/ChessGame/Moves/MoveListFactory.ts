@@ -2,7 +2,6 @@ import GameState from "../GameState/GameState";
 import MoveList from "./MoveList";
 import Mailbox144 from "../GameState/Mailbox144";
 import MailboxAddress from "../GameState/MailboxAddress";
-import BasicMove from "./BasicMove";
 import EnPassantMove from "./EnPassantMove";
 import DoublePawnMove from "./DoublePawnMove";
 import CastlingMove from "./CastlingMove";
