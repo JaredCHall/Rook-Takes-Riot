@@ -10,9 +10,10 @@ export default class BasicMove {
 
     newSquare: string|null
 
-    piece: ChessPiece|null = null
+    piece: ChessPiece
 
-    constructor(oldSquare: string, newSquare:string|null, piece: ChessPiece|null) {
+
+    constructor(oldSquare: string, newSquare:string|null, piece: ChessPiece) {
         this.oldSquare = oldSquare
         this.newSquare = newSquare
         this.piece = piece

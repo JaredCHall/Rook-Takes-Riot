@@ -14,8 +14,7 @@ export default class EnPassantMove extends BasicMove
 
     getOpponentPawnSquare(): string
     {
-        // @ts-ignore
-        const isWhite = this.piece.color === 'white'
+
         // @ts-ignore
         const newFile = this.newSquare.split('')[0]
         // @ts-ignore

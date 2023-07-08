@@ -33,19 +33,6 @@ export default class ChessGame {
         this.moveListFactory = new MoveListFactory(this.gameState)
     }
 
-    makeBasicMove(move: BasicMove): void
-    {
-        // remove piece from old square, except for pawn promotions
-        if(move.oldSquare !== move.newSquare){
-            this.gameState.mailbox144.setSquare(move.oldSquare, null)
-        }
-
-        // put the piece on the new square
-        if(move.newSquare !== null){
-            this.gameState.mailbox144.setSquare(move.newSquare, move.piece)
-        }
-    }
-
     makeMove(chessMove: BasicMove): void {
 
         const moves = chessMove.getMoves()
@@ -54,7 +41,8 @@ export default class ChessGame {
 
         for(let i = 0; i < moves.length; i++){
             const move = moves[i]
-            this.makeBasicMove(move)
+
+            this.gameState.mailbox144.makeMove(move)
             this.onMoveCallback(move);
         }
 

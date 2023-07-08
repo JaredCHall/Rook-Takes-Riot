@@ -15,6 +15,10 @@ export default class ChessPiece {
 
     fenType: string;
 
+    startingSquare: string
+
+    currentSquare: string
+
     static piecesMap: {[key: string]: string} = {
         r: 'rook',
         b: 'bishop',
@@ -24,8 +28,10 @@ export default class ChessPiece {
         p: 'pawn'
     }
 
-    constructor(fenType: string){
+    constructor(fenType: string, startingSquare: string){
         this.fenType = fenType;
+        this.startingSquare = startingSquare
+        this.currentSquare = startingSquare
         this.type = ChessPiece.piecesMap[fenType.toLowerCase()]
         this.color = fenType == fenType.toLowerCase() ? 'black' : 'white'
     }

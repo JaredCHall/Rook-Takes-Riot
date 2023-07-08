@@ -28,8 +28,9 @@ export default class FenParser {
                         columnNumber++
                     }
                 }else if(/[rbnqkpRBNQKP]/.test(character)) {
-                    const piece = new ChessPiece(character)
+
                     const squareName = columnNames[columnNumber-1]+rowNumber.toString()
+                    const piece = new ChessPiece(character, squareName)
                     positions[squareName] = piece
                     columnNumber++
                 }else{

@@ -81,6 +81,12 @@ export default class GameState {
         this.generateFen();
     }
 
+    isKingInCheck()
+    {
+
+    }
+
+
     checkRookMoveCastlingRights(oldSquare: string)
     {
         // if rook is moving from its starting square, then revoke castling rights for that side

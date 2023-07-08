@@ -1,14 +1,17 @@
 import MailboxAddress from "./MailboxAddress";
 import ChessPiece from "../ChessPiece";
-import ChessGame from "../ChessGame";
-import MoveList from "../Moves/MoveList";
 import PiecePositions from "./PiecePositions";
-import GameState from "./GameState";
+import PieceList from "./PieceList";
+import BasicMove from "../Moves/BasicMove";
 
 export default class Mailbox144 {
     board: Array<MailboxAddress>=[];
 
     piecePositions: PiecePositions = {}; // parallel object that stays updated with the mailboxes
+
+    whitePieces: PieceList
+
+    blackPieces: PieceList
 
     static addressesByIndex: {[index:number]: string} = {
         26: 'a8', 27: 'b8', 28: 'c8', 29: 'd8', 30: 'e8', 31: 'f8', 32: 'g8', 33: 'h8', // rank 8
@@ -31,6 +34,8 @@ export default class Mailbox144 {
 
     constructor(piecePositions: PiecePositions) {
         this.piecePositions = piecePositions
+        this.whitePieces = new PieceList()
+        this.blackPieces = new PieceList()
         this.initializeBoard(this.piecePositions)
     }
 
@@ -54,7 +59,16 @@ export default class Mailbox144 {
             const squareName = Mailbox144.getAddressName(i)
             const isOutOfBounds = seed[i] == 'x'
             const piece = !isOutOfBounds ? positions[squareName] : null
-            this.board[i] = new MailboxAddress(i, isOutOfBounds , piece)
+            const address = new MailboxAddress(i, isOutOfBounds , piece)
+            this.board[i] = address
+
+            if(piece !== null){
+                if(piece.color === 'white'){
+                    this.whitePieces.add(piece)
+                }else{
+                    this.blackPieces.add(piece)
+                }
+            }
         }
 
         console.log(this.board)
@@ -76,9 +90,10 @@ export default class Mailbox144 {
         return this.getAddress(Mailbox144.getAddressIndex(squareName))
     }
     
-    setAddress(address: number, isOutOfBounds: boolean, piece: ChessPiece|null) {
-        this.board[address] = new MailboxAddress(address, isOutOfBounds, piece)
-        const squareName = Mailbox144.getAddressName(address)
+    setAddress(squareIndex: number, isOutOfBounds: boolean, piece: ChessPiece|null) {
+
+        this.board[squareIndex] = new MailboxAddress(squareIndex, isOutOfBounds, piece)
+        const squareName = Mailbox144.getAddressName(squareIndex)
         if(squareName !== null){
             this.piecePositions[squareName] = piece;
         }
@@ -88,4 +103,34 @@ export default class Mailbox144 {
         const index = Mailbox144.getAddressIndex(squareName)
         this.setAddress(index, false, piece)
     }
+
+    makeMove(move: BasicMove){
+
+        const movingPiece = move.piece
+
+        // check if something is being captured
+        let capturedPiece = null
+        if(move.newSquare === null){
+
+        }
+
+        // remove piece from old square, except for pawn promotions
+        if(move.oldSquare !== move.newSquare){
+            this.setSquare(move.oldSquare, null)
+        }
+
+        // put the piece on the new square
+        if(move.newSquare !== null){
+            this.setSquare(move.newSquare, movingPiece)
+        }
+
+        if(movingPiece === null){
+            return
+        }
+
+
+
+
+    }
+
 }
