@@ -4,7 +4,7 @@ import PiecePositions from "../GameState/PiecePositions";
 export default class DoublePawnMove extends BasicMove
 {
     constructor(move: BasicMove) {
-        super(move.oldSquare, move.newSquare, move.piece);
+        super(move.oldSquare, move.newSquare, move.movingPiece);
     }
 
     getEnPassantTargetSquare(): string
@@ -13,11 +13,11 @@ export default class DoublePawnMove extends BasicMove
             throw new Error('this.newSquare is null')
         }
 
-        if(this.piece === null){
+        if(this.movingPiece === null){
             throw new Error('this.piece is null')
         }
 
-        const targetRank = parseInt(this.newSquare.split('')[1]) - (this.piece.color == 'white' ? 1 : -1)
+        const targetRank = parseInt(this.newSquare.split('')[1]) - (this.movingPiece.color == 'white' ? 1 : -1)
         const file = this.newSquare.split('')[0];
         return file + targetRank.toString()
     }

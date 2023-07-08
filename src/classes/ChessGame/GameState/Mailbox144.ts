@@ -9,9 +9,7 @@ export default class Mailbox144 {
 
     piecePositions: PiecePositions = {}; // parallel object that stays updated with the mailboxes
 
-    whitePieces: PieceList
-
-    blackPieces: PieceList
+    pieceList: PieceList
 
     static addressesByIndex: {[index:number]: string} = {
         26: 'a8', 27: 'b8', 28: 'c8', 29: 'd8', 30: 'e8', 31: 'f8', 32: 'g8', 33: 'h8', // rank 8
@@ -34,8 +32,7 @@ export default class Mailbox144 {
 
     constructor(piecePositions: PiecePositions) {
         this.piecePositions = piecePositions
-        this.whitePieces = new PieceList()
-        this.blackPieces = new PieceList()
+        this.pieceList = new PieceList()
         this.initializeBoard(this.piecePositions)
     }
 
@@ -59,15 +56,10 @@ export default class Mailbox144 {
             const squareName = Mailbox144.getAddressName(i)
             const isOutOfBounds = seed[i] == 'x'
             const piece = !isOutOfBounds ? positions[squareName] : null
-            const address = new MailboxAddress(i, isOutOfBounds , piece)
-            this.board[i] = address
+            this.board[i] = new MailboxAddress(i, isOutOfBounds , piece)
 
             if(piece !== null){
-                if(piece.color === 'white'){
-                    this.whitePieces.add(piece)
-                }else{
-                    this.blackPieces.add(piece)
-                }
+                this.pieceList.add(piece)
             }
         }
 
@@ -102,17 +94,15 @@ export default class Mailbox144 {
     setSquare(squareName: string, piece: ChessPiece|null): void {
         const index = Mailbox144.getAddressIndex(squareName)
         this.setAddress(index, false, piece)
+        if(piece !== null){
+            piece.currentSquare = squareName
+        }
     }
 
     makeMove(move: BasicMove){
 
-        const movingPiece = move.piece
-
-        // check if something is being captured
-        let capturedPiece = null
-        if(move.newSquare === null){
-
-        }
+        const movingPiece = move.movingPiece
+        const capturedPiece = move.capturedPiece
 
         // remove piece from old square, except for pawn promotions
         if(move.oldSquare !== move.newSquare){
@@ -124,13 +114,27 @@ export default class Mailbox144 {
             this.setSquare(move.newSquare, movingPiece)
         }
 
-        if(movingPiece === null){
-            return
+        if(capturedPiece !== null){
+            this.pieceList.remove(capturedPiece)
         }
-
-
-
-
     }
 
+    unmakeMove(move: BasicMove){
+        const movingPiece = move.movingPiece
+        const capturedPiece = move.capturedPiece
+
+        // put piece back on its old square
+        this.setSquare(move.oldSquare, movingPiece)
+
+        // either clear the new square or put the captured piece back on it
+        if(move.newSquare !== null){
+            this.setSquare(move.newSquare, capturedPiece)
+        }else{
+            this.setSquare(move.oldSquare, capturedPiece)
+        }
+
+        if(capturedPiece !== null){
+            this.pieceList.add(capturedPiece) // add captured piece back to the list of pieces
+        }
+    }
 }

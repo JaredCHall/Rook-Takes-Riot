@@ -6,19 +6,18 @@ export default class EnPassantMove extends BasicMove
 
     opponentPawnSquare: string
 
-    constructor(move: BasicMove) {
-        super(move.oldSquare, move.newSquare, move.piece);
+    constructor(move: BasicMove, capturedPiece: ChessPiece) {
+        super(move.oldSquare, move.newSquare, move.movingPiece, capturedPiece);
 
-        this.opponentPawnSquare = this.getOpponentPawnSquare()
+        this.opponentPawnSquare = capturedPiece.currentSquare
     }
 
-    getOpponentPawnSquare(): string
+    static getOpponentPawnSquare(move: BasicMove): string
     {
-
         // @ts-ignore
-        const newFile = this.newSquare.split('')[0]
+        const newFile = move.newSquare.split('')[0]
         // @ts-ignore
-        const startingRank = this.oldSquare.split('')[1]
+        const startingRank = move.oldSquare.split('')[1]
 
         return newFile + startingRank
     }
@@ -30,7 +29,8 @@ export default class EnPassantMove extends BasicMove
         moves.push(new BasicMove(
             this.opponentPawnSquare,
             null,
-            this.piece
+            this.movingPiece,
+            this.capturedPiece
         ))
 
         return moves

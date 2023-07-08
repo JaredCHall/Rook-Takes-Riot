@@ -152,7 +152,7 @@
             onMove(move: BasicMove){
                 this.getSquare(move.oldSquare).setPiece(null)
                 if(move.newSquare !== null){
-                    this.getSquare(move.newSquare).setPiece(move.piece)
+                    this.getSquare(move.newSquare).setPiece(move.movingPiece)
                 }
             },
             moveSelectedPiece(squareName: string){

@@ -20,12 +20,12 @@ export default class CastlingMove extends BasicMove
 
     static getCastlingType(move: BasicMove): string|null
     {
-        if(move.piece === null){
+        if(move.movingPiece === null){
             return null
         }
 
-        const isKing = move.piece.type === 'king'
-        const isWhite = move.piece.color === 'white'
+        const isKing = move.movingPiece.type === 'king'
+        const isWhite = move.movingPiece.color === 'white'
 
         if (!isKing) {
             return null
@@ -47,7 +47,7 @@ export default class CastlingMove extends BasicMove
     }
 
     constructor(move: BasicMove, rook: ChessPiece) {
-        super(move.oldSquare, move.newSquare, move.piece);
+        super(move.oldSquare, move.newSquare, move.movingPiece);
         const castlesType = CastlingMove.getCastlingType(this);
         if(castlesType === null){
             throw new Error('Invalid castlesType')

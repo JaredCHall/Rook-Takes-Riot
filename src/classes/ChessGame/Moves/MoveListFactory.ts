@@ -58,17 +58,29 @@ export default class MoveListFactory {
         }
 
 
+        const enPassantTargetSquare = this.gameState.enPassantTarget
+
         // test if pawn can capture diagonally
         for(let i = 0; i<captureOffsets.length;i++){
             const offset = captureOffsets[i]
             const newIndex = squareIndex + sign * offset
             const testSquare: MailboxAddress = this.mailbox144.getAddress(newIndex)
             // test if square has an enemy piece
-            const move = new BasicMove(pieceAddress.squareName, testSquare.squareName, pieceAddress.piece);
+            const move = new BasicMove(pieceAddress.squareName, testSquare.squareName, piece, testSquare.piece);
             if(testSquare.piece && testSquare.piece.color != piece.color){
                 moves[testSquare.squareName] = move;
-            }else if(testSquare.squareName === this.gameState.enPassantTarget){
-                moves[testSquare.squareName] = new EnPassantMove(move);
+
+            }else if(testSquare.squareName === enPassantTargetSquare){
+
+                // Handle En Passant
+
+                const capturedSquare = EnPassantMove.getOpponentPawnSquare(move)
+                const capturedPawn = this.mailbox144.getSquare(capturedSquare).piece
+                if(capturedPawn === null){
+                    throw new Error('Expected enPassantTarget to exist')
+                }
+
+                moves[testSquare.squareName] = new EnPassantMove(move, capturedPawn);
             }
         }
 
@@ -83,7 +95,7 @@ export default class MoveListFactory {
                 break;
             }
 
-            let move = new BasicMove(pieceAddress.squareName, testSquare.squareName, pieceAddress.piece)
+            let move = new BasicMove(pieceAddress.squareName, testSquare.squareName, piece)
 
             if(i === 1){
                 move = new DoublePawnMove(move);
@@ -105,9 +117,15 @@ export default class MoveListFactory {
             const newIndex = squareIndex + offset
             const testSquare: MailboxAddress = this.mailbox144.getAddress(newIndex)
 
+            let capturedPiece = null
+            if(testSquare.piece != null){
+                capturedPiece = testSquare.piece
+            }
+
+
             // test if square is not out-of-bounds and is either empty or occupied by an enemy piece
             if(!testSquare.isOutOfBounds && (!testSquare.piece || testSquare.piece.color != piece.color) ){
-                moves[testSquare.squareName] = new BasicMove(squareName, testSquare.squareName, piece);
+                moves[testSquare.squareName] = new BasicMove(squareName, testSquare.squareName, piece, capturedPiece);
             }
         }
 
@@ -191,7 +209,7 @@ export default class MoveListFactory {
                     && c1.piece == null
                     && d1.piece == null
                 ){
-                    const basicMove = new BasicMove(currentSquare.squareName, 'c1', currentSquare.piece);
+                    const basicMove = new BasicMove(currentSquare.squareName, 'c1', piece);
                     moves['c1'] = new CastlingMove(basicMove, a1.piece)
                 }
             }
@@ -207,7 +225,7 @@ export default class MoveListFactory {
                     && g1.piece == null
                     && f1.piece == null
                 ) {
-                    const basicMove = new BasicMove(currentSquare.squareName, 'g1', currentSquare.piece);
+                    const basicMove = new BasicMove(currentSquare.squareName, 'g1', piece);
                     moves['g1'] = new CastlingMove(basicMove, h1.piece)
                 }
             }
@@ -227,7 +245,7 @@ export default class MoveListFactory {
                     && c8.piece == null
                     && d8.piece == null
                 ){
-                    const basicMove = new BasicMove(currentSquare.squareName, 'c8', currentSquare.piece);
+                    const basicMove = new BasicMove(currentSquare.squareName, 'c8', piece);
                     moves['c8'] = new CastlingMove(basicMove, a8.piece)
                 }
             }
@@ -243,7 +261,7 @@ export default class MoveListFactory {
                     && g8.piece == null
                     && f8.piece == null
                 ) {
-                    const basicMove = new BasicMove(currentSquare.squareName, 'g8', currentSquare.piece);
+                    const basicMove = new BasicMove(currentSquare.squareName, 'g8', piece);
                     moves['g8'] = new CastlingMove(basicMove, h8.piece)
                 }
             }
@@ -272,7 +290,12 @@ export default class MoveListFactory {
                     break
                 }
 
-                moves[testSquare.squareName] = new BasicMove(currentSquare.squareName, testSquare.squareName, currentSquare.piece)
+                let capturedPiece = null
+                if(testSquare.piece != null){
+                    capturedPiece = testSquare.piece
+                }
+
+                moves[testSquare.squareName] = new BasicMove(currentSquare.squareName, testSquare.squareName, piece, capturedPiece)
 
                 // if there's an enemy piece, the ray is terminated
                 if(testSquare.piece){

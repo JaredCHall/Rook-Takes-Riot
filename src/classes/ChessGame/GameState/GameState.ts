@@ -51,7 +51,7 @@ export default class GameState {
     recordMove(chessMove: BasicMove): void {
         const whiteIsMoving = this.sideToMove == 'w';
 
-        const piece = chessMove.piece
+        const piece = chessMove.movingPiece
         if(piece === null){
             throw new Error('expected ChessPiece')
         }

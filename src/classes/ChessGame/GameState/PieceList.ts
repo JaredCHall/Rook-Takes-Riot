@@ -3,18 +3,24 @@ import ChessPiece from "../ChessPiece";
 
 export default class PieceList {
 
-    data:     Array<ChessPiece> = [];
+    white:     Array<ChessPiece> = [];
+    black:     Array<ChessPiece> = [];
 
     add(piece: ChessPiece){
-        this.data.push(piece)
+        this.#getListForColor(piece.color).push(piece)
     }
 
     remove(piece: ChessPiece){
-        for(let i = 0; i < this.data.length; i++){
-            if(piece === this.data[i]){
-                this.data.splice(i,1)
+        const list = this.#getListForColor(piece.color)
+        for(let i = 0; i < list.length; i++){
+            if(piece === list[i]){
+                list.splice(i,1)
             }
         }
+    }
+
+    #getListForColor(color: string): ChessPiece[] {
+        return color === 'white' ? this.white : this.black
     }
 
 }

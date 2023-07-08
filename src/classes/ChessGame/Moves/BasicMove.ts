@@ -10,16 +10,19 @@ export default class BasicMove {
 
     newSquare: string|null
 
-    piece: ChessPiece
+    movingPiece: ChessPiece
+
+    capturedPiece: ChessPiece|null = null
 
 
-    constructor(oldSquare: string, newSquare:string|null, piece: ChessPiece) {
+    constructor(oldSquare: string, newSquare:string|null, movingPiece: ChessPiece, capturedPiece: ChessPiece | null = null) {
         this.oldSquare = oldSquare
         this.newSquare = newSquare
-        this.piece = piece
+        this.movingPiece = movingPiece
     }
     getMoves(): Array<BasicMove>
     {
         return [this]
     }
+
 }
