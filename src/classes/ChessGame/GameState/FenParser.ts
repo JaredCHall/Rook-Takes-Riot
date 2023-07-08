@@ -1,6 +1,6 @@
 import GameState from "./GameState";
 import PiecePositions from "./PiecePositions";
-import ChessPiece from "./ChessPiece";
+import ChessPiece from "../ChessPiece";
 
 export default class FenParser {
 
@@ -44,7 +44,7 @@ export default class FenParser {
     static calculateFen(gameState: GameState): string
     {
 
-        console.log(gameState.piecePositions)
+        console.log(gameState.mailbox144.piecePositions)
         const columnNames = ['a','b','c','d','e','f','g','h']
         let emptySquares = 0
 
@@ -52,7 +52,7 @@ export default class FenParser {
         for(let row=8;row>=1;row--){
             for(let col =1; col<=8;col++){
                 const squareName = columnNames[col - 1] + row.toString()
-                const piece = gameState.piecePositions[squareName]
+                const piece = gameState.mailbox144.piecePositions[squareName]
 
                 if(piece) {
                     if(emptySquares > 0){

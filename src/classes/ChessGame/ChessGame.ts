@@ -1,53 +1,56 @@
 
 
 import BoardSquares from './BoardSquares'
-import Mailbox144 from "./Mailbox144";
+import Mailbox144 from "./GameState/Mailbox144";
 import ChessPiece from "./ChessPiece";
 import BasicMove from "./Moves/BasicMove";
-import CastlingMove from "./Moves/CastlingMove"
-import PiecePositions from "./PiecePositions";
+import PiecePositions from "./GameState/PiecePositions";
 import OnMoveCallback from "./OnMoveCallback";
-import DoublePawnMove from "./Moves/DoublePawnMove";
 import MoveList from "./Moves/MoveList";
-import GameState from "./GameState";
+import GameState from "./GameState/GameState";
+import MoveListFactory from "./Moves/MoveListFactory";
 
 export default class ChessGame {
 
     gameState: GameState;
 
-    mailbox: Mailbox144;
+    moveListFactory: MoveListFactory
 
     onMoveCallback: OnMoveCallback;
 
     constructor(fen: string|null = null, onMoveCallback: OnMoveCallback | null) {
         this.onMoveCallback = onMoveCallback ?? function(move:BasicMove){}
-        this.mailbox = new Mailbox144()
         this.gameState = new GameState(fen)
+        this.moveListFactory = new MoveListFactory(this.gameState)
     }
 
     getPiecePositions(): PiecePositions {
-        return this.mailbox.piecePositions
+        return this.gameState.mailbox144.piecePositions
     }
 
     setGameState(fen: string) {
         this.gameState = new GameState(fen)
-        this.mailbox.setPiecePositions(this.gameState.piecePositions)
+        this.moveListFactory = new MoveListFactory(this.gameState)
     }
 
     makeBasicMove(move: BasicMove): void
     {
-        if(move.oldSquare !== null){
-            this.setPosition(move.oldSquare, null)
+        // remove piece from old square, except for pawn promotions
+        if(move.oldSquare !== move.newSquare){
+            this.gameState.mailbox144.setSquare(move.oldSquare, null)
         }
 
+        // put the piece on the new square
         if(move.newSquare !== null){
-            this.setPosition(move.newSquare, move.piece)
+            this.gameState.mailbox144.setSquare(move.newSquare, move.piece)
         }
     }
 
     makeMove(chessMove: BasicMove): void {
 
         const moves = chessMove.getMoves()
+
+        console.log(moves)
 
         for(let i = 0; i < moves.length; i++){
             const move = moves[i]
@@ -60,12 +63,12 @@ export default class ChessGame {
 
     setPosition(squareName: string, piece: ChessPiece|null): void
     {
-        this.mailbox.setBySquareName(squareName, piece)
+        this.gameState.mailbox144.setSquare(squareName, piece)
     }
 
 
     getMoves(squareName: string): MoveList {
-        return this.mailbox.getMoves(squareName, this);
+        return this.moveListFactory.getLegalMoves(squareName);
     }
 
     static getEmptyBoardFEN(): string {

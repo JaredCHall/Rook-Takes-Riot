@@ -1,5 +1,5 @@
-import ChessPiece from "./ChessPiece";
-import BoardSquares from "./BoardSquares";
+import ChessPiece from "../ChessPiece";
+import BoardSquares from "../BoardSquares";
 import Mailbox144 from "./Mailbox144";
 
 export default class MailboxAddress

@@ -6,13 +6,13 @@ import ChessPiece from "../ChessPiece";
  */
 export default class BasicMove {
 
-    oldSquare: string|null
+    oldSquare: string
 
     newSquare: string|null
 
     piece: ChessPiece|null = null
 
-    constructor(oldSquare: string|null, newSquare:string|null, piece: ChessPiece|null) {
+    constructor(oldSquare: string, newSquare:string|null, piece: ChessPiece|null) {
         this.oldSquare = oldSquare
         this.newSquare = newSquare
         this.piece = piece

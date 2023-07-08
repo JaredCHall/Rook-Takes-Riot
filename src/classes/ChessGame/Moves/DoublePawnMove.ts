@@ -1,6 +1,6 @@
 import BasicMove from './BasicMove'
 import ChessPiece from "../ChessPiece";
-import PiecePositions from "../PiecePositions";
+import PiecePositions from "../GameState/PiecePositions";
 export default class DoublePawnMove extends BasicMove
 {
     constructor(move: BasicMove) {

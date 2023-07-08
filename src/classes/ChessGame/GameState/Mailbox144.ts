@@ -1,8 +1,9 @@
 import MailboxAddress from "./MailboxAddress";
-import ChessPiece from "./ChessPiece";
-import ChessGame from "./ChessGame";
-import MoveList from "./Moves/MoveList";
+import ChessPiece from "../ChessPiece";
+import ChessGame from "../ChessGame";
+import MoveList from "../Moves/MoveList";
 import PiecePositions from "./PiecePositions";
+import GameState from "./GameState";
 
 export default class Mailbox144 {
     board: Array<MailboxAddress>=[];
@@ -23,29 +24,17 @@ export default class Mailbox144 {
     static addressesBySquare: {[name: string]: number};
 
     static {
+        // flip keys and values of the addressesByIndex property
         Mailbox144.addressesBySquare = Object.fromEntries(Object.entries(this.addressesByIndex).map(([key, value]) => [value, parseInt(key)]))
+
     }
 
-    constructor() {
-        this.clear()
+    constructor(piecePositions: PiecePositions) {
+        this.piecePositions = piecePositions
+        this.initializeBoard(this.piecePositions)
     }
 
-    setPiecePositions(positions: PiecePositions)
-    {
-        for(const squareName in positions){
-            this.setBySquareName(squareName,positions[squareName])
-        }
-    }
-
-    static getAddressName(index: number): string {
-        return Mailbox144.addressesByIndex[index] ?? null
-    }
-
-    static getAddressIndex(name: string): number {
-        return Mailbox144.addressesBySquare[name]
-    }
-
-    clear(): void {
+    initializeBoard(positions: PiecePositions): void {
         const seed = [
             'x', 'x',  'x',  'x',  'x',  'x',  'x',  'x',  'x',  'x', 'x', 'x',
             'x', 'x',  'x',  'x',  'x',  'x',  'x',  'x',  'x',  'x', 'x', 'x',
@@ -62,43 +51,41 @@ export default class Mailbox144 {
         ];
 
         for(let i = 0; i < seed.length; i++){
-            this.set(i, seed[i] == 'x', null)
+            const squareName = Mailbox144.getAddressName(i)
+            const isOutOfBounds = seed[i] == 'x'
+            const piece = !isOutOfBounds ? positions[squareName] : null
+            this.board[i] = new MailboxAddress(i, isOutOfBounds , piece)
         }
 
         console.log(this.board)
     }
+
+    static getAddressName(index: number): string {
+        return Mailbox144.addressesByIndex[index] ?? null
+    }
+
+    static getAddressIndex(name: string): number {
+        return Mailbox144.addressesBySquare[name]
+    }
     
-    get(address: number): MailboxAddress{
+    getAddress(address: number): MailboxAddress{
         return this.board[address]
     }
 
-    getBySquareName(squareName: string): MailboxAddress {
-        return this.get(Mailbox144.getAddressIndex(squareName))
+    getSquare(squareName: string): MailboxAddress {
+        return this.getAddress(Mailbox144.getAddressIndex(squareName))
     }
     
-    set(address: number, isOutOfBounds: boolean, piece: ChessPiece|null) {
+    setAddress(address: number, isOutOfBounds: boolean, piece: ChessPiece|null) {
         this.board[address] = new MailboxAddress(address, isOutOfBounds, piece)
         const squareName = Mailbox144.getAddressName(address)
         if(squareName !== null){
             this.piecePositions[squareName] = piece;
         }
-
     }
 
-    setBySquareName(squareName: string, piece: ChessPiece|null): void {
+    setSquare(squareName: string, piece: ChessPiece|null): void {
         const index = Mailbox144.getAddressIndex(squareName)
-        this.set(index, false, piece)
+        this.setAddress(index, false, piece)
     }
-
-    getMoves(squareName: string, game: ChessGame): MoveList
-    {
-        const mailbox = this.get(Mailbox144.getAddressIndex(squareName))
-        const piece = mailbox.piece
-        if(piece == null){
-            return {}
-        }
-
-        return piece.getMoves(mailbox.address, this, game.gameState)
-    }
-    
 }
