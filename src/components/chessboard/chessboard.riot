@@ -28,7 +28,7 @@
         import BoardOptions from "./board-options/board-options.riot"
         import ChessGame from 'ChessGame/ChessGame.ts'
         import MoveList from "../../classes/ChessGame/Moves/MoveList";
-        import ChessMove from "../../classes/ChessGame/Moves/ChessMove";
+        import MoveStep from "../../classes/ChessGame/Moves/MoveStep";
 
         interface Props {
             greeting: string,
@@ -59,7 +59,7 @@
                 indicatedMoves: {}, // MoveList
             },
             onBeforeMount(props: Props, state: State) {
-                this.gamePosition = new ChessGame(null, this.onMove)
+                this.gamePosition = new ChessGame(null, this.onMoveStep)
 
                 state.greeting = props.greeting
                 state.showOptions = props.showOptions
@@ -98,7 +98,7 @@
                 })
             },
             getFen(): string {
-                return this.gamePosition.gameState.fen
+                return this.gamePosition.gameState.fenNumber.toString()
             },
             getGamePosition(): ChessGame
             {
@@ -117,6 +117,10 @@
                     const piece = positions[squareName]
                     this.getSquare(squareName).setPiece(piece)
                 }
+            },
+            undoLastMove(): void {
+                this.gamePosition.undoLastMove()
+                this.update()
             },
             setSelectedSquare(squareName: string): void {
                 this.update({
@@ -149,12 +153,8 @@
             isSelectionAnIndicatedMove(squareName: string): boolean{
                 return this.state.indicatedMoves.hasOwnProperty(squareName)
             },
-            onMove(move: ChessMove){
-                const moveSteps = move.getMoveSteps()
-                for(let i = 0; i < moveSteps.length; i++){
-                    const step = moveSteps[i]
-                    this.getSquare(step.squareName).setPiece(step.piece)
-                }
+            onMoveStep(step: MoveStep){
+                this.getSquare(step.squareName).setPiece(step.piece)
             },
             moveSelectedPiece(squareName: string){
                 this.gamePosition.makeMove(this.state.indicatedMoves[squareName])

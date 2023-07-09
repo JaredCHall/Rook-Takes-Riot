@@ -58,16 +58,6 @@ export default class CastlingMove extends ChessMove
         return null
     }
 
-    static getCastlesTypeByRook(rook: ChessPiece): string|null{
-        switch(rook.startingSquare){
-            case 'a1': return 'Q'
-            case 'h1': return 'K'
-            case 'a8': return 'q'
-            case 'h8': return 'k'
-            default: return null
-        }
-    }
-
     getMoveSteps(): Array<MoveStep> {
         const steps = super.getMoveSteps()
         const rookMoveSteps = this.getRookMove().getMoveSteps()

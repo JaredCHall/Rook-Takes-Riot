@@ -20,6 +20,11 @@
             Random Puzzle
         </button>
     </div>
+    <div>
+        <button class="button button-red" onclick={() => undoLastMove()}>
+            Undo Last Move
+        </button>
+    </div>
     <hr>
     <div>
 
@@ -66,6 +71,9 @@
                     this.update({fenError: e.message})
                 }
                 this.update()
+            },
+            undoLastMove() {
+                this.board.undoLastMove()
             },
             clearFenError() {
                 this.update({fenError: null})

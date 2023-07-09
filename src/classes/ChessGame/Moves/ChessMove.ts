@@ -1,8 +1,7 @@
 import ChessPiece from "../ChessPiece";
 import MoveStep from "./MoveStep";
-import StateMutation from "../GameState/StateMutation";
 import GameState from "../GameState/GameState";
-import CastlingMove from "./CastlingMove";
+import FenNumber from "../GameState/FenNumber";
 
 /**
  * This represents any full chess move
@@ -17,7 +16,9 @@ export default class ChessMove {
 
     capturedPiece: ChessPiece|null
 
-    gameStateMutations: StateMutation[]|null = null // stores enpassant and castling right mutations, so they can be easily reversed
+    fenBefore: FenNumber|undefined
+
+    fenAfter: FenNumber|undefined
 
     constructor(oldSquare: string, newSquare:string, movingPiece: ChessPiece, capturedPiece: ChessPiece|null = null) {
         this.oldSquare = oldSquare
@@ -26,58 +27,48 @@ export default class ChessMove {
         this.capturedPiece = capturedPiece
     }
 
+    mutateFenNumber(gameState: GameState): FenNumber {
 
-    getGameStateMutations(gameState: GameState): StateMutation[] {
+        this.fenBefore = gameState.fenNumber.clone()
+        this.fenAfter = FenNumber.fromGameState(gameState)
 
-        if(this.gameStateMutations !== null){
-            return this.gameStateMutations
-        }
+        this.mutateHalfMoveClock(this.fenAfter)
+        this.mutateCastleRights(this.fenAfter)
+        this.mutateEnPassantTarget(this.fenAfter)
 
-        const mutations = []
-
-        const castleRightsMutation = this.#getCastleRightsMutation(gameState)
-        const enPassantExpiredMutation = this.#getEnPassantExpiredMutation(gameState)
-
-        if(castleRightsMutation){
-            mutations.push(castleRightsMutation)
-        }
-        if(enPassantExpiredMutation){
-            mutations.push(enPassantExpiredMutation)
-        }
-
-        return this.gameStateMutations = mutations
-    }
-
-    #getEnPassantExpiredMutation(gameState: GameState): null|StateMutation
-    {
-        if(!gameState.enPassantTarget){
-            return null
-        }
-
-        return new StateMutation('enPassantTarget',gameState.enPassantTarget, null)
+        return this.fenAfter
 
     }
-    #getCastleRightsMutation(gameState: GameState): null|StateMutation
+    mutateHalfMoveClock(fenNumber: FenNumber): void {
+        if(this.movingPiece.type === 'pawn' || this.capturedPiece){
+            fenNumber.halfMoveClock = 0
+        }else{
+            fenNumber.halfMoveClock++
+        }
+    }
+
+    mutateEnPassantTarget(fenNumber: FenNumber): void
     {
-        if(!gameState.castleRights){
-            return null
+        if(!fenNumber.enPassantTarget){
+            return
+        }
+
+        fenNumber.enPassantTarget = '-'
+    }
+    mutateCastleRights(fenNumber: FenNumber): void
+    {
+        if(!fenNumber.castleRights){
+            return
         }
 
         if(this.movingPiece.startingSquare != this.oldSquare){
-            return null
+            return
         }
 
         const castleRights = this.movingPiece.getCastleRights()
-        if(castleRights.length === 0){
-            return null
-        }
-
-        let newCastleRights = gameState.castleRights
         for(let i = 0; i<castleRights.length; i++){
-            newCastleRights = newCastleRights.replace(castleRights[i],'')
+            fenNumber.castleRights = fenNumber.castleRights.replace(castleRights[i],'')
         }
-
-        return new StateMutation('castleRights', gameState.castleRights, newCastleRights)
     }
 
     getMoveSteps(): Array<MoveStep>

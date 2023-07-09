@@ -3,11 +3,12 @@
 import BoardSquares from './BoardSquares'
 import ChessPiece from "./ChessPiece";
 import PiecePositions from "./GameState/PiecePositions";
-import OnMoveCallback from "./OnMoveCallback";
+import OnMoveStepCallback from "./OnMoveStepCallback";
 import MoveList from "./Moves/MoveList";
 import GameState from "./GameState/GameState";
 import MoveListFactory from "./Moves/MoveListFactory";
 import ChessMove from "./Moves/ChessMove";
+import MoveStep from "./Moves/MoveStep";
 
 export default class ChessGame {
 
@@ -15,10 +16,10 @@ export default class ChessGame {
 
     moveListFactory: MoveListFactory
 
-    onMoveCallback: OnMoveCallback;
+    onMoveStepCallback: OnMoveStepCallback;
 
-    constructor(fen: string|null = null, onMoveCallback: OnMoveCallback | null) {
-        this.onMoveCallback = onMoveCallback ?? function(move:ChessMove){}
+    constructor(fen: string|null = null, callback: OnMoveStepCallback | null) {
+        this.onMoveStepCallback = callback ?? function(step: MoveStep){}
         this.gameState = new GameState(fen)
         this.moveListFactory = new MoveListFactory(this.gameState)
     }
@@ -34,14 +35,23 @@ export default class ChessGame {
 
     makeMove(chessMove: ChessMove): void {
         this.gameState.recordMove(chessMove)
-        this.onMoveCallback(chessMove);
+        const steps = chessMove.getMoveSteps()
+        for (const i in steps) {
+            this.onMoveStepCallback(steps[i])
+        }
     }
 
-    setPosition(squareName: string, piece: ChessPiece|null): void
-    {
-        this.gameState.mailbox144.setSquare(squareName, piece)
-    }
+    undoLastMove(): void {
+        const lastMove = this.gameState.undoLastMove()
+        if(!lastMove){
+            return
+        }
 
+        const steps = lastMove.getUndoSteps()
+        for (const i in steps) {
+            this.onMoveStepCallback(steps[i])
+        }
+    }
 
     getMoves(squareName: string): MoveList {
         return this.moveListFactory.getLegalMoves(squareName);

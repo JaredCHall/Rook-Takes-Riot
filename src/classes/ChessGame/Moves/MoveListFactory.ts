@@ -58,7 +58,7 @@ export default class MoveListFactory {
         }
 
 
-        const enPassantTargetSquare = this.gameState.enPassantTarget
+        const enPassantTargetSquare = this.gameState.fenNumber.enPassantTarget
 
         // test if pawn can capture diagonally
         for(let i = 0; i<captureOffsets.length;i++){
@@ -186,7 +186,7 @@ export default class MoveListFactory {
         ]
         let moves = this.getMovesFromRayVectors(squareIndex, piece, rayVectors, 1)
 
-        const castleRights = this.gameState.castleRights
+        const castleRights = this.gameState.fenNumber.castleRights
         if(castleRights === null){
             return moves // no castle rights, this is a full list of moves
         }

@@ -1,14 +1,74 @@
-import GameState from "./GameState";
 import PiecePositions from "./PiecePositions";
 import ChessPiece from "../ChessPiece";
+import GameState from "./GameState";
 
-export default class FenParser {
+export default class FenNumber {
 
-    static parsePiecePlacements(fenPart: string): PiecePositions
+    piecePlacements: string
+
+    sideToMove: string
+
+    castleRights: null|string
+
+    enPassantTarget: null|string
+
+    halfMoveClock: number
+
+    fullMoveCounter: number
+
+    constructor(fen: string) {
+
+        const parts = fen.split(' ')
+
+        this.piecePlacements = parts[0]
+        this.sideToMove = parts[1] ?? 'w'
+        this.castleRights = parts[2] ?? null
+        this.enPassantTarget = parts[3] ?? null
+        this.halfMoveClock = parseInt(parts[4]) ?? 0
+        this.fullMoveCounter = parseInt(parts[5]) ?? 1
+
+        if(this.castleRights == '-'){
+            this.castleRights = null
+        }
+        if(this.enPassantTarget == '-'){
+            this.enPassantTarget = null
+        }
+    }
+
+    toString(): string {
+        return [
+            this.piecePlacements,
+            this.sideToMove,
+            this.castleRights == null ? '-' : this.castleRights,
+            this.enPassantTarget == null ? '-' : this.enPassantTarget,
+            this.halfMoveClock,
+            this.fullMoveCounter
+        ].join(' ')
+    }
+
+    clone(): FenNumber {
+        return new FenNumber(this.toString())
+    }
+
+    isWhiteMoving() {
+        return this.sideToMove === 'w'
+    }
+
+    incrementTurn(): void
+    {
+        const whiteIsMoving = this.isWhiteMoving()
+        this.sideToMove = whiteIsMoving ? 'b' : 'w';
+
+        if(!whiteIsMoving){
+            this.fullMoveCounter++
+        }
+    }
+
+    parsePiecePlacements(): PiecePositions
     {
         let positions: PiecePositions = {}
 
-        const rows = fenPart.split('/').reverse()
+        const rows = this.piecePlacements.split('/').reverse()
         if(rows.length !== 8){
             throw new Error('FEN piece placement must include all eight rows')
         }
@@ -42,8 +102,9 @@ export default class FenParser {
         return positions
     }
 
-    static calculateFen(gameState: GameState): string
+    static fromGameState(gameState: GameState): FenNumber
     {
+        const fenNumber = gameState.fenNumber
 
         console.log(gameState.mailbox144.piecePositions)
         const columnNames = ['a','b','c','d','e','f','g','h']
@@ -76,19 +137,19 @@ export default class FenParser {
         }
 
         fen += ' '
-        fen += gameState.sideToMove
+        fen += fenNumber.sideToMove
         fen += ' '
-        fen += gameState.castleRights == null ? '-' : gameState.castleRights;
+        fen += fenNumber.castleRights == null ? '-' : fenNumber.castleRights;
         fen += ' '
-        fen += gameState.enPassantTarget == null ? '-' : gameState.enPassantTarget;
+        fen += fenNumber.enPassantTarget == null ? '-' : fenNumber.enPassantTarget;
         fen += ' '
-        fen += gameState.halfMoveClock
+        fen += fenNumber.halfMoveClock
         fen += ' '
-        fen += gameState.fullMoveCounter
+        fen += fenNumber.fullMoveCounter
 
         console.log(fen);
 
-        return fen;
+        return new FenNumber(fen);
     }
 
 

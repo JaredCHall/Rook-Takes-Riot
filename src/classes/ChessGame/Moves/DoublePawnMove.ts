@@ -3,6 +3,7 @@ import ChessPiece from "../ChessPiece";
 import ChessMove from "./ChessMove";
 import GameState from "../GameState/GameState";
 import StateMutation from "../GameState/StateMutation";
+import FenNumber from "../GameState/FenNumber";
 export default class DoublePawnMove extends ChessMove
 {
 
@@ -29,9 +30,8 @@ export default class DoublePawnMove extends ChessMove
         return file + targetRank.toString()
     }
 
-    getGameStateMutations(gameState: GameState): StateMutation[] {
-        return [
-            new StateMutation('enPassantTarget', gameState.enPassantTarget, this.getEnPassantTargetSquare())
-        ]
+    mutateEnPassantTarget(fenNumber: FenNumber): void
+    {
+        fenNumber.enPassantTarget = this.getEnPassantTargetSquare()
     }
 }
