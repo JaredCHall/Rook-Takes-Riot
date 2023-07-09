@@ -1,7 +1,11 @@
 <chessboard class="container-content">
 
-    <h1 if={state.greeting}>{state.greeting}</h1>
+    <h1 if={state.greeting} style="text-align:center">{state.greeting}</h1>
     <div class="row">
+
+        <div class="column options" style="width:40rem; text-align: left;" if={state.showOptions}>
+            <moves-table board={this}></moves-table>
+        </div>
 
         <div class="column">
             <svg viewBox="0 0 800 800" style="min-width:60rem;max-width:90rem;width: auto">
@@ -26,6 +30,7 @@
         import {RiotComponent} from "riot";
         import Square from "./square/square.riot"
         import BoardOptions from "./board-options/board-options.riot"
+        import MovesTable from "./moves-table/moves-table.riot"
         import GameEngine from '../../classes/ChessGame/GameEngine.ts'
         import MoveList from "../../classes/ChessGame/Moves/MoveList";
         import MoveStep from "../../classes/ChessGame/Moves/MoveStep";
@@ -50,7 +55,7 @@
             gameEngine: undefined, // GameEngine
             squares: [], // Array<Square>
 
-            components: {Square, BoardOptions},
+            components: {Square, BoardOptions, MovesTable},
             state: {
                 mode: 'play',
                 orientation: 'white',
@@ -104,10 +109,10 @@
             {
                 return this.gameEngine;
             },
-            setGameFenNumber(fen: string|null): void {
+            setGameFenNumber(fen: string|null, replaceMoveHistory: boolean = true): void {
                 console.log('Set FEN: '+fen)
                 if(fen !== null){
-                    this.gameEngine.setGameState(fen)
+                    this.gameEngine.setGameState(fen,replaceMoveHistory)
                 }
 
                 const positions = this.gameEngine.getPiecePositions()
@@ -117,6 +122,7 @@
                     const piece = positions[squareName]
                     this.getSquare(squareName).setPiece(piece)
                 }
+                this.update()
             },
             undoLastMove(): void {
                 this.gameEngine.undoLastMove()

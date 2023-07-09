@@ -58,6 +58,15 @@ export default class CastlingMove extends ChessMove
         return null
     }
 
+    toAlgebraicNotation(): string {
+        if(this.castlesType === CastlingMove.KING_SIDE_WHITE || this.castlesType === CastlingMove.KING_SIDE_BLACK){
+            return 'O-O'
+        }
+        else{
+            return 'O-O-O'
+        }
+    }
+
     getMoveSteps(): Array<MoveStep> {
         const steps = super.getMoveSteps()
         const rookMoveSteps = this.getRookMove().getMoveSteps()

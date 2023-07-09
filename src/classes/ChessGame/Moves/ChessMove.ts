@@ -71,6 +71,21 @@ export default class ChessMove {
         }
     }
 
+    toAlgebraicNotation(): string {
+        const isPawn = this.movingPiece.type === 'pawn'
+        let moveNotation = isPawn ? '' : this.movingPiece.toFen().toUpperCase()
+
+        if(isPawn && this.capturedPiece){
+            moveNotation += this.oldSquare.split('')[0]
+        }
+
+        moveNotation += this.capturedPiece ? 'x' : ''
+        //moveNotation += isPawn ? '' : this.oldSquare
+        moveNotation += this.newSquare
+
+        return moveNotation
+    }
+
     getMoveSteps(): Array<MoveStep>
     {
         return [

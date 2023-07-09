@@ -1,0 +1,88 @@
+<moves-table>
+
+    <table class="move-history-table">
+        <tbody>
+            <tr each={move in getMoveRows()}>
+                <td class="row-heading">{move.moveCounter}</td>
+                <td class="move-record" onclick={() => showSelectedMove(move.index1)}>{move.move1}</td>
+                <td class="move-record" onclick={() => showSelectedMove(move.index2)}>{move.move2}</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+
+    <script lang="ts">
+        import GameEngine from 'ChessGame/GameEngine.ts'
+        import {RiotComponent} from "riot";
+        import MoveHistory from "../../../classes/ChessGame/GameState/MoveHistory";
+        import FenNumber from "../../../classes/ChessGame/GameState/FenNumber";
+
+        interface Props {
+            board: RiotComponent
+        }
+
+        interface State {
+            moveHistory: MoveHistory
+        }
+
+        export default {
+            onBeforeMount(props: Props, state: State){
+                if(props.board === undefined){
+                    throw new Error("must set board property")
+                }
+                state.moveHistory = props.board.getGameEngine().gameState.moveHistory
+            },
+            showSelectedMove(moveIndex: number): void {
+                const fenNumber = this.state.moveHistory.moves[moveIndex].fenAfter
+
+                console.log(fenNumber)
+
+                this.props.board.setGameFenNumber(fenNumber.toString(), this.state.moveHistory)
+            },
+            getMoveRows(): {moveCounter:number, index1:number, index2:number|null, move1:string, move2:string}[] {
+                const moves = this.state.moveHistory.moves
+
+                let rows = []
+
+                for(let i=0; i < moves.length; i +=2 ){
+                    const row = {
+                        moveCounter: moves[i].fenBefore.fullMoveCounter,
+                        index1: i,
+                        index2: moves[i+1] !== undefined ? i+1 : null,
+                        move1: moves[i].toAlgebraicNotation(),
+                        move2: moves[i+1]?.toAlgebraicNotation(),
+                    }
+                    rows.push(row)
+                }
+                return rows
+            }
+        }
+    </script>
+
+    <style type="sass">
+
+        .move-history-table
+
+          td
+            border-bottom: none
+
+          td.move-record
+            padding: .5rem 4rem
+            font-weight: bold
+            color: darkslategray
+            background-color: gainsboro
+
+          td.move-record:hover
+            background-color: darkslategray
+            color: gainsboro
+            cursor: pointer
+
+          td.row-heading
+              background-color: black
+              color: aquamarine
+              padding: .5rem 1rem
+
+    </style>
+
+</moves-table>

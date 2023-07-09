@@ -16,9 +16,9 @@ export default class GameState {
 
     startFenNumber: FenNumber
 
-    constructor(fen: string|null) {
+    constructor(fen: string|null, moveHistory: MoveHistory|null = null) {
 
-        this.moveHistory = new MoveHistory()
+        this.moveHistory = moveHistory ?? new MoveHistory()
         this.fenNumber = new FenNumber(fen ?? GameState.getNewGameFen())
         this.startFenNumber = this.fenNumber.clone()
         this.fenString = this.fenNumber.toString()
