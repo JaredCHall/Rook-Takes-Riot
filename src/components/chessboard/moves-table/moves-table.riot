@@ -2,10 +2,10 @@
 
     <table class="move-history-table">
         <tbody>
-            <tr each={move in getMoveRows()}>
-                <td class="row-heading">{move.moveCounter}</td>
-                <td class="move-record" onclick={() => showSelectedMove(move.index1)}>{move.move1}</td>
-                <td class="move-record" onclick={() => showSelectedMove(move.index2)}>{move.move2}</td>
+            <tr each={fullMove in getMoveRows()}>
+                <td class="row-heading">{fullMove.moveCounter}</td>
+                <td is="moves-table-item" movesTable={this} move={fullMove.move1}></td>
+                <td is="moves-table-item" movesTable={this} move={fullMove.move2}></td>
             </tr>
         </tbody>
     </table>
@@ -13,75 +13,84 @@
 
 
     <script lang="ts">
-        import GameEngine from 'ChessGame/GameEngine.ts'
         import {RiotComponent} from "riot";
-        import MoveHistory from "../../../classes/ChessGame/GameState/MoveHistory";
-        import FenNumber from "../../../classes/ChessGame/GameState/FenNumber";
+        import MoveHistory from "../../../classes/ChessGame/GameState/MoveHistory/MoveHistory";
+        import ChessMove from "../../../classes/ChessGame/Moves/ChessMove";
+        import MovesTableItem from "./moves-table-item.riot"
 
         interface Props {
             board: RiotComponent
         }
 
         interface State {
-            moveHistory: MoveHistory
+            moveHistory: MoveHistory,
         }
 
         export default {
+            components: {MovesTableItem},
+            board: undefined,
+            moveHistory: undefined,
             onBeforeMount(props: Props, state: State){
                 if(props.board === undefined){
                     throw new Error("must set board property")
                 }
-                state.moveHistory = props.board.getGameEngine().gameState.moveHistory
+                this.board = props.board
+                this.moveHistory = this.board.getGameEngine().gameState.moveHistory
             },
             showSelectedMove(moveIndex: number): void {
-                const fenNumber = this.state.moveHistory.moves[moveIndex].fenAfter
-
-                console.log(fenNumber)
-
-                this.props.board.setGameFenNumber(fenNumber.toString(), this.state.moveHistory)
+                this.board.showMove(moveIndex)
+                this.update()
             },
-            getMoveRows(): {moveCounter:number, index1:number, index2:number|null, move1:string, move2:string}[] {
-                const moves = this.state.moveHistory.moves
+            getMoveRows(): {moveCounter:number, move: ChessMove}[] {
+                const moves = this.moveHistory.moves
 
                 let rows = []
-
                 for(let i=0; i < moves.length; i +=2 ){
                     const row = {
                         moveCounter: moves[i].fenBefore.fullMoveCounter,
-                        index1: i,
-                        index2: moves[i+1] !== undefined ? i+1 : null,
-                        move1: moves[i].toAlgebraicNotation(),
-                        move2: moves[i+1]?.toAlgebraicNotation(),
+                        move1: moves[i],
+                        move2: moves[i+1] ?? null
                     }
                     rows.push(row)
                 }
+                console.log('why')
                 return rows
-            }
+            },
+            getSelectedIndex(): number|null{
+                return this.board.getGameEngine().gameState.currentMove.moveIndex
+            },
         }
     </script>
 
     <style type="sass">
 
-        .move-history-table
+        table
+          box-shadow: 0.1rem 0.1rem #1e1c1c
 
           td
             border-bottom: none
+            font-weight: bold
 
           td.move-record
             padding: .5rem 4rem
-            font-weight: bold
-            color: darkslategray
-            background-color: gainsboro
+            color: black
+            background-color: cadetblue
 
           td.move-record:hover
             background-color: darkslategray
             color: gainsboro
             cursor: pointer
 
+          td.selected
+            background-color: darkslategray
+            color: gainsboro
+            text-decoration: none
+
           td.row-heading
               background-color: black
               color: aquamarine
-              padding: .5rem 1rem
+              padding: .5rem 0 .5rem 1rem
+              border-right: 1pt solid aquamarine
 
     </style>
 

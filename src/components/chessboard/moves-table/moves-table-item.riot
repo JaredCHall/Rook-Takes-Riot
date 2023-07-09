@@ -1,0 +1,41 @@
+<moves-table-item
+        class="move-record {movesTable.getSelectedIndex() === props.move?.moveIndex ? 'selected' : ''}"
+        onclick={() => selectMove()}
+        >
+
+        {props.move?.toAlgebraicNotation()}
+
+    <script lang="ts">
+        import {RiotComponent} from "riot";
+        import ChessMove from "../../../classes/ChessGame/Moves/ChessMove";
+
+        interface Props {
+            movesTable: RiotComponent
+            move: ChessMove
+        }
+
+        export default {
+            movesTable: undefined,
+            onBeforeMount(props: Props){
+                if(props.movesTable === undefined){
+                    throw new Error("must set movesTable property")
+                }
+                if(props.move === undefined){
+                    throw new Error("must set moves property")
+                }
+                this.movesTable = props.movesTable
+            },
+            selectMove() {
+
+                if(this.props.move === null){
+                    return
+                }
+
+                this.movesTable.showSelectedMove(this.props.move.moveIndex)
+            }
+
+        }
+    </script>
+
+
+</moves-table-item>

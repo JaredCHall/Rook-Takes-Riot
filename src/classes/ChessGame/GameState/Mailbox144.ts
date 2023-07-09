@@ -52,6 +52,7 @@ export default class Mailbox144 {
             'x', 'x',  'x',  'x',  'x',  'x',  'x',  'x',  'x',  'x', 'x', 'x',
         ];
 
+        this.pieceList = new PieceList() // clear out piece list
         for(let i = 0; i < seed.length; i++){
             const squareName = Mailbox144.getAddressName(i)
             const isOutOfBounds = seed[i] == 'x'

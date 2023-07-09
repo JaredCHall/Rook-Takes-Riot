@@ -12,15 +12,16 @@ export default class MoveListFactory {
 
     gameState: GameState
 
-    mailbox144: Mailbox144
-
     constructor(gameState: GameState) {
         this.gameState = gameState
-        this.mailbox144 = gameState.mailbox144
+    }
+
+    getMailbox(): Mailbox144{
+        return this.gameState.mailbox144
     }
 
     getLegalMoves(squareName: string): MoveList {
-        const mailbox = this.gameState.mailbox144
+        const mailbox = this.getMailbox()
         const piece = mailbox.getSquare(squareName).piece
         if(piece === null){
             throw new Error('No piece on square '+squareName)
@@ -41,7 +42,7 @@ export default class MoveListFactory {
     getPawnMoves(piece: ChessPiece, squareName: string): MoveList
     {
         const squareIndex = Mailbox144.getAddressIndex(squareName)
-        const pieceAddress = this.mailbox144.getAddress(squareIndex)
+        const pieceAddress = this.getMailbox().getAddress(squareIndex)
 
         let moves: MoveList = {};
         const isPieceWhite = piece.color == 'white'
@@ -64,7 +65,7 @@ export default class MoveListFactory {
         for(let i = 0; i<captureOffsets.length;i++){
             const offset = captureOffsets[i]
             const newIndex = squareIndex + sign * offset
-            const testSquare: MailboxAddress = this.mailbox144.getAddress(newIndex)
+            const testSquare: MailboxAddress = this.getMailbox().getAddress(newIndex)
             // test if square has an enemy piece
             const move = new ChessMove(pieceAddress.squareName, testSquare.squareName, piece, testSquare.piece);
             if(testSquare.piece && testSquare.piece.color != piece.color){
@@ -75,7 +76,7 @@ export default class MoveListFactory {
                 // Handle En Passant
 
                 const capturedSquare = EnPassantMove.getOpponentPawnSquare(move)
-                const capturedPawn = this.mailbox144.getSquare(capturedSquare).piece
+                const capturedPawn = this.getMailbox().getSquare(capturedSquare).piece
                 if(capturedPawn === null){
                     throw new Error('Expected enPassantTarget to exist')
                 }
@@ -87,7 +88,7 @@ export default class MoveListFactory {
         for(let i = 0; i<moveOffsets.length;i++){
             const offset = moveOffsets[i]
             const newIndex = squareIndex + sign * offset
-            const testSquare: MailboxAddress = this.mailbox144.getAddress(newIndex)
+            const testSquare: MailboxAddress = this.getMailbox().getAddress(newIndex)
 
             // if out-of-bounds or occupied, stop trying to move forward
             if(testSquare.piece || testSquare.isOutOfBounds){
@@ -113,7 +114,7 @@ export default class MoveListFactory {
         for(let i = 0; i<moveOffsets.length;i++){
             const offset = moveOffsets[i]
             const newIndex = squareIndex + offset
-            const testSquare: MailboxAddress = this.mailbox144.getAddress(newIndex)
+            const testSquare: MailboxAddress = this.getMailbox().getAddress(newIndex)
 
             let capturedPiece = null
             if(testSquare.piece != null){
@@ -173,7 +174,7 @@ export default class MoveListFactory {
     getKingMoves(piece: ChessPiece, squareName: string): MoveList
     {
         const squareIndex = Mailbox144.getAddressIndex(squareName)
-        const currentSquare = this.mailbox144.getAddress(squareIndex)
+        const currentSquare = this.getMailbox().getAddress(squareIndex)
         const rayVectors = [
             [1,0], // right
             [-1,0], // left
@@ -195,10 +196,10 @@ export default class MoveListFactory {
         if(piece.color == 'white' && squareName === 'e1'){
 
             if(castleRights.indexOf('Q') != -1){
-                const a1 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('a1'));
-                const b1 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('b1'));
-                const c1 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('c1'));
-                const d1 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('d1'));
+                const a1 = this.getMailbox().getSquare('a1');
+                const b1 = this.getMailbox().getSquare('b1');
+                const c1 = this.getMailbox().getSquare('c1');
+                const d1 = this.getMailbox().getSquare('d1');
 
                 if(
                     a1.piece != null
@@ -212,9 +213,9 @@ export default class MoveListFactory {
             }
 
             if(castleRights.indexOf('K') != -1) {
-                const h1 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('h1'));
-                const g1 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('g1'));
-                const f1 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('f1'));
+                const h1 = this.getMailbox().getSquare('h1');
+                const g1 = this.getMailbox().getSquare('g1');
+                const f1 = this.getMailbox().getSquare('f1');
 
                 if (
                     h1.piece != null
@@ -229,10 +230,10 @@ export default class MoveListFactory {
 
         if(piece.color == 'black' && squareName === 'e8'){
             if(castleRights.indexOf('q') != -1){
-                const a8 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('a8'));
-                const b8 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('b8'));
-                const c8 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('c8'));
-                const d8 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('d8'));
+                const a8 = this.getMailbox().getSquare('a8');
+                const b8 = this.getMailbox().getSquare('b8');
+                const c8 = this.getMailbox().getSquare('c8');
+                const d8 = this.getMailbox().getSquare('d8');
 
                 if(
                     a8.piece != null
@@ -246,9 +247,9 @@ export default class MoveListFactory {
             }
 
             if(castleRights.indexOf('k') != -1) {
-                const h8 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('h8'));
-                const g8 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('g8'));
-                const f8 = this.mailbox144.getAddress(Mailbox144.getAddressIndex('f8'));
+                const h8 = this.getMailbox().getSquare('h8');
+                const g8 = this.getMailbox().getSquare('g8');
+                const f8 = this.getMailbox().getSquare('f8');
 
                 if (
                     h8.piece != null
@@ -267,7 +268,7 @@ export default class MoveListFactory {
     getMovesFromRayVectors(squareIndex:number, piece: ChessPiece, rayVectors: number[][], maxRayLength: number = 7): MoveList
     {
         let moves: MoveList = {}
-        const currentSquare = this.mailbox144.getAddress(squareIndex)
+        const currentSquare = this.getMailbox().getAddress(squareIndex)
 
         for(let i = 0; i<rayVectors.length;i++) {
             const vector = rayVectors[i]
@@ -275,7 +276,7 @@ export default class MoveListFactory {
             // the maximum possible moves along a ray from any position is 7, except for the king who can only move 1
             for(let j=1;j<=maxRayLength;j++){
                 const newIndex = squareIndex + j * (vector[0] + vector[1] * 12)
-                const testSquare: MailboxAddress = this.mailbox144.getAddress(newIndex)
+                const testSquare: MailboxAddress = this.getMailbox().getAddress(newIndex)
                 console.log(newIndex)
                 console.log(testSquare)
 

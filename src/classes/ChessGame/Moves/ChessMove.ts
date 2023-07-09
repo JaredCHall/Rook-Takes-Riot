@@ -20,6 +20,8 @@ export default class ChessMove {
 
     fenAfter: FenNumber|undefined
 
+    moveIndex: number|undefined
+
     constructor(oldSquare: string, newSquare:string, movingPiece: ChessPiece, capturedPiece: ChessPiece|null = null) {
         this.oldSquare = oldSquare
         this.newSquare = newSquare
@@ -31,6 +33,7 @@ export default class ChessMove {
 
         this.fenBefore = gameState.fenNumber.clone()
         this.fenAfter = FenNumber.fromGameState(gameState)
+        this.moveIndex = gameState.moveHistory.moves.length -1
 
         this.mutateHalfMoveClock(this.fenAfter)
         this.mutateCastleRights(this.fenAfter)

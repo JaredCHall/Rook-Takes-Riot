@@ -118,6 +118,8 @@
             select() {
                 const board = this.props.board
 
+                console.log(this.state.piece)
+
                 if(board.getMode() == 'play'){
 
                     // allow legal moves

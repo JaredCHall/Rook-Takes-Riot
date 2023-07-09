@@ -8,7 +8,7 @@ import GameState from "./GameState/GameState";
 import MoveListFactory from "./Moves/MoveListFactory";
 import ChessMove from "./Moves/ChessMove";
 import MoveStep from "./Moves/MoveStep";
-import MoveHistory from "./GameState/MoveHistory";
+import MoveHistory from "./GameState/MoveHistory/MoveHistory";
 
 export default class GameEngine {
 
@@ -16,21 +16,23 @@ export default class GameEngine {
 
     moveListFactory: MoveListFactory
 
+    moveHistory: MoveHistory
+
     onMoveStepCallback: OnMoveStepCallback;
 
     constructor(fen: string|null = null, callback: OnMoveStepCallback | null) {
         this.onMoveStepCallback = callback ?? function(step: MoveStep){}
         this.gameState = new GameState(fen)
         this.moveListFactory = new MoveListFactory(this.gameState)
+        this.moveHistory = this.gameState.moveHistory
     }
 
     getPiecePositions(): PiecePositions {
         return this.gameState.mailbox144.piecePositions
     }
 
-    setGameState(fen: string, replaceMoveHistory: boolean = true) {
-        const moveHistory = replaceMoveHistory ? null : this.gameState.moveHistory
-        this.gameState = new GameState(fen, moveHistory)
+    setGameState(fen: string) {
+        this.gameState = new GameState(fen)
         this.moveListFactory = new MoveListFactory(this.gameState)
     }
 

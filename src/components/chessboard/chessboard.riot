@@ -7,8 +7,8 @@
             <moves-table board={this}></moves-table>
         </div>
 
-        <div class="column">
-            <svg viewBox="0 0 800 800" style="min-width:60rem;max-width:90rem;width: auto">
+        <div class="column" style="width:70rem">
+            <svg viewBox="0 0 800 800">
                 <svg
                     each={ (name, index) in getSquareNames() }
                     is="square" name={name}
@@ -34,6 +34,8 @@
         import GameEngine from '../../classes/ChessGame/GameEngine.ts'
         import MoveList from "../../classes/ChessGame/Moves/MoveList";
         import MoveStep from "../../classes/ChessGame/Moves/MoveStep";
+        import FenNumber from "../../classes/ChessGame/GameState/FenNumber";
+        import MoveHistory from "../../classes/ChessGame/GameState/MoveHistory/MoveHistory";
 
         interface Props {
             greeting: string,
@@ -61,13 +63,14 @@
                 orientation: 'white',
                 showLabels: false,
                 showPieces: false,
+                showOptions: false,
                 indicatedMoves: {}, // MoveList
             },
             onBeforeMount(props: Props, state: State) {
                 this.gameEngine = new GameEngine(null, this.onMoveStep)
 
                 state.greeting = props.greeting
-                state.showOptions = props.showOptions
+                state.showOptions = true
                 state.selectedSquare = props.selectedSquare
             },
             onMounted() {
@@ -109,12 +112,15 @@
             {
                 return this.gameEngine;
             },
-            setGameFenNumber(fen: string|null, replaceMoveHistory: boolean = true): void {
+            setGameFenNumber(fen: string|null): void {
                 console.log('Set FEN: '+fen)
                 if(fen !== null){
-                    this.gameEngine.setGameState(fen,replaceMoveHistory)
+                    this.gameEngine.setGameState(fen)
                 }
 
+                this.refreshPiecePositions()
+            },
+            refreshPiecePositions(){
                 const positions = this.gameEngine.getPiecePositions()
                 console.log(positions)
 
@@ -124,6 +130,13 @@
                 }
                 this.update()
             },
+            showMove(moveIndex: number) {
+                const isPlayable = this.gameEngine.gameState.setCurrentMove(moveIndex)
+                this.state.mode = isPlayable ? 'play' : 'view'
+                this.refreshPiecePositions()
+            },
+
+
             undoLastMove(): void {
                 this.gameEngine.undoLastMove()
                 this.update()
