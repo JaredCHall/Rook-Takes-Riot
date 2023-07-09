@@ -12,9 +12,9 @@ export default class FenNumber {
 
     enPassantTarget: null|string
 
-    halfMoveClock: number
+    halfMoveClock: number = 0
 
-    fullMoveCounter: number
+    fullMoveCounter: number = 1
 
     constructor(fen: string) {
 
@@ -24,8 +24,14 @@ export default class FenNumber {
         this.sideToMove = parts[1] ?? 'w'
         this.castleRights = parts[2] ?? null
         this.enPassantTarget = parts[3] ?? null
-        this.halfMoveClock = parseInt(parts[4]) ?? 0
-        this.fullMoveCounter = parseInt(parts[5]) ?? 1
+
+        if(parts[4]){
+            this.halfMoveClock = parseInt(parts[4])
+        }
+
+        if(parts[5]){
+            this.fullMoveCounter = parseInt(parts[5])
+        }
 
         if(this.castleRights == '-'){
             this.castleRights = null

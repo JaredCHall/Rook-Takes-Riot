@@ -1,7 +1,6 @@
 
 
 import BoardSquares from './BoardSquares'
-import ChessPiece from "./ChessPiece";
 import PiecePositions from "./GameState/PiecePositions";
 import OnMoveStepCallback from "./OnMoveStepCallback";
 import MoveList from "./Moves/MoveList";
@@ -10,7 +9,7 @@ import MoveListFactory from "./Moves/MoveListFactory";
 import ChessMove from "./Moves/ChessMove";
 import MoveStep from "./Moves/MoveStep";
 
-export default class ChessGame {
+export default class GameEngine {
 
     gameState: GameState;
 
@@ -34,7 +33,7 @@ export default class ChessGame {
     }
 
     makeMove(chessMove: ChessMove): void {
-        this.gameState.recordMove(chessMove)
+        this.gameState.makeMove(chessMove)
         const steps = chessMove.getMoveSteps()
         for (const i in steps) {
             this.onMoveStepCallback(steps[i])

@@ -27,7 +27,7 @@
 
     <script lang="ts">
         import Piece from "Chessboard/piece/piece.riot"
-        import ChessGame from 'ChessGame/ChessGame.ts'
+        import GameEngine from 'ChessGame/GameEngine.ts'
         import ChessPiece from "ChessGame/ChessPiece.ts";
 
         interface Props {
@@ -66,7 +66,7 @@
                 const coords = this.getXYPosition(props.name, orientation)
                 state.x = coords[0]
                 state.y = coords[1]
-                state.color = ChessGame.getSquareColor(props.name)
+                state.color = GameEngine.getSquareColor(props.name)
                 state.selected = props.selected
 
             },
@@ -75,7 +75,7 @@
             },
             getXYPosition(name, orientation) {
 
-                const position = ChessGame.getSquarePosition(name, orientation)
+                const position = GameEngine.getSquarePosition(name, orientation)
 
                 const x = position[0] * 100;
                 const y = position[1] * 100;
@@ -136,7 +136,7 @@
 
                     // don't select wrong color pieces
                     const movingPieceColor = this.state.piece.color.charAt(0)
-                    const colorToMove = board.getGamePosition().gameState.fenNumber.sideToMove
+                    const colorToMove = board.getGameEngine().gameState.fenNumber.sideToMove
                     if(colorToMove != movingPieceColor){
                         board.clearSelections()
                         return
@@ -146,7 +146,7 @@
                 // select and indicate legal moves
                 board.clearSelections()
                 this.showSelected(true)
-                const moves = board.gamePosition.getMoves(this.props.name)
+                const moves = board.gameEngine.getMoves(this.props.name)
                 board.showMoveIndicators(moves)
             },
             showMoveIndicator(show: boolean){

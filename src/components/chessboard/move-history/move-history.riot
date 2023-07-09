@@ -1,0 +1,25 @@
+<move-history>
+
+
+
+
+
+    <script lang="ts">
+        import GameEngine from 'ChessGame/GameEngine.ts'
+        import {RiotComponent} from "riot";
+
+        interface Props {
+            board: RiotComponent
+        }
+
+        export default {
+            board: null,
+            onBeforeMount(props: Props){
+                if(props.board === null){
+                    throw new Error("must set board property")
+                }
+                this.board = props.board
+            },
+        }
+    </script>
+</move-history>

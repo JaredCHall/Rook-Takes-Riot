@@ -36,7 +36,7 @@ export default class GameState {
         return this.fenNumber.isWhiteMoving()
     }
 
-    recordMove(chessMove: ChessMove): void {
+    makeMove(chessMove: ChessMove): void {
 
         this.mailbox144.makeMove(chessMove)
         this.moveHistory.add(chessMove)

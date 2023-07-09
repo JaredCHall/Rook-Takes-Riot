@@ -43,7 +43,7 @@
     </div>
 
     <script lang="ts">
-        import ChessGame from 'ChessGame/ChessGame.ts'
+        import GameEngine from 'ChessGame/GameEngine.ts'
         import {RiotComponent} from "riot";
 
         interface Props {
@@ -59,14 +59,14 @@
                 this.board = props.board
             },
             randomPuzzle() {
-                const puzzles = ChessGame.puzzles
+                const puzzles = GameEngine.puzzles
                 const fen = puzzles[Math.floor(Math.random() * puzzles.length)]
                 this.setFen(fen)
             },
             setFen(fen) {
                 fen = fen ?? this.$('input[name="fenNumber"]').value
                 try {
-                    this.board.setGamePosition(fen)
+                    this.board.setGameFenNumber(fen)
                 }catch (e) {
                     this.update({fenError: e.message})
                 }
