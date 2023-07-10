@@ -1,6 +1,7 @@
 import ChessMove from "../../Moves/ChessMove";
 import MoveHistoryItem from "./MoveHistoryItem";
 import GameState from "../GameState";
+import FenNumber from "../FenNumber";
 
 export default class MoveHistory
 {
@@ -38,8 +39,8 @@ export default class MoveHistory
         return this.moves[this.moves.length - 1]
     }
 
-    recordMove(gameState: GameState, chessMove: ChessMove){
-        const moveHistoryItem = new MoveHistoryItem(gameState, chessMove)
+    recordMove(gameState: GameState, chessMove: ChessMove, fenAfter: FenNumber){
+        const moveHistoryItem = new MoveHistoryItem(gameState, chessMove, fenAfter)
         this.moves.push(moveHistoryItem)
         return moveHistoryItem
     }

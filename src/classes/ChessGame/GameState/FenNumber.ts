@@ -3,6 +3,7 @@ import ChessPiece from "../ChessPiece";
 import GameState from "./GameState";
 import ChessMove from "../Moves/ChessMove";
 import DoublePawnMove from "../Moves/DoublePawnMove";
+import Mailbox144 from "./Mailbox144";
 
 export default class FenNumber {
 
@@ -142,10 +143,9 @@ export default class FenNumber {
         return positions
     }
 
-    static fromGameState(gameState: GameState): FenNumber
+    static fromMailbox(mailbox: Mailbox144): FenNumber
     {
-        const fenNumber = gameState.fenNumber
-
+        const fenNumber = mailbox.fenNumber
         const columnNames = ['a','b','c','d','e','f','g','h']
         let emptySquares = 0
 
@@ -153,7 +153,7 @@ export default class FenNumber {
         for(let row=8;row>=1;row--){
             for(let col =1; col<=8;col++){
                 const squareName = columnNames[col - 1] + row.toString()
-                const piece = gameState.mailbox144.piecePositions[squareName]
+                const piece = mailbox.piecePositions[squareName]
 
                 if(piece) {
                     if(emptySquares > 0){
@@ -188,6 +188,4 @@ export default class FenNumber {
 
         return new FenNumber(fen);
     }
-
-
 }

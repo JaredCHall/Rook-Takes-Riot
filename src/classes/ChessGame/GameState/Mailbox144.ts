@@ -3,8 +3,17 @@ import ChessPiece from "../ChessPiece";
 import PiecePositions from "./PiecePositions";
 import PieceList from "./PieceList";
 import ChessMove from "../Moves/ChessMove";
+import MoveList from "../Moves/MoveList";
+import MoveFactory from "./MoveFactory";
+import GameState from "./GameState";
+import FenNumber from "./FenNumber";
 
 export default class Mailbox144 {
+
+    moveFactory: MoveFactory
+
+    fenNumber: FenNumber
+
     board: Array<MailboxAddress>=[];
 
     piecePositions: PiecePositions = {}; // parallel object that stays updated with the mailboxes
@@ -30,8 +39,10 @@ export default class Mailbox144 {
 
     }
 
-    constructor(piecePositions: PiecePositions) {
-        this.piecePositions = piecePositions
+    constructor(fenNumber: FenNumber) {
+        this.fenNumber = fenNumber
+        this.moveFactory = new MoveFactory(this)
+        this.piecePositions = fenNumber.parsePiecePlacements()
         this.pieceList = new PieceList()
         this.initializeBoard(this.piecePositions)
     }
@@ -98,7 +109,7 @@ export default class Mailbox144 {
         }
     }
 
-    makeMove(move: ChessMove){
+    makeMove(move: ChessMove): FenNumber {
 
         // execute each move step
         const moveSteps = move.getMoveSteps()
@@ -111,10 +122,19 @@ export default class Mailbox144 {
         if(move.capturedPiece){
             this.pieceList.remove(move.capturedPiece)
         }
+
+        const fenAfter = FenNumber.fromMailbox(this).incrementTurn(move)
+        const isKingChecked = this.isKingChecked(this.getOppositeColor(move.movingPiece.color), fenAfter)
+
+        if(isKingChecked){
+            console.log('CHECK!!')
+        }
+
+        return this.fenNumber = fenAfter
     }
 
-    undoMove(move: ChessMove){
-
+    undoMove(move: ChessMove, fenAfter: FenNumber): void
+    {
         // execute each undo step
         const undoSteps = move.getUndoSteps()
         for(let i = 0; i < undoSteps.length; i++){
@@ -126,5 +146,37 @@ export default class Mailbox144 {
         if(move.capturedPiece){
             this.pieceList.add(move.capturedPiece) // add captured piece back to the list of pieces
         }
+
+        this.fenNumber = fenAfter
     }
+
+    getOppositeColor(color:string): string {
+        return color === 'white' ? 'black' : 'white'
+    }
+
+
+    isSquareThreatenedBy(square: string, color: string, fenNumber: FenNumber|null = null): boolean
+    {
+        fenNumber ??= this.fenNumber
+        const pieces = this.pieceList.getPieces(color)
+
+        for(const i in pieces){
+            const pieceMoves = this.moveFactory.getPseudoLegalMoves(pieces[i].currentSquare, fenNumber)
+            if(pieceMoves.hasOwnProperty(square)){
+                return true
+            }
+        }
+
+        return false
+    }
+
+
+    isKingChecked(color: string, fenNumber: FenNumber|null = null): boolean
+    {
+        let isKingChecked = false
+        const king = this.pieceList.getPieces(color, 'king')[0]
+
+        return this.isSquareThreatenedBy(king.currentSquare, this.getOppositeColor(color), fenNumber)
+    }
+
 }

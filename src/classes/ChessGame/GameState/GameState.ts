@@ -26,7 +26,7 @@ export default class GameState {
         this.startFenNumber = this.fenNumber.clone()
 
         // init mailbox144
-        this.mailbox144 = new Mailbox144(this.fenNumber.parsePiecePlacements())
+        this.mailbox144 = new Mailbox144(this.fenNumber)
     }
 
     static getNewGameFen(): string {
@@ -53,9 +53,7 @@ export default class GameState {
             throw new Error('selectedMove.fenAfter is undefined')
         }
 
-        const piecePositions = selectedMove.fenAfter.parsePiecePlacements()
-
-        this.mailbox144 = new Mailbox144(piecePositions)
+        this.mailbox144 = new Mailbox144(selectedMove.fenAfter)
 
         this.fenNumber = selectedMove.fenAfter
         this.currentMove = selectedMove
@@ -73,10 +71,10 @@ export default class GameState {
             throw new Error('Cannot make a move when the board is set to a previous move. Select the latest move to contine the game')
         }
 
-        this.mailbox144.makeMove(chessMove)
-        const moveRecord = this.moveHistory.recordMove(this, chessMove)
-        this.fenNumber = moveRecord.fenAfter.clone()
+        const newFenNumber = this.mailbox144.makeMove(chessMove)
+        const moveRecord = this.moveHistory.recordMove(this, chessMove, newFenNumber)
 
+        this.fenNumber = newFenNumber
         this.currentMove = this.lastMove = moveRecord
     }
 
@@ -89,11 +87,13 @@ export default class GameState {
         const lastMove = this.moveHistory.pop()
 
         this.fenNumber = lastMove.fenBefore
-        this.mailbox144.undoMove(lastMove.chessMove)
+        this.mailbox144.undoMove(lastMove.chessMove, this.fenNumber)
 
         this.currentMove = this.lastMove = this.moveHistory.getLastMove()
 
         return lastMove.chessMove
     }
+
+
 
 }

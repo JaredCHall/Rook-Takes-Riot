@@ -12,13 +12,13 @@ export default class MoveHistoryItem {
 
     fenAfter: FenNumber
 
-    constructor(gameState: GameState, chessMove: ChessMove) {
+    constructor(gameState: GameState, chessMove: ChessMove, fenAfter: FenNumber) {
 
         const lastMoveIndex = gameState.moveHistory.getLastMove()?.moveIndex ?? -1
 
         this.chessMove = chessMove
         this.moveIndex = lastMoveIndex + 1
         this.fenBefore = gameState.fenNumber.clone()
-        this.fenAfter = FenNumber.fromGameState(gameState).incrementTurn(this.chessMove)
+        this.fenAfter = fenAfter.clone()
     }
 }

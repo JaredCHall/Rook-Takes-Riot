@@ -5,7 +5,6 @@ import PiecePositions from "./GameState/PiecePositions";
 import OnMoveStepCallback from "./OnMoveStepCallback";
 import MoveList from "./Moves/MoveList";
 import GameState from "./GameState/GameState";
-import MoveListFactory from "./Moves/MoveListFactory";
 import ChessMove from "./Moves/ChessMove";
 import MoveStep from "./Moves/MoveStep";
 import MoveHistory from "./GameState/MoveHistory/MoveHistory";
@@ -14,8 +13,6 @@ export default class GameEngine {
 
     gameState: GameState;
 
-    moveListFactory: MoveListFactory
-
     moveHistory: MoveHistory
 
     onMoveStepCallback: OnMoveStepCallback
@@ -23,7 +20,6 @@ export default class GameEngine {
     constructor(fen: string|null = null, onMoveStepCallback: OnMoveStepCallback | null = null) {
         this.onMoveStepCallback = onMoveStepCallback ?? function(step: MoveStep){}
         this.gameState = new GameState(fen)
-        this.moveListFactory = new MoveListFactory(this.gameState)
         this.moveHistory = this.gameState.moveHistory
     }
 
@@ -33,7 +29,6 @@ export default class GameEngine {
 
     setGameState(fen: string) {
         this.gameState = new GameState(fen)
-        this.moveListFactory = new MoveListFactory(this.gameState)
     }
 
     makeMove(chessMove: ChessMove): void {
@@ -62,7 +57,7 @@ export default class GameEngine {
     }
 
     getMoves(squareName: string): MoveList {
-        return this.moveListFactory.getLegalMoves(squareName);
+        return this.gameState.mailbox144.moveFactory.getLegalMoves(squareName, this.gameState.fenNumber);
     }
 
     static getEmptyBoardFEN(): string {

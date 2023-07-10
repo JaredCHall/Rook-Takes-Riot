@@ -1,45 +1,68 @@
-import GameState from "../GameState/GameState";
-import MoveList from "./MoveList";
-import Mailbox144 from "../GameState/Mailbox144";
-import MailboxAddress from "../GameState/MailboxAddress";
-import EnPassantMove from "./EnPassantMove";
-import DoublePawnMove from "./DoublePawnMove";
-import CastlingMove from "./CastlingMove";
+import MoveList from "../Moves/MoveList";
+import Mailbox144 from "./Mailbox144";
+import MailboxAddress from "./MailboxAddress";
+import EnPassantMove from "../Moves/EnPassantMove";
+import DoublePawnMove from "../Moves/DoublePawnMove";
+import CastlingMove from "../Moves/CastlingMove";
 import ChessPiece from "../ChessPiece";
-import ChessMove from "./ChessMove";
+import ChessMove from "../Moves/ChessMove";
+import FenNumber from "./FenNumber";
 
-export default class MoveListFactory {
+export default class MoveFactory {
 
-    gameState: GameState
+    mailbox: Mailbox144
 
-    constructor(gameState: GameState) {
-        this.gameState = gameState
+    constructor(mailbox: Mailbox144) {
+        this.mailbox = mailbox
     }
 
     getMailbox(): Mailbox144{
-        return this.gameState.mailbox144
+        return this.mailbox
     }
 
-    getLegalMoves(squareName: string): MoveList {
-        const mailbox = this.getMailbox()
-        const piece = mailbox.getSquare(squareName).piece
+    getMovingPiece(squareName: string): ChessPiece {
+        const piece = this.mailbox.getSquare(squareName).piece
         if(piece === null){
             throw new Error('No piece on square '+squareName)
         }
+        return piece
+    }
+
+    getLegalMoves(squareName: string): MoveList {
+        const candidateMoves = this.getPseudoLegalMoves(squareName)
+        const movingPiece = this.getMovingPiece(squareName)
+        const currentFen = this.mailbox.fenNumber
+
+        const legalMoves: MoveList = {}
+        for(const i in candidateMoves){
+            const move = candidateMoves[i]
+
+            this.mailbox.makeMove(move)
+            if(!this.mailbox.isKingChecked(movingPiece.color)){
+                legalMoves[move.newSquare] = move
+            }
+            this.mailbox.undoMove(move,currentFen)
+        }
+        return legalMoves
+    }
+
+    getPseudoLegalMoves(squareName: string, fenNumber: FenNumber|null = null): MoveList {
+        const mailbox = this.getMailbox()
+        fenNumber ??= mailbox.fenNumber
+        const piece = this.getMovingPiece(squareName)
 
         switch(piece.type){
-            case 'pawn': return this.getPawnMoves(piece, squareName)
+            case 'pawn': return this.getPawnMoves(piece, squareName, fenNumber.enPassantTarget)
             case 'rook': return this.getRookMoves(piece, squareName)
             case 'knight': return this.getKnightMoves(piece, squareName)
             case 'bishop': return this.getBishopMoves(piece, squareName)
             case 'queen': return this.getQueenMoves(piece, squareName)
-            case 'king': return this.getKingMoves(piece, squareName)
+            case 'king': return this.getKingMoves(piece, squareName, fenNumber.castleRights)
         }
         return {}
     }
 
-
-    getPawnMoves(piece: ChessPiece, squareName: string): MoveList
+    getPawnMoves(piece: ChessPiece, squareName: string, enPassantTarget: null|string): MoveList
     {
         const squareIndex = Mailbox144.getAddressIndex(squareName)
         const pieceAddress = this.getMailbox().getAddress(squareIndex)
@@ -58,9 +81,6 @@ export default class MoveListFactory {
             moveOffsets.push(24)
         }
 
-
-        const enPassantTargetSquare = this.gameState.fenNumber.enPassantTarget
-
         // test if pawn can capture diagonally
         for(let i = 0; i<captureOffsets.length;i++){
             const offset = captureOffsets[i]
@@ -71,16 +91,16 @@ export default class MoveListFactory {
             if(testSquare.piece && testSquare.piece.color != piece.color){
                 moves[testSquare.squareName] = move;
 
-            }else if(testSquare.squareName === enPassantTargetSquare){
+            }else if(testSquare.squareName === enPassantTarget){
 
                 // Handle En Passant
 
                 const capturedSquare = EnPassantMove.getOpponentPawnSquare(move)
-                const capturedPawn = this.getMailbox().getSquare(capturedSquare).piece
-                if(capturedPawn === null){
-                    throw new Error('Expected enPassantTarget to exist')
+                const capturedPawn = this.mailbox.getSquare(capturedSquare).piece
+                if(capturedPawn !== null){
+                    moves[testSquare.squareName] = new EnPassantMove(pieceAddress.squareName, testSquare.squareName, piece, capturedPawn);
                 }
-                moves[testSquare.squareName] = new EnPassantMove(pieceAddress.squareName, testSquare.squareName, piece, capturedPawn);
+
             }
         }
 
@@ -171,7 +191,7 @@ export default class MoveListFactory {
         return this.getMovesFromRayVectors(squareIndex, piece, rayVectors)
     }
 
-    getKingMoves(piece: ChessPiece, squareName: string): MoveList
+    getKingMoves(piece: ChessPiece, squareName: string, castleRights: null|string): MoveList
     {
         const squareIndex = Mailbox144.getAddressIndex(squareName)
         const currentSquare = this.getMailbox().getAddress(squareIndex)
@@ -187,7 +207,6 @@ export default class MoveListFactory {
         ]
         let moves = this.getMovesFromRayVectors(squareIndex, piece, rayVectors, 1)
 
-        const castleRights = this.gameState.fenNumber.castleRights
         if(castleRights === null){
             return moves // no castle rights, this is a full list of moves
         }
