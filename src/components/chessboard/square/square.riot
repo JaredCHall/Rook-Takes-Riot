@@ -9,6 +9,7 @@
 
     <rect width="50" height="50" class="{state.color}-square"></rect>
     <rect width="50" height="50" class="square-{state.color}-selected" if={state.selected || isSquareSelected()}></rect>
+    <rect width="50" height="50" class="square-{state.color}-threatened" if={isSquareChecked()}></rect>
 
     <text x="5" y="45" class="square-label stroke-{state.color}" if={state.showLabel || props.board.getShowLabels()}>
         {props.name}
@@ -29,6 +30,7 @@
         import Piece from "Chessboard/piece/piece.riot"
         import GameEngine from 'ChessGame/GameEngine.ts'
         import ChessPiece from "ChessGame/ChessPiece.ts";
+        import FenNumber from "../../../classes/ChessGame/GameState/FenNumber";
 
         interface Props {
             name: string,
@@ -100,6 +102,18 @@
             isSquareSelected(): boolean {
                 return this.props.board.state.selectedSquare === this.props.name
             },
+            isSquareChecked(): boolean {
+                if(!this.state.piece || this.state.piece.type != 'king'){
+                    return false
+                }
+
+                const fen: FenNumber = this.props.board.getFen()
+                if(fen.sideToMove !== this.state.piece.color){
+                    return false
+                }
+
+                return fen.isCheck
+            },
             isCaptureIndicated(): boolean{
                 if(!this.state.piece){
                     return false
@@ -151,9 +165,7 @@
                     }
 
                     // don't select wrong color pieces
-                    const movingPieceColor = this.state.piece.color.charAt(0)
-                    const colorToMove = this.getGameEngine().isWhiteMoving() ? 'w' : 'b'
-                    if(colorToMove != movingPieceColor){
+                    if(this.state.piece.color != this.getGameEngine().getFenNumber().sideToMove){
                         board.clearIndicators()
                         return
                     }
@@ -181,6 +193,14 @@
         .square-white-selected
             fill: hotpink
             fill-opacity: 0.35
+
+        .square-black-threatened
+          fill: orangered
+          fill-opacity: 0.65
+
+        .square-white-threatened
+          fill: orangered
+          fill-opacity: 0.35
 
     </style>
 

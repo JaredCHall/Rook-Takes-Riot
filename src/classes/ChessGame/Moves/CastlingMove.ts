@@ -4,67 +4,76 @@ import ChessMove from "./ChessMove";
 import MoveStep from "./MoveStep";
 export default class CastlingMove extends ChessMove
 {
-    static KING_SIDE_WHITE = 'K'
-    static QUEEN_SIDE_WHITE = 'Q'
-    static KING_SIDE_BLACK = 'k'
-    static QUEEN_SIDE_BLACK = 'q'
+    static KING_SIDE_WHITE: 'K' = 'K'
+    static QUEEN_SIDE_WHITE: 'Q' = 'Q'
+    static KING_SIDE_BLACK: 'k' = 'k'
+    static QUEEN_SIDE_BLACK: 'q' = 'q'
 
     rook: ChessPiece
 
-    castlesType: string
+    castlesType: 'K'|'Q'|'k'|'q'
 
-    static rookMoves: {[castlesType: string]: Array<string>} = {
-        K: ['h1','f1'],
-        Q: ['a1','d1'],
-        k: ['h8','f8'],
-        q: ['a8','d8'],
+    static castlesTypesInfo = {
+        'Q' : {
+            rooksOldSquare: 'a1',
+            rooksNewSquare: 'd1',
+            kingsOldSquare: 'e1',
+            kingsNewSquare: 'c1',
+            squaresThatMustBeEmpty: ['d1','c1','b1'],
+            squaresThatMustBeSafe: ['e1','d1','c1'],
+        },
+        'K' : {
+            rooksOldSquare: 'h1',
+            rooksNewSquare: 'f1',
+            kingsOldSquare: 'e1',
+            kingsNewSquare: 'g1',
+            squaresThatMustBeEmpty: ['f1','g1'],
+            squaresThatMustBeSafe: ['e1','f1','g1'],
+        },
+        'q' : {
+            rooksOldSquare: 'a8',
+            rooksNewSquare: 'd8',
+            kingsOldSquare: 'e8',
+            kingsNewSquare: 'c8',
+            squaresThatMustBeEmpty: ['d8','c8','b8'],
+            squaresThatMustBeSafe: ['e8','d8','c8'],
+        },
+        'k' : {
+            rooksOldSquare: 'h8',
+            rooksNewSquare: 'f8',
+            kingsOldSquare: 'e8',
+            kingsNewSquare: 'g8',
+            squaresThatMustBeEmpty: ['f8','g8'],
+            squaresThatMustBeSafe: ['e8','f8','g8'],
+        }
     }
 
-    constructor(oldSquare: string, newSquare:string, movingPiece: ChessPiece, rook: ChessPiece) {
+
+    constructor(oldSquare: string, newSquare:string, movingPiece: ChessPiece, rook: ChessPiece, castlesType: 'K'|'Q'|'k'|'q') {
         super(oldSquare, newSquare, movingPiece, null)
-        const castlesType = CastlingMove.getCastlingType(this);
-        if(castlesType === null){
-            throw new Error('Invalid castlesType')
-        }
         this.castlesType = castlesType
         this.rook = rook
     }
 
-    static getCastlingType(move: ChessMove): string|null
-    {
-        if(move.movingPiece === null){
-            return null
+    toAlgebraicNotation(): string {
+        switch(this.castlesType){
+            case 'K':
+            case 'k':
+                return 'O-O'
+            default:
+                return 'O-O-O'
         }
-
-        const isKing = move.movingPiece.type === 'king'
-        const isWhite = move.movingPiece.color === 'white'
-
-        if (!isKing) {
-            return null
-        }
-
-        if( isWhite && move.oldSquare === 'e1') {
-            switch(move.newSquare){
-                case 'g1': return this.KING_SIDE_WHITE
-                case 'c1': return this.QUEEN_SIDE_WHITE
-            }
-        }else if (!isWhite && move.oldSquare === 'e8') {
-            switch(move.newSquare){
-                case 'g8': return this.KING_SIDE_BLACK
-                case 'c8': return this.QUEEN_SIDE_BLACK
-            }
-        }
-
-        return null
     }
 
-    toAlgebraicNotation(): string {
-        if(this.castlesType === CastlingMove.KING_SIDE_WHITE || this.castlesType === CastlingMove.KING_SIDE_BLACK){
-            return 'O-O'
-        }
-        else{
-            return 'O-O-O'
-        }
+    getMoveInfo(): {
+        rooksOldSquare: string,
+        rooksNewSquare: string,
+        kingsOldSquare: string,
+        kingsNewSquare: string,
+        squaresThatMustBeEmpty: string[],
+        squaresThatMustBeSafe: string[]
+    } {
+        return CastlingMove.castlesTypesInfo[this.castlesType]
     }
 
     getMoveSteps(): Array<MoveStep> {
@@ -83,9 +92,8 @@ export default class CastlingMove extends ChessMove
 
     getRookMove(): ChessMove
     {
-        const oldSquare = CastlingMove.rookMoves[this.castlesType][0]
-        const newSquare = CastlingMove.rookMoves[this.castlesType][1]
-        return new ChessMove(oldSquare, newSquare, this.rook)
+        const moveInfo = CastlingMove.castlesTypesInfo[this.castlesType]
+        return new ChessMove(moveInfo.rooksOldSquare, moveInfo.rooksNewSquare, this.rook)
     }
 
 }

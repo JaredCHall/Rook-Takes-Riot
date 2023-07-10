@@ -79,6 +79,16 @@ export default class PieceList {
         return pieceSet[type]
     }
 
+    getKing(color: string): ChessPiece
+    {
+        const pieceSet = this.#getListForColor(color)
+        if(!pieceSet.king){
+            throw new Error('there is no king!')
+        }
+
+        return pieceSet.king
+    }
+
     #getAllPiecesForColor(color: string): ChessPiece[]{
         const pieceSet = this.#getListForColor(color)
 

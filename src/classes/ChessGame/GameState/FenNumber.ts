@@ -9,7 +9,7 @@ export default class FenNumber {
 
     piecePlacements: string
 
-    sideToMove: string
+    sideToMove: 'white'|'black'
 
     castleRights: null|string
 
@@ -19,12 +19,20 @@ export default class FenNumber {
 
     fullMoveCounter: number = 1
 
+    checkedKingSquare: string|null = null
+
+    isCheck: boolean = false
+
+    isCheckMate: boolean = false
+
     constructor(fen: string) {
 
         const parts = fen.split(' ')
 
+
+
         this.piecePlacements = parts[0]
-        this.sideToMove = parts[1] ?? 'w'
+        this.sideToMove = (parts[1] ?? 'w') === 'w' ? 'white' : 'black'
         this.castleRights = parts[2] ?? null
         this.enPassantTarget = parts[3] ?? null
 
@@ -51,10 +59,25 @@ export default class FenNumber {
         return '8/8/8/8/8/8/8/8 w KQkq -'
     }
 
+    setKingIsChecked(kingSquare: string|false, isMate: boolean): void
+    {
+        if(kingSquare === false){
+            this.checkedKingSquare = null
+            this.isCheck = false
+            this.isCheckMate = false
+
+            return
+        }
+
+        this.checkedKingSquare = kingSquare
+        this.isCheck = true
+        this.isCheckMate = isMate
+    }
+
     toString(): string {
         return [
             this.piecePlacements,
-            this.sideToMove,
+            this.sideToMove.charAt(0),
             this.castleRights == null ? '-' : this.castleRights,
             this.enPassantTarget == null ? '-' : this.enPassantTarget,
             this.halfMoveClock,
@@ -67,14 +90,14 @@ export default class FenNumber {
     }
 
     isWhiteMoving() {
-        return this.sideToMove === 'w'
+        return this.sideToMove === 'white'
     }
 
     incrementTurn(chessMove: ChessMove): FenNumber
     {
         // change side to move
         const whiteIsMoving = this.isWhiteMoving()
-        this.sideToMove = whiteIsMoving ? 'b' : 'w';
+        this.sideToMove = whiteIsMoving ? 'black' : 'white';
 
         // increment full move counter if black's turn
         if(!whiteIsMoving){
@@ -183,7 +206,7 @@ export default class FenNumber {
         }
 
         fen += ' '
-        fen += fenNumber.sideToMove
+        fen += fenNumber.sideToMove.charAt(0)
         fen += ' '
         fen += fenNumber.castleRights == null ? '-' : fenNumber.castleRights;
         fen += ' '

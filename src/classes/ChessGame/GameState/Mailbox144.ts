@@ -7,6 +7,7 @@ import MoveList from "../Moves/MoveList";
 import MoveFactory from "./MoveFactory";
 import GameState from "./GameState";
 import FenNumber from "./FenNumber";
+import CastlingMove from "../Moves/CastlingMove";
 
 export default class Mailbox144 {
 
@@ -109,7 +110,7 @@ export default class Mailbox144 {
         }
     }
 
-    makeMove(move: ChessMove): FenNumber {
+    makeMove(move: ChessMove, validateMated: boolean = true): FenNumber {
 
         // execute each move step
         const moveSteps = move.getMoveSteps()
@@ -123,11 +124,21 @@ export default class Mailbox144 {
             this.pieceList.remove(move.capturedPiece)
         }
 
+        const opponentColor = this.getOppositeColor(move.movingPiece.color)
         const fenAfter = FenNumber.fromMailbox(this).incrementTurn(move)
-        const isKingChecked = this.isKingChecked(this.getOppositeColor(move.movingPiece.color), fenAfter)
 
+        let isKingMated: boolean = false
+        const isKingChecked = this.isKingChecked(opponentColor, fenAfter)
+        if(isKingChecked && validateMated){
+            console.log('checking for mate')
+            isKingMated = this.isKingMated(opponentColor, fenAfter)
+        }
         if(isKingChecked){
+            fenAfter.setKingIsChecked(this.pieceList.getKing(opponentColor).currentSquare, isKingMated)
             console.log('CHECK!!')
+            if(fenAfter.isCheckMate){
+                console.log('AND MATE!!')
+            }
         }
 
         return this.fenNumber = fenAfter
@@ -170,13 +181,58 @@ export default class Mailbox144 {
         return false
     }
 
+    getPseudoLegalMovesForColor(color:string,fenNumber: FenNumber|null = null): ChessMove[]
+    {
+        fenNumber ??= this.fenNumber
+        const pieces = this.pieceList.getPieces(color)
+
+        const moves: ChessMove[] = []
+        for(const i in pieces){
+            const pieceMoves = this.moveFactory.getPseudoLegalMoves(pieces[i].currentSquare, fenNumber)
+            for(const j in pieceMoves){
+                moves.push(pieceMoves[j])
+            }
+        }
+        return moves
+    }
 
     isKingChecked(color: string, fenNumber: FenNumber|null = null): boolean
     {
         let isKingChecked = false
-        const king = this.pieceList.getPieces(color, 'king')[0]
+        fenNumber = fenNumber ?? this.fenNumber
+        const king = this.pieceList.getKing(color)
+        const mailbox = new Mailbox144(fenNumber.clone()) // get a new mailbox so we dont mess up the current one
 
-        return this.isSquareThreatenedBy(king.currentSquare, this.getOppositeColor(color), fenNumber)
+        return mailbox.isSquareThreatenedBy(king.currentSquare, this.getOppositeColor(color), fenNumber)
+    }
+
+    isKingMated(color: string, fenNumber: FenNumber): boolean
+    {
+        const kingSquare = this.pieceList.getKing(color).currentSquare
+        const moves = this.getPseudoLegalMovesForColor(color, fenNumber)
+
+        const mailbox = new Mailbox144(fenNumber.clone()) // get a new mailbox so we dont mess up the current one
+
+        // all possible moves are checks, if king is mated
+        return moves.reduce(function(isMated: boolean, move:ChessMove) {
+            if(!isMated){
+                return false
+            }
+            if(move instanceof CastlingMove){
+                // cannot castle away from check
+                return true
+            }
+
+            console.log(mailbox)
+
+            const moveIsCheck = mailbox.makeMove(move, false).isCheck // must pass false or forever loop
+            mailbox.undoMove(move, fenNumber)
+
+            console.log(moveIsCheck)
+
+            return !moveIsCheck // any move that is not a check, sets isMated to true
+        }, true)
+
     }
 
 }

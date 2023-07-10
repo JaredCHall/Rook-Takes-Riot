@@ -7,6 +7,7 @@ import CastlingMove from "../Moves/CastlingMove";
 import ChessPiece from "../ChessPiece";
 import ChessMove from "../Moves/ChessMove";
 import FenNumber from "./FenNumber";
+import GameState from "./GameState";
 
 export default class MoveFactory {
 
@@ -33,12 +34,26 @@ export default class MoveFactory {
         const movingPiece = this.getMovingPiece(squareName)
         const currentFen = this.mailbox.fenNumber
 
+        // ensure move does not put the king in check
         const legalMoves: MoveList = {}
         for(const i in candidateMoves){
             const move = candidateMoves[i]
 
             this.mailbox.makeMove(move)
-            if(!this.mailbox.isKingChecked(movingPiece.color)){
+
+            let isKingChecked: boolean = false
+            if(move instanceof CastlingMove){
+                // every square a king passes through, including the old and new square, must be safe in order to castle
+                const expectedSafeSquares = move.getMoveInfo().squaresThatMustBeSafe
+                isKingChecked = expectedSafeSquares.reduce((isKingChecked, squareName) =>
+                        isKingChecked || this.mailbox.isSquareThreatenedBy(squareName, this.mailbox.getOppositeColor(movingPiece.color))
+                    , false)
+            }else{
+                // for every other type of move, you just cannot end a turn with a check on the board
+                isKingChecked = this.mailbox.isKingChecked(movingPiece.color)
+            }
+
+            if(!isKingChecked){
                 legalMoves[move.newSquare] = move
             }
             this.mailbox.undoMove(move,currentFen)
@@ -193,6 +208,7 @@ export default class MoveFactory {
 
     getKingMoves(piece: ChessPiece, squareName: string, castleRights: null|string): MoveList
     {
+        const mailbox = this.getMailbox()
         const squareIndex = Mailbox144.getAddressIndex(squareName)
         const currentSquare = this.getMailbox().getAddress(squareIndex)
         const rayVectors = [
@@ -211,74 +227,40 @@ export default class MoveFactory {
             return moves // no castle rights, this is a full list of moves
         }
 
-        // get castling moves TODO: find a more elegant way to handle this?
-        if(piece.color == 'white' && squareName === 'e1'){
-
-            if(castleRights.indexOf('Q') != -1){
-                const a1 = this.getMailbox().getSquare('a1');
-                const b1 = this.getMailbox().getSquare('b1');
-                const c1 = this.getMailbox().getSquare('c1');
-                const d1 = this.getMailbox().getSquare('d1');
-
-                if(
-                    a1.piece != null
-                    && a1.piece.type == 'rook'
-                    && b1.piece == null
-                    && c1.piece == null
-                    && d1.piece == null
-                ){
-                    moves['c1'] = new CastlingMove(currentSquare.squareName, 'c1', piece, a1.piece)
-                }
-            }
-
-            if(castleRights.indexOf('K') != -1) {
-                const h1 = this.getMailbox().getSquare('h1');
-                const g1 = this.getMailbox().getSquare('g1');
-                const f1 = this.getMailbox().getSquare('f1');
-
-                if (
-                    h1.piece != null
-                    && h1.piece.type == 'rook'
-                    && g1.piece == null
-                    && f1.piece == null
-                ) {
-                    moves['g1'] = new CastlingMove(currentSquare.squareName, 'g1', piece, h1.piece)
-                }
-            }
+        // get possible castling moves
+        let possibleTypes: ('K'|'Q'|'k'|'q')[] = []
+        if(piece.color === 'white' && squareName === 'e1'){
+            possibleTypes = ['K','Q']
+        }else if(piece.color === 'black' && squareName === 'e8'){
+            possibleTypes = ['k','q']
+        }else{
+            // king is not on starting square, castling not possible
+            return moves
         }
 
-        if(piece.color == 'black' && squareName === 'e8'){
-            if(castleRights.indexOf('q') != -1){
-                const a8 = this.getMailbox().getSquare('a8');
-                const b8 = this.getMailbox().getSquare('b8');
-                const c8 = this.getMailbox().getSquare('c8');
-                const d8 = this.getMailbox().getSquare('d8');
-
-                if(
-                    a8.piece != null
-                    && a8.piece.type == 'rook'
-                    && b8.piece == null
-                    && c8.piece == null
-                    && d8.piece == null
-                ){
-                    moves['c8'] = new CastlingMove(currentSquare.squareName, 'c8', piece, a8.piece)
-                }
+        // evaluate possible castling moves
+        for(const i in possibleTypes){
+            const possibleCastlesType = possibleTypes[i]
+            if(castleRights.indexOf(possibleCastlesType) === -1){
+                continue
             }
 
-            if(castleRights.indexOf('k') != -1) {
-                const h8 = this.getMailbox().getSquare('h8');
-                const g8 = this.getMailbox().getSquare('g8');
-                const f8 = this.getMailbox().getSquare('f8');
+            const moveInfo = CastlingMove.castlesTypesInfo[possibleCastlesType]
+            const rookSquare = mailbox.getSquare(moveInfo.rooksOldSquare)
+            const expectedEmptySquares = moveInfo.squaresThatMustBeEmpty
 
-                if (
-                    h8.piece != null
-                    && h8.piece.type == 'rook'
-                    && g8.piece == null
-                    && f8.piece == null
-                ) {
-                    moves['g8'] = new CastlingMove(currentSquare.squareName, 'g8',piece, h8.piece)
-                }
+            // determine if any of the empty squares are occupied
+            const isAnyOccupied = expectedEmptySquares.reduce((isAnyOccupied, squareName) =>
+                isAnyOccupied || this.mailbox.getSquare(squareName).piece !== null
+            , false)
+
+            if(
+                rookSquare.piece && rookSquare.piece.type == 'rook' // rook must be in its proper place
+                && !isAnyOccupied
+            ){
+                moves[moveInfo.kingsNewSquare] = new CastlingMove(currentSquare.squareName, moveInfo.kingsNewSquare, piece, rookSquare.piece, possibleCastlesType)
             }
+
         }
 
         return moves
