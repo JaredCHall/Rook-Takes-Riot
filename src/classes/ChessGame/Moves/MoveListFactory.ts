@@ -277,8 +277,6 @@ export default class MoveListFactory {
             for(let j=1;j<=maxRayLength;j++){
                 const newIndex = squareIndex + j * (vector[0] + vector[1] * 12)
                 const testSquare: MailboxAddress = this.getMailbox().getAddress(newIndex)
-                console.log(newIndex)
-                console.log(testSquare)
 
                 // if test square is out-of-bounds or occupied by a friendly piece, the ray is terminated
                 if(testSquare.isOutOfBounds || (testSquare.piece && testSquare.piece.color == piece.color)){

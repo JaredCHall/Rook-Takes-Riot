@@ -1,6 +1,8 @@
 import PiecePositions from "./PiecePositions";
 import ChessPiece from "../ChessPiece";
 import GameState from "./GameState";
+import ChessMove from "../Moves/ChessMove";
+import DoublePawnMove from "../Moves/DoublePawnMove";
 
 export default class FenNumber {
 
@@ -60,14 +62,46 @@ export default class FenNumber {
         return this.sideToMove === 'w'
     }
 
-    incrementTurn(): void
+    incrementTurn(chessMove: ChessMove): FenNumber
     {
+        // change side to move
         const whiteIsMoving = this.isWhiteMoving()
         this.sideToMove = whiteIsMoving ? 'b' : 'w';
 
+        // increment full move counter if black's turn
         if(!whiteIsMoving){
             this.fullMoveCounter++
         }
+
+        // increment or reset half-move clock as required
+        if(chessMove.movingPiece.type === 'pawn' || chessMove.capturedPiece){
+            this.halfMoveClock = 0
+        }else{
+            this.halfMoveClock++
+        }
+
+        // handle en passant target
+        if(chessMove instanceof DoublePawnMove){
+            this.enPassantTarget = chessMove.getEnPassantTargetSquare()
+        }else{
+            this.enPassantTarget = null
+        }
+
+        // handle revoking castle rights
+        if(!this.castleRights){
+            return this // if there are not castle rights, don't try to revoke
+        }
+
+        if(chessMove.movingPiece.startingSquare != chessMove.oldSquare){
+            return this // castle rights are only revoked when a piece moves off its starting square
+        }
+
+        const castleRights = chessMove.movingPiece.getCastleRights()
+        for(let i = 0; i<castleRights.length; i++){
+            this.castleRights = this.castleRights.replace(castleRights[i],'')
+        }
+
+        return this
     }
 
     parsePiecePlacements(): PiecePositions
@@ -112,7 +146,6 @@ export default class FenNumber {
     {
         const fenNumber = gameState.fenNumber
 
-        console.log(gameState.mailbox144.piecePositions)
         const columnNames = ['a','b','c','d','e','f','g','h']
         let emptySquares = 0
 
@@ -152,8 +185,6 @@ export default class FenNumber {
         fen += fenNumber.halfMoveClock
         fen += ' '
         fen += fenNumber.fullMoveCounter
-
-        console.log(fen);
 
         return new FenNumber(fen);
     }

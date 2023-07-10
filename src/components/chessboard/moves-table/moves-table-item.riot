@@ -3,7 +3,8 @@
         onclick={() => selectMove()}
         >
 
-        {props.move?.toAlgebraicNotation()}
+        {props.move?.chessMove.toAlgebraicNotation()}
+
 
     <script lang="ts">
         import {RiotComponent} from "riot";
@@ -26,11 +27,6 @@
                 this.movesTable = props.movesTable
             },
             selectMove() {
-
-                if(this.props.move === null){
-                    return
-                }
-
                 this.movesTable.showSelectedMove(this.props.move.moveIndex)
             }
 

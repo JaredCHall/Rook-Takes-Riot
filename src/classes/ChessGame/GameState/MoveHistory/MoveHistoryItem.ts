@@ -1,17 +1,24 @@
 import ChessMove from "../../Moves/ChessMove";
 import FenNumber from "../FenNumber";
-import PiecePositions from "../PiecePositions";
+import GameState from "../GameState";
 
 export default class MoveHistoryItem {
 
-    move: ChessMove
+    chessMove: ChessMove
 
-    moveIndex: number|undefined
+    moveIndex: number
 
-    fenBefore: FenNumber|undefined
+    fenBefore: FenNumber
 
-    fenAfter: FenNumber|undefined
+    fenAfter: FenNumber
 
+    constructor(gameState: GameState, chessMove: ChessMove) {
 
+        const lastMoveIndex = gameState.moveHistory.getLastMove()?.moveIndex ?? -1
 
+        this.chessMove = chessMove
+        this.moveIndex = lastMoveIndex + 1
+        this.fenBefore = gameState.fenNumber.clone()
+        this.fenAfter = FenNumber.fromGameState(gameState).incrementTurn(this.chessMove)
+    }
 }

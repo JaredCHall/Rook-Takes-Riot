@@ -63,8 +63,6 @@ export default class Mailbox144 {
                 this.pieceList.add(piece)
             }
         }
-
-        console.log(this.board)
     }
 
     static getAddressName(index: number): string {
@@ -96,7 +94,6 @@ export default class Mailbox144 {
         const index = Mailbox144.getAddressIndex(squareName)
         this.setAddress(index, false, piece)
         if(piece !== null){
-            console.log(piece)
             piece.currentSquare = squareName
         }
     }

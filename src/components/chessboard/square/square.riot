@@ -8,7 +8,7 @@
         class="square" onclick={() => toggleSelected()}>
 
     <rect width="50" height="50" class="{state.color}-square"></rect>
-    <rect width="50" height="50" class="square-{state.color}-selected" if={state.selected}></rect>
+    <rect width="50" height="50" class="square-{state.color}-selected" if={state.selected || isSquareSelected()}></rect>
 
     <text x="5" y="45" class="square-label stroke-{state.color}" if={state.showLabel}>
         {props.name}
@@ -16,14 +16,14 @@
 
     <svg is="piece" piece-name={state.piece.type}  width="40" x="4" y="5" color={state.piece.color} if={state.piece}></svg>
 
-    <g class="move-indicator" if={state.showMoveIndicator && state.piece}>
+    <g class="move-indicator" if={isCaptureIndicated()}>
         <polygon points="0,0 0,10 10,0"></polygon>
         <polygon points="50,0 40,0 50,10"></polygon>
         <polygon points="0,50 0,40 10,50"></polygon>
         <polygon points="50,50 40,50 50,40"></polygon>
     </g>
 
-    <circle cx="25" cy="25" r="6" class="move-indicator" if={state.showMoveIndicator && !state.piece} />
+    <circle cx="25" cy="25" r="6" class="move-indicator" if={isRegularMoveIndicated()} />
 
     <script lang="ts">
         import Piece from "Chessboard/piece/piece.riot"
@@ -67,7 +67,7 @@
                 state.x = coords[0]
                 state.y = coords[1]
                 state.color = GameEngine.getSquareColor(props.name)
-                state.selected = props.selected
+                state.selected = props.selected ?? false
 
             },
             onMounted(props: Props) {
@@ -97,18 +97,33 @@
             getPiece(): Piece|null {
                 return this.state.piece
             },
+            isSquareSelected(): boolean {
+                return this.props.board.state.selectedSquare === this.props.name
+            },
+            isCaptureIndicated(): boolean{
+                if(!this.state.piece){
+                    return false
+                }
+
+                return this.isMoveIndicated()
+
+            },
+            isRegularMoveIndicated(): boolean {
+                if(this.state.piece){
+                    return false
+                }
+
+                return this.isMoveIndicated()
+            },
+            isMoveIndicated(): boolean {
+                return this.props.board.state.indicatedMoves.hasOwnProperty(this.props.name)
+            },
             showSelected(show: boolean){
-                const board = this.props.board
-                board.setSelectedSquare(this.props.name);
-                this.update({selected: show ?? false})
+                this.props.board.setSelectedSquare(show ? this.props.name : null);
             },
             toggleSelected(): void {
-
-                const board = this.props.board
-
                 // if clicking selected square, de-select it
-                if(this.state.selected){
-                    board.clearSelections()
+                if(this.isSquareSelected()){
                     this.showSelected(false)
                     return
                 }
@@ -118,41 +133,32 @@
             select() {
                 const board = this.props.board
 
-                console.log(this.state.piece)
-
                 if(board.getMode() == 'play'){
 
                     // allow legal moves
-                    if(board.isSelectionAnIndicatedMove(this.props.name)){
+                    if(this.isMoveIndicated()){
                         board.moveSelectedPiece(this.props.name)
                         return;
                     }
 
                     // don't select empty squares
-                    if(board.getMode() == 'play'){
-                        if(this.state.piece === null){
-                            board.clearSelections()
-                            return;
-                        }
+                    if(this.state.piece === null){
+                        board.clearIndicators(true, true)
+                        return;
                     }
 
                     // don't select wrong color pieces
                     const movingPieceColor = this.state.piece.color.charAt(0)
                     const colorToMove = board.getGameEngine().gameState.fenNumber.sideToMove
                     if(colorToMove != movingPieceColor){
-                        board.clearSelections()
+                        board.clearIndicators(true, true)
                         return
                     }
                 }
 
-                // select and indicate legal moves
-                board.clearSelections()
-                this.showSelected(true)
+                // show legal moves
                 const moves = board.gameEngine.getMoves(this.props.name)
-                board.showMoveIndicators(moves)
-            },
-            showMoveIndicator(show: boolean){
-                  this.update({showMoveIndicator: show})
+                board.showMoveIndicators(this.props.name, moves)
             },
             toggleLabel() {
                 this.update({showLabel: !this.state.showLabel})
@@ -161,8 +167,6 @@
     </script>
 
     <style type="sass">
-
-
 
         .square-label
             font-size: 10px

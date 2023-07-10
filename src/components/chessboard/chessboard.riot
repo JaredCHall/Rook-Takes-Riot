@@ -34,8 +34,6 @@
         import GameEngine from '../../classes/ChessGame/GameEngine.ts'
         import MoveList from "../../classes/ChessGame/Moves/MoveList";
         import MoveStep from "../../classes/ChessGame/Moves/MoveStep";
-        import FenNumber from "../../classes/ChessGame/GameState/FenNumber";
-        import MoveHistory from "../../classes/ChessGame/GameState/MoveHistory/MoveHistory";
 
         interface Props {
             greeting: string,
@@ -50,7 +48,7 @@
             greeting: string,
             showOptions: boolean,
             selectedSquare: string,
-            indicatedMoves: Array<string>,
+            indicatedMoves: {},
         }
 
         export default {
@@ -122,7 +120,6 @@
             },
             refreshPiecePositions(){
                 const positions = this.gameEngine.getPiecePositions()
-                console.log(positions)
 
                 for(const squareName in positions){
                     const piece = positions[squareName]
@@ -136,7 +133,6 @@
                 this.refreshPiecePositions()
             },
 
-
             undoLastMove(): void {
                 this.gameEngine.undoLastMove()
                 this.update()
@@ -144,30 +140,28 @@
             setSelectedSquare(squareName: string): void {
                 this.update({
                     selectedSquare: squareName,
+                    moveIndicators: {},
                 })
             },
-            showMoveIndicators(moves: MoveList): void {
-                this.clearMoveIndicators()
-
-                for(const targetSquare in moves){
-                    if(!moves.hasOwnProperty(targetSquare)){
-                        continue
-                    }
-
-                    this.getSquare(targetSquare).showMoveIndicator(true);
-
-                }
-
-                this.state.indicatedMoves = moves
+            showMoveIndicators(selectedSquare: string, moves: MoveList): void {
+                this.update({
+                    selectedSquare: selectedSquare,
+                    indicatedMoves: moves,
+                })
             },
             getMode(): string {
                 return this.state.mode;
             },
-            clearSelections() {
-                for(let i = 0; i<this.squares.length; i++){
-                    this.squares[i].showSelected(false)
+            clearIndicators(selectedSquare: boolean = true, indicatedMoves: boolean = true) {
+                if(selectedSquare){
+                    this.state.selectedSquare = null
                 }
-                this.clearMoveIndicators()
+                if(indicatedMoves){
+                    this.state.indicatedMoves = {}
+                }
+
+                this.update()
+
             },
             isSelectionAnIndicatedMove(squareName: string): boolean{
                 return this.state.indicatedMoves.hasOwnProperty(squareName)
@@ -176,15 +170,12 @@
                 this.getSquare(step.squareName).setPiece(step.piece)
             },
             moveSelectedPiece(squareName: string){
-                this.gameEngine.makeMove(this.state.indicatedMoves[squareName])
-                this.clearSelections()
+                const chessMove = this.state.indicatedMoves[squareName]
+                this.clearIndicators(true,true)
+                this.gameEngine.makeMove(chessMove)
+                this.update()
             },
-            clearMoveIndicators() {
-                for(let i = 0; i<this.squares.length; i++){
-                    this.squares[i].showMoveIndicator(false)
-                }
-                this.state.indicatedMoves = {}
-            },
+
             togglePieces() {
                 const showPieces = !this.state.showPieces
                 if(showPieces){

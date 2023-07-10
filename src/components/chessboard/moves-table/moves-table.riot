@@ -17,6 +17,7 @@
         import MoveHistory from "../../../classes/ChessGame/GameState/MoveHistory/MoveHistory";
         import ChessMove from "../../../classes/ChessGame/Moves/ChessMove";
         import MovesTableItem from "./moves-table-item.riot"
+        import MoveHistoryItem from "../../../classes/ChessGame/GameState/MoveHistory/MoveHistoryItem";
 
         interface Props {
             board: RiotComponent
@@ -39,21 +40,21 @@
             },
             showSelectedMove(moveIndex: number): void {
                 this.board.showMove(moveIndex)
-                this.update()
             },
-            getMoveRows(): {moveCounter:number, move: ChessMove}[] {
-                const moves = this.moveHistory.moves
+            getMoveRows(): {moveCounter:number, move1: MoveHistoryItem, move2: null|MoveHistoryItem}[] {
+                const moveHistory = this.board.getGameEngine().gameState.moveHistory
+                const moves = moveHistory.all()
 
                 let rows = []
-                for(let i=0; i < moves.length; i +=2 ){
+                for(let i:number=0; i < moveHistory.length(); i += 2 ){
                     const row = {
                         moveCounter: moves[i].fenBefore.fullMoveCounter,
                         move1: moves[i],
                         move2: moves[i+1] ?? null
                     }
                     rows.push(row)
+
                 }
-                console.log('why')
                 return rows
             },
             getSelectedIndex(): number|null{

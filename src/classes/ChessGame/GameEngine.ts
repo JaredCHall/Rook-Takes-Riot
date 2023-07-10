@@ -18,10 +18,10 @@ export default class GameEngine {
 
     moveHistory: MoveHistory
 
-    onMoveStepCallback: OnMoveStepCallback;
+    onMoveStepCallback: OnMoveStepCallback
 
-    constructor(fen: string|null = null, callback: OnMoveStepCallback | null) {
-        this.onMoveStepCallback = callback ?? function(step: MoveStep){}
+    constructor(fen: string|null = null, onMoveStepCallback: OnMoveStepCallback | null = null) {
+        this.onMoveStepCallback = onMoveStepCallback ?? function(step: MoveStep){}
         this.gameState = new GameState(fen)
         this.moveListFactory = new MoveListFactory(this.gameState)
         this.moveHistory = this.gameState.moveHistory
@@ -41,6 +41,11 @@ export default class GameEngine {
         const steps = chessMove.getMoveSteps()
         for (const i in steps) {
             this.onMoveStepCallback(steps[i])
+        }
+
+        const moveHistoryItem = this.gameState.moveHistory.getLastMove()
+        if(moveHistoryItem === null){
+            throw new Error("moveHistoryItem is null immediately after making a move")
         }
     }
 

@@ -3,6 +3,7 @@ import ChessMove from "../Moves/ChessMove";
 import MoveList from "../Moves/MoveList";
 import MoveHistory from "./MoveHistory/MoveHistory";
 import FenNumber from "./FenNumber";
+import MoveHistoryItem from "./MoveHistory/MoveHistoryItem";
 
 export default class GameState {
 
@@ -12,20 +13,17 @@ export default class GameState {
 
     fenNumber: FenNumber
 
-    fenString: string = ''
-
     startFenNumber: FenNumber
 
-    currentMove: ChessMove|null = null // the move the game state is currently representing (null means the first move has not been played)
+    currentMove: MoveHistoryItem|null = null // the move the game state is currently representing (null means the first move has not been played)
 
-    lastMove: ChessMove|null = null // the last move completed by either player (null means the first move has not been played)
+    lastMove: MoveHistoryItem|null = null // the last move completed by either player (null means the first move has not been played)
 
     constructor(fen: string|null) {
 
         this.moveHistory = new MoveHistory()
         this.fenNumber = new FenNumber(fen ?? GameState.getNewGameFen())
         this.startFenNumber = this.fenNumber.clone()
-        this.fenString = this.fenNumber.toString()
 
         // init mailbox144
         this.mailbox144 = new Mailbox144(this.fenNumber.parsePiecePlacements())
@@ -76,12 +74,10 @@ export default class GameState {
         }
 
         this.mailbox144.makeMove(chessMove)
-        this.moveHistory.add(chessMove)
-        this.fenNumber = chessMove.mutateFenNumber(this)
-        this.fenNumber.incrementTurn()
-        this.currentMove = this.lastMove = chessMove
+        const moveRecord = this.moveHistory.recordMove(this, chessMove)
+        this.fenNumber = moveRecord.fenAfter.clone()
 
-        console.log(this.moveHistory)
+        this.currentMove = this.lastMove = moveRecord
     }
 
     undoLastMove(): ChessMove|null {
@@ -91,16 +87,13 @@ export default class GameState {
         }
 
         const lastMove = this.moveHistory.pop()
-        if(!lastMove.fenBefore){
-            throw new Error('fenBefore is undefined for move')
-        }
 
-        console.log(lastMove.fenBefore)
-        console.log(lastMove.fenAfter)
         this.fenNumber = lastMove.fenBefore
-        this.mailbox144.undoMove(lastMove)
+        this.mailbox144.undoMove(lastMove.chessMove)
 
-        return this.currentMove = this.lastMove = this.moveHistory.getLastMove()
+        this.currentMove = this.lastMove = this.moveHistory.getLastMove()
+
+        return lastMove.chessMove
     }
 
 }

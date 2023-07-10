@@ -1,15 +1,25 @@
 import ChessMove from "../../Moves/ChessMove";
+import MoveHistoryItem from "./MoveHistoryItem";
+import GameState from "../GameState";
 
 export default class MoveHistory
 {
-    moves: ChessMove[] = []
+    moves: MoveHistoryItem[] = []
 
     isEmpty(): boolean {
         return this.moves.length === 0
     }
 
+    length(): number {
+        return this.moves.length
+    }
+
+    all(): MoveHistoryItem[] {
+        return this.moves
+    }
+
     // moveIndex starts at zero and is incremented for every half move
-    get(moveIndex: number): ChessMove
+    get(moveIndex: number): MoveHistoryItem
     {
         const move = this.moves[moveIndex] ?? null
         if(!move){
@@ -19,7 +29,7 @@ export default class MoveHistory
         return move
     }
 
-    getLastMove(): ChessMove|null
+    getLastMove(): MoveHistoryItem|null
     {
         if(this.moves.length === 0){
             return null
@@ -28,11 +38,17 @@ export default class MoveHistory
         return this.moves[this.moves.length - 1]
     }
 
-    add(move: ChessMove){
+    recordMove(gameState: GameState, chessMove: ChessMove){
+        const moveHistoryItem = new MoveHistoryItem(gameState, chessMove)
+        this.moves.push(moveHistoryItem)
+        return moveHistoryItem
+    }
+
+    add(move: MoveHistoryItem){
         this.moves.push(move)
     }
 
-    pop(): ChessMove {
+    pop(): MoveHistoryItem {
         const move = this.moves.pop()
         if(move === undefined){
             throw new Error('nothing to pop')
