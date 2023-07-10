@@ -21,7 +21,7 @@
         </button>
     </div>
     <div>
-        <button class="button button-red" onclick={() => undoLastMove()}>
+        <button class="button button-red" onclick={() => undoLastMove()} disabled={getBoardMode() === 'view'}>
             Undo Last Move
         </button>
     </div>
@@ -71,6 +71,9 @@
                     this.update({fenError: e.message})
                 }
                 this.update()
+            },
+            getBoardMode(): string {
+                return this.board.getMode()
             },
             undoLastMove() {
                 this.board.undoLastMove()

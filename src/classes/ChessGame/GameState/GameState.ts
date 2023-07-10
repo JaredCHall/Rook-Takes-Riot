@@ -68,7 +68,7 @@ export default class GameState {
     makeMove(chessMove: ChessMove): void {
 
         if(this.currentMove !== this.lastMove){
-            throw new Error('Cannot make a move when the board is set to a previous move. Select the latest move to contine the game')
+            throw new Error('Cannot make a move when the board is set to a previous move.')
         }
 
         const newFenNumber = this.mailbox144.makeMove(chessMove)
@@ -82,6 +82,10 @@ export default class GameState {
 
         if(this.moveHistory.isEmpty()){
             return null
+        }
+
+        if(this.currentMove !== this.lastMove){
+            throw new Error('Cannot undo move when the board is set to a previous move.')
         }
 
         const lastMove = this.moveHistory.pop()
