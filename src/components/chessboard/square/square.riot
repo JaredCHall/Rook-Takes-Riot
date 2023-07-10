@@ -10,7 +10,7 @@
     <rect width="50" height="50" class="{state.color}-square"></rect>
     <rect width="50" height="50" class="square-{state.color}-selected" if={state.selected || isSquareSelected()}></rect>
 
-    <text x="5" y="45" class="square-label stroke-{state.color}" if={state.showLabel}>
+    <text x="5" y="45" class="square-label stroke-{state.color}" if={state.showLabel || props.board.getShowLabels()}>
         {props.name}
     </text>
 
@@ -124,11 +124,14 @@
             toggleSelected(): void {
                 // if clicking selected square, de-select it
                 if(this.isSquareSelected()){
-                    this.showSelected(false)
+                    this.props.board.setSelectedSquare(null)
                     return
                 }
 
                 this.select()
+            },
+            getGameEngine(): GameEngine {
+                return this.props.board.gameEngine
             },
             select() {
                 const board = this.props.board
@@ -143,22 +146,22 @@
 
                     // don't select empty squares
                     if(this.state.piece === null){
-                        board.clearIndicators(true, true)
+                        board.clearIndicators()
                         return;
                     }
 
                     // don't select wrong color pieces
                     const movingPieceColor = this.state.piece.color.charAt(0)
-                    const colorToMove = board.getGameEngine().gameState.fenNumber.sideToMove
+                    const colorToMove = this.getGameEngine().isWhiteMoving() ? 'w' : 'b'
                     if(colorToMove != movingPieceColor){
-                        board.clearIndicators(true, true)
+                        board.clearIndicators()
                         return
                     }
                 }
 
                 // show legal moves
                 const moves = board.gameEngine.getMoves(this.props.name)
-                board.showMoveIndicators(this.props.name, moves)
+                board.setSelectedSquare(this.props.name, moves)
             },
             toggleLabel() {
                 this.update({showLabel: !this.state.showLabel})

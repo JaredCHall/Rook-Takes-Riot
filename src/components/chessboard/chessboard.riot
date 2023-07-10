@@ -34,6 +34,7 @@
         import GameEngine from '../../classes/ChessGame/GameEngine.ts'
         import MoveList from "../../classes/ChessGame/Moves/MoveList";
         import MoveStep from "../../classes/ChessGame/Moves/MoveStep";
+        import FenNumber from "../../classes/ChessGame/GameState/FenNumber";
 
         interface Props {
             greeting: string,
@@ -82,7 +83,7 @@
                 }
 
                 // set game position
-                this.setGameFenNumber(null)
+                this.refreshPiecePositions()
             },
             getSquareNames(): Array<string> {
                 return GameEngine.allSquareNames();
@@ -94,27 +95,29 @@
 
                 return this.squares[key];
             },
+            getShowLabels(): boolean {
+                return this.state.showLabels
+            },
             orientBoard(color): void {
                 for(let i=0; i<this.squares.length; i++){
                     const square = this.squares[i]
                     square.setOrientation(color)
                 }
                 this.update({
-                    orientation: color
+                    orientation: color,
+                    selectedSquare: null,
+                    indicatedMoves: {},
                 })
             },
-            getFen(): string {
-                return this.gameEngine.gameState.fenNumber.toString()
+            getFen(): FenNumber {
+                return this.gameEngine.getFenNumber()
             },
             getGameEngine(): GameEngine
             {
                 return this.gameEngine;
             },
-            setGameFenNumber(fen: string|null): void {
-                console.log('Set FEN: '+fen)
-                if(fen !== null){
-                    this.gameEngine.setGameState(fen)
-                }
+            startNewGame(fen: string|null): void {
+                this.gameEngine.startNewGame(fen)
 
                 this.refreshPiecePositions()
             },
@@ -125,7 +128,10 @@
                     const piece = positions[squareName]
                     this.getSquare(squareName).setPiece(piece)
                 }
-                this.update()
+                this.update({
+                    selectedSquare: null,
+                    indicatedMoves: {},
+                })
             },
             showMove(moveIndex: number) {
                 const isPlayable = this.gameEngine.gameState.setCurrentMove(moveIndex)
@@ -135,18 +141,15 @@
 
             undoLastMove(): void {
                 this.gameEngine.undoLastMove()
-                this.update()
-            },
-            setSelectedSquare(squareName: string): void {
                 this.update({
-                    selectedSquare: squareName,
-                    moveIndicators: {},
+                    selectedSquare: null,
+                    indicatedMoves: {},
                 })
             },
-            showMoveIndicators(selectedSquare: string, moves: MoveList): void {
+            setSelectedSquare(squareName: string|null, indicatedMoves: MoveList|null = null): void {
                 this.update({
-                    selectedSquare: selectedSquare,
-                    indicatedMoves: moves,
+                    selectedSquare: squareName,
+                    indicatedMoves: indicatedMoves ?? {},
                 })
             },
             getMode(): string {
@@ -175,18 +178,6 @@
                 this.gameEngine.makeMove(chessMove)
                 this.update()
             },
-
-            togglePieces() {
-                const showPieces = !this.state.showPieces
-                if(showPieces){
-                    this.setGameFenNumber(GameEngine.getNewGameFEN())
-                }else{
-                    this.setGameFenNumber(GameEngine.getEmptyBoardFEN())
-                }
-                this.update({
-                    showPieces: showPieces,
-                })
-            },
             toggleLabels() {
                 for(let i=0; i<this.squares.length; i++){
                     const square = this.squares[i]
@@ -194,6 +185,8 @@
                 }
                 this.update({
                     showLabels: !this.state.showLabels,
+                    selectedSquare: null,
+                    indicatedMoves: {},
                 })
             },
             flipBoard() {

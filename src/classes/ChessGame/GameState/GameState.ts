@@ -22,15 +22,11 @@ export default class GameState {
     constructor(fen: string|null) {
 
         this.moveHistory = new MoveHistory()
-        this.fenNumber = new FenNumber(fen ?? GameState.getNewGameFen())
+        this.fenNumber = new FenNumber(fen ?? FenNumber.getNewGameFen())
         this.startFenNumber = this.fenNumber.clone()
 
         // init mailbox144
         this.mailbox144 = new Mailbox144(this.fenNumber)
-    }
-
-    static getNewGameFen(): string {
-        return 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
     }
 
     /**
@@ -63,6 +59,9 @@ export default class GameState {
 
     isWhiteMoving() {
         return this.fenNumber.isWhiteMoving()
+    }
+    getMoves(squareName: string): MoveList {
+        return this.mailbox144.moveFactory.getLegalMoves(squareName);
     }
 
     makeMove(chessMove: ChessMove): void {

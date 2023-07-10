@@ -1,6 +1,11 @@
 <board-options>
     <h3> Options:</h3>
     <div>
+        <button class="button button-green" onclick={() => board.startNewGame(null)}>
+            Start New Game
+        </button>
+    </div>
+    <div>
         <button class="button" onclick={() => board.flipBoard()}>
             Flip Board
         </button>
@@ -11,17 +16,12 @@
         </button>
     </div>
     <div>
-        <button class="button" onclick={() => board.togglePieces()}>
-           Toggle Pieces
-        </button>
-    </div>
-    <div>
         <button class="button" onclick={() => randomPuzzle()}>
             Random Puzzle
         </button>
     </div>
     <div>
-        <button class="button button-red" onclick={() => undoLastMove()} disabled={getBoardMode() === 'view'}>
+        <button class="button button-red" onclick={() => undoLastMove()} disabled={board.getMode() === 'view' || board.gameEngine.moveHistory.isEmpty()}>
             Undo Last Move
         </button>
     </div>
@@ -30,7 +30,7 @@
 
         <fieldset>
             <h3>FEN:</h3>
-            { board.getFen() }
+            { board.getFen().toString() }
             <input name="fenNumber" type="text"  onfocus={() => clearFenError()}>
             <div if={state.fenError} class="error-text" style="margin-bottom: 1rem">
                 {state.fenError}
@@ -63,17 +63,14 @@
                 const fen = puzzles[Math.floor(Math.random() * puzzles.length)]
                 this.setFen(fen)
             },
-            setFen(fen) {
-                fen = fen ?? this.$('input[name="fenNumber"]').value
+            setFen() {
+                const fen = this.$('input[name="fenNumber"]').value
                 try {
-                    this.board.setGameFenNumber(fen)
+                    this.board.startNewGame(fen)
                 }catch (e) {
                     this.update({fenError: e.message})
                 }
                 this.update()
-            },
-            getBoardMode(): string {
-                return this.board.getMode()
             },
             undoLastMove() {
                 this.board.undoLastMove()

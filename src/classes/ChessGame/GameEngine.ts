@@ -8,27 +8,26 @@ import GameState from "./GameState/GameState";
 import ChessMove from "./Moves/ChessMove";
 import MoveStep from "./Moves/MoveStep";
 import MoveHistory from "./GameState/MoveHistory/MoveHistory";
+import FenNumber from "./GameState/FenNumber";
 
 export default class GameEngine {
 
+    // @ts-ignore - set by method called from constructor
     gameState: GameState;
 
+    // @ts-ignore - set by method called from constructor
     moveHistory: MoveHistory
 
     onMoveStepCallback: OnMoveStepCallback
 
     constructor(fen: string|null = null, onMoveStepCallback: OnMoveStepCallback | null = null) {
         this.onMoveStepCallback = onMoveStepCallback ?? function(step: MoveStep){}
-        this.gameState = new GameState(fen)
-        this.moveHistory = this.gameState.moveHistory
+        this.startNewGame(fen)
     }
 
-    getPiecePositions(): PiecePositions {
-        return this.gameState.mailbox144.piecePositions
-    }
-
-    setGameState(fen: string) {
-        this.gameState = new GameState(fen)
+    startNewGame(fen: string|null): void {
+        this.gameState = new GameState(fen ?? FenNumber.getNewGameFen())
+        this.moveHistory = this.gameState.moveHistory // overwrite existing reference with new move history
     }
 
     makeMove(chessMove: ChessMove): void {
@@ -56,16 +55,24 @@ export default class GameEngine {
         }
     }
 
+    /**
+     *  Composite getters
+     */
+
+    getFenNumber(): FenNumber {
+        return this.gameState.fenNumber
+    }
+
+    getPiecePositions(): PiecePositions {
+        return this.gameState.mailbox144.piecePositions
+    }
+
     getMoves(squareName: string): MoveList {
-        return this.gameState.mailbox144.moveFactory.getLegalMoves(squareName, this.gameState.fenNumber);
+        return this.gameState.getMoves(squareName);
     }
 
-    static getEmptyBoardFEN(): string {
-        return '8/8/8/8/8/8/8/8 w KQkq -'
-    }
-
-    static getNewGameFEN(): string {
-        return 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+    isWhiteMoving(): boolean {
+        return this.gameState.isWhiteMoving()
     }
 
     static allSquareNames(): Array<string> {

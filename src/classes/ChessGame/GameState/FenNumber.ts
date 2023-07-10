@@ -44,6 +44,13 @@ export default class FenNumber {
         }
     }
 
+    static getNewGameFen(): string {
+        return 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+    }
+    static getEmptyBoardFEN(): string {
+        return '8/8/8/8/8/8/8/8 w KQkq -'
+    }
+
     toString(): string {
         return [
             this.piecePlacements,
