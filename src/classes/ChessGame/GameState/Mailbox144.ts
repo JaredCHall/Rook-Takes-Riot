@@ -154,7 +154,7 @@ export default class Mailbox144 {
     {
 
         if(move instanceof PawnPromotionMove){
-            move.movingPiece.type = 'pawn'
+            move.movingPiece.type = 'pawn' // demote back to pawn
         }
 
         // execute each undo step

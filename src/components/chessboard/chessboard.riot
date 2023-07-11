@@ -69,8 +69,9 @@
                 this.gameEngine = new GameEngine(null, this.onMoveStep)
 
                 state.greeting = props.greeting
-                state.showOptions = true
+                state.showOptions = props.showOptions
                 state.selectedSquare = props.selectedSquare
+
             },
             onMounted() {
 
