@@ -5,8 +5,6 @@ export default class ChessPiece {
 
     color: string;
 
-    fenType: string;
-
     startingSquare: string
 
     currentSquare: string
@@ -21,17 +19,32 @@ export default class ChessPiece {
     }
 
     constructor(fenType: string, startingSquare: string){
-        this.fenType = fenType;
         this.startingSquare = startingSquare
         this.currentSquare = startingSquare
         this.type = ChessPiece.piecesMap[fenType.toLowerCase()]
         this.color = fenType == fenType.toLowerCase() ? 'black' : 'white'
     }
 
+    promoteTo(type:string){
+        this.type = type
+    }
+
     // the representation of the piece in a FEN number
     toFen(): string
     {
-        return this.fenType
+        let fenTypeName = ''
+        switch(this.type){
+            case 'knight':
+                fenTypeName = 'n'
+                break
+            default:
+                fenTypeName = this.type.charAt(0)
+        }
+        if(this.color === 'white'){
+            fenTypeName = fenTypeName.toUpperCase()
+        }
+
+        return fenTypeName
     }
 
     /**

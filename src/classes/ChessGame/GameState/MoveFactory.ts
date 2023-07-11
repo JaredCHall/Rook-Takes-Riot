@@ -8,6 +8,7 @@ import ChessPiece from "../ChessPiece";
 import ChessMove from "../Moves/ChessMove";
 import FenNumber from "./FenNumber";
 import GameState from "./GameState";
+import PawnPromotionMove from "../Moves/PawnPromotionMove";
 
 export default class MoveFactory {
 
@@ -134,6 +135,13 @@ export default class MoveFactory {
                 moves[testSquare.squareName] = new DoublePawnMove(pieceAddress.squareName, testSquare.squareName, piece);
             }else{
                 moves[testSquare.squareName] = new ChessMove(pieceAddress.squareName, testSquare.squareName, piece)
+            }
+        }
+
+        for(const i in moves){
+            const testMove = moves[i]
+            if(PawnPromotionMove.squareIsOnFinalRank(testMove.newSquare, testMove.movingPiece)){
+                moves[i] = new PawnPromotionMove(moves[i])
             }
         }
 

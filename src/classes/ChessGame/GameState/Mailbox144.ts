@@ -8,6 +8,7 @@ import MoveFactory from "./MoveFactory";
 import GameState from "./GameState";
 import FenNumber from "./FenNumber";
 import CastlingMove from "../Moves/CastlingMove";
+import PawnPromotionMove from "../Moves/PawnPromotionMove";
 
 export default class Mailbox144 {
 
@@ -112,6 +113,11 @@ export default class Mailbox144 {
 
     makeMove(move: ChessMove, validateMated: boolean = true): FenNumber {
 
+        // handle promotion
+        if(move instanceof PawnPromotionMove){
+            move.movingPiece.promoteTo('queen')
+        }
+
         // execute each move step
         const moveSteps = move.getMoveSteps()
         for(let i = 0; i < moveSteps.length; i++){
@@ -146,6 +152,11 @@ export default class Mailbox144 {
 
     undoMove(move: ChessMove, fenAfter: FenNumber): void
     {
+
+        if(move instanceof PawnPromotionMove){
+            move.movingPiece.type = 'pawn'
+        }
+
         // execute each undo step
         const undoSteps = move.getUndoSteps()
         for(let i = 0; i < undoSteps.length; i++){
@@ -157,6 +168,7 @@ export default class Mailbox144 {
         if(move.capturedPiece){
             this.pieceList.add(move.capturedPiece) // add captured piece back to the list of pieces
         }
+
 
         this.fenNumber = fenAfter
     }

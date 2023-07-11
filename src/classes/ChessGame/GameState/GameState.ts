@@ -4,6 +4,7 @@ import MoveList from "../Moves/MoveList";
 import MoveHistory from "./MoveHistory/MoveHistory";
 import FenNumber from "./FenNumber";
 import MoveHistoryItem from "./MoveHistory/MoveHistoryItem";
+import PawnPromotionMove from "../Moves/PawnPromotionMove";
 
 export default class GameState {
 
@@ -70,8 +71,14 @@ export default class GameState {
             throw new Error('Cannot make a move when the board is set to a previous move.')
         }
 
+        if(chessMove instanceof PawnPromotionMove){
+            console.log('this is a promotion')
+        }
+
         const newFenNumber = this.mailbox144.makeMove(chessMove)
         const moveRecord = this.moveHistory.recordMove(this, chessMove, newFenNumber)
+
+
 
         this.fenNumber = newFenNumber
         this.currentMove = this.lastMove = moveRecord
