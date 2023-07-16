@@ -96,4 +96,11 @@ export default class CastlingMove extends ChessMove
         return new ChessMove(moveInfo.rooksOldSquare, moveInfo.rooksNewSquare, this.rook)
     }
 
+    clone(): ChessMove {
+
+        const movingPiece = this.movingPiece.clone()
+        const rook = this.rook.clone()
+        return new CastlingMove(this.oldSquare, this.newSquare, movingPiece, rook, this.castlesType)
+    }
+
 }

@@ -40,7 +40,7 @@ export default class MoveHistory
     }
 
     recordMove(gameState: GameState, chessMove: ChessMove, fenAfter: FenNumber){
-        const moveHistoryItem = new MoveHistoryItem(gameState, chessMove, fenAfter)
+        const moveHistoryItem = new MoveHistoryItem(gameState, chessMove.clone(), fenAfter)
         this.moves.push(moveHistoryItem)
         return moveHistoryItem
     }

@@ -1,7 +1,6 @@
 import ChessPiece from "../ChessPiece";
 import MoveStep from "./MoveStep";
-import GameState from "../GameState/GameState";
-import FenNumber from "../GameState/FenNumber";
+
 
 /**
  * This represents any full chess move
@@ -39,4 +38,12 @@ export default class ChessMove {
         ]
 
     }
+
+    clone(): ChessMove
+    {
+        const movingPiece = this.movingPiece.clone()
+        const capturedPiece = this.capturedPiece ? this.capturedPiece.clone() : null
+        return new ChessMove(this.oldSquare, this.newSquare, movingPiece, capturedPiece)
+    }
+
 }

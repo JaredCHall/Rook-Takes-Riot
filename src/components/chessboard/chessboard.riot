@@ -125,8 +125,8 @@
             refreshPiecePositions(){
                 const positions = this.gameEngine.getPiecePositions()
 
-                for(const squareName in positions){
-                    const piece = positions[squareName]
+                for(const squareName in positions.squares){
+                    const piece = positions.get(squareName)
                     this.getSquare(squareName).setPiece(piece)
                 }
                 this.update({

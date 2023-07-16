@@ -140,7 +140,7 @@ export default class FenNumber {
 
     parsePiecePlacements(): PiecePositions
     {
-        let positions: PiecePositions = {}
+        let positions: PiecePositions = new PiecePositions()
 
         const rows = this.piecePlacements.split('/').reverse()
         if(rows.length !== 8){
@@ -158,14 +158,14 @@ export default class FenNumber {
                     const lastEmptySpace = columnNumber + emptySpaces - 1
                     while(columnNumber <= lastEmptySpace){
                         const squareName = columnNames[columnNumber-1]+rowNumber.toString()
-                        positions[squareName] = null
+                        positions.put(squareName, null)
                         columnNumber++
                     }
                 }else if(/[rbnqkpRBNQKP]/.test(character)) {
 
                     const squareName = columnNames[columnNumber-1]+rowNumber.toString()
                     const piece = new ChessPiece(character, squareName)
-                    positions[squareName] = piece
+                    positions.put(squareName, piece)
                     columnNumber++
                 }else{
                     throw new Error("Unrecognized position character: "+character)
@@ -186,7 +186,7 @@ export default class FenNumber {
         for(let row=8;row>=1;row--){
             for(let col =1; col<=8;col++){
                 const squareName = columnNames[col - 1] + row.toString()
-                const piece = mailbox.piecePositions[squareName]
+                const piece = mailbox.piecePositions.get(squareName)
 
                 if(piece) {
                     if(emptySquares > 0){

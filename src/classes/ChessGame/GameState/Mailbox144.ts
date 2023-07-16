@@ -18,7 +18,7 @@ export default class Mailbox144 {
 
     board: Array<MailboxAddress>=[];
 
-    piecePositions: PiecePositions = {}; // parallel object that stays updated with the mailboxes
+    piecePositions: PiecePositions ; // parallel object that stays updated with the mailboxes
 
     pieceList: PieceList
 
@@ -41,10 +41,10 @@ export default class Mailbox144 {
 
     }
 
-    constructor(fenNumber: FenNumber) {
+    constructor(fenNumber: FenNumber, piecePositions: null|PiecePositions = null) {
         this.fenNumber = fenNumber
         this.moveFactory = new MoveFactory(this)
-        this.piecePositions = fenNumber.parsePiecePlacements()
+        this.piecePositions = piecePositions ?? fenNumber.parsePiecePlacements()
         this.pieceList = new PieceList()
         this.initializeBoard(this.piecePositions)
     }
@@ -69,7 +69,7 @@ export default class Mailbox144 {
         for(let i = 0; i < seed.length; i++){
             const squareName = Mailbox144.getAddressName(i)
             const isOutOfBounds = seed[i] == 'x'
-            const piece = !isOutOfBounds ? positions[squareName] : null
+            const piece = !isOutOfBounds ? positions.get(squareName) : null
             this.board[i] = new MailboxAddress(i, isOutOfBounds , piece)
 
             if(piece !== null){
@@ -99,7 +99,7 @@ export default class Mailbox144 {
         this.board[squareIndex] = new MailboxAddress(squareIndex, isOutOfBounds, piece)
         const squareName = Mailbox144.getAddressName(squareIndex)
         if(squareName !== null){
-            this.piecePositions[squareName] = piece;
+            this.piecePositions.put(squareName,piece);
         }
     }
 
@@ -214,21 +214,20 @@ export default class Mailbox144 {
 
     clone(fenNumber: null|FenNumber = null): Mailbox144
     {
-
+        fenNumber ??= this.fenNumber.clone()
+        const piecePositions = this.piecePositions.clone()
+        return new Mailbox144(fenNumber, piecePositions)
     }
 
     isKingChecked(color: string, fenNumber: FenNumber|null = null): boolean
     {
-        let isKingChecked = false
         fenNumber = fenNumber ?? this.fenNumber
         const king = this.pieceList.getKing(color)
-        const mailbox = new Mailbox144(fenNumber.clone()) // get a new mailbox so we dont mess up the current one
+        const mailbox = this.clone(fenNumber) // get a new mailbox so we dont mess up the current one
 
         console.log('testing is '+color+'king checked')
 
-        const ret = mailbox.isSquareThreatenedBy(king.currentSquare, this.getOppositeColor(color), fenNumber)
-        console.log(ret)
-        return ret
+        return mailbox.isSquareThreatenedBy(king.currentSquare, this.getOppositeColor(color), fenNumber)
     }
 
     isKingMated(color: string, fenNumber: FenNumber): boolean
