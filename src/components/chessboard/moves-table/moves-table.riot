@@ -1,6 +1,13 @@
 <moves-table>
 
     <table class="move-history-table">
+        <thead>
+            <tr>
+                <td>&nbsp;</td>
+                <td>White</td>
+                <td>Black</td>
+            </tr>
+        </thead>
         <tbody>
             <tr each={fullMove in getMoveRows()}>
                 <td class="row-heading">{fullMove.moveCounter}</td>
@@ -46,6 +53,7 @@
             },
             showSelectedMove(moveIndex: number): void {
                 this.board.showMove(moveIndex)
+                this.update()
             },
             showPreviousMove(): void {
                 const i = this.getSelectedIndex()
@@ -96,6 +104,14 @@
         table
           box-shadow: 0.1rem 0.1rem #1e1c1c
           margin-bottom: 0
+
+
+          thead td
+              background-color: black
+              color: aquamarine
+              padding: .5rem 0 0 1rem
+              border-bottom: 1pt solid aquamarine
+              text-align: center
 
           td
             border-bottom: none

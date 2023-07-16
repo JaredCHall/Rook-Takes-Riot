@@ -24,4 +24,7 @@ export default class PawnPromotionMove extends ChessMove
         return squareName.charAt(1) === expectedRank
     }
 
+    clone(): ChessMove {
+        return new PawnPromotionMove(super.clone())
+    }
 }

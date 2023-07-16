@@ -41,9 +41,6 @@ export default class MoveHistoryItem {
             moveNotation += this.determineDisambiguation()
         }
 
-
-
-
         moveNotation += chessMove.capturedPiece ? 'x' : ''
 
 
