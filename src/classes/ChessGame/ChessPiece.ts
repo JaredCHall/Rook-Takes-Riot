@@ -69,4 +69,11 @@ export default class ChessPiece {
         return []
     }
 
+    clone(): ChessPiece
+    {
+        const newPiece = new ChessPiece(this.toFen(), this.startingSquare)
+        newPiece.currentSquare = this.currentSquare
+        return newPiece
+    }
+
 }

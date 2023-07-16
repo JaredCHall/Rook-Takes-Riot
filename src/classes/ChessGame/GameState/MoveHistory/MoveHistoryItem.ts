@@ -62,7 +62,6 @@ export default class MoveHistoryItem {
         const oldSquareRank = this.chessMove.oldSquare.charAt(0)
         const oldSquareFile = this.chessMove.oldSquare.charAt(1)
 
-
         const mailbox = new Mailbox144(this.fenBefore.clone());
         const pieces = mailbox.pieceList.getPieces(movingPiece.color, movingPiece.type)
 
@@ -97,10 +96,6 @@ export default class MoveHistoryItem {
 
         const rankIsUnique = attackingFromRanks[oldSquareRank] === 1
         const fileIsUnique = attackingFromFiles[oldSquareFile] === 1
-
-        console.log(attackingFromSquares)
-        console.log(attackingFromRanks)
-        console.log(attackingFromFiles)
 
         if(rankIsUnique){
             return oldSquareRank

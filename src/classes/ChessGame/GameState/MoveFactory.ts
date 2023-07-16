@@ -40,21 +40,28 @@ export default class MoveFactory {
         for(const i in candidateMoves){
             const move = candidateMoves[i]
 
-            this.mailbox.makeMove(move)
+            this.mailbox.makeMove(move, false)
 
+            const oppositeColor = this.mailbox.getOppositeColor(movingPiece.color)
             let isKingChecked: boolean = false
+            let isKingDead: boolean = false
             if(move instanceof CastlingMove){
                 // every square a king passes through, including the old and new square, must be safe in order to castle
                 const expectedSafeSquares = move.getMoveInfo().squaresThatMustBeSafe
                 isKingChecked = expectedSafeSquares.reduce((isKingChecked, squareName) =>
-                        isKingChecked || this.mailbox.isSquareThreatenedBy(squareName, this.mailbox.getOppositeColor(movingPiece.color))
+                        isKingChecked || this.mailbox.isSquareThreatenedBy(squareName, oppositeColor)
                     , false)
             }else{
                 // for every other type of move, you just cannot end a turn with a check on the board
                 isKingChecked = this.mailbox.isKingChecked(movingPiece.color)
+                isKingDead = this.mailbox.pieceList.getKing(movingPiece.color) === null
+
+                console.log(movingPiece.color + ' king is checked: '+ isKingChecked)
+                console.log(movingPiece.color + ' king is dead: '+ isKingDead)
+
             }
 
-            if(!isKingChecked){
+            if(!isKingChecked && !isKingDead){
                 legalMoves[move.newSquare] = move
             }
             this.mailbox.undoMove(move,currentFen)

@@ -106,6 +106,8 @@ export default class PieceList {
             pieceSet.pawn,
         )
 
+        console.log(pieces)
+
         return pieces
     }
 

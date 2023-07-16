@@ -9,6 +9,12 @@
             </tr>
         </tbody>
     </table>
+    <div class="row move-nav-panel">
+        <div class="column move-nav-button">&lt&lt</div>
+        <div class="column move-nav-button">&lt</div>
+        <div class="column move-nav-button">&gt</div>
+        <div class="column move-nav-button">&gt&gt</div>
+    </div>
 
 
 
@@ -67,6 +73,7 @@
 
         table
           box-shadow: 0.1rem 0.1rem #1e1c1c
+          margin-bottom: 0
 
           td
             border-bottom: none
@@ -92,6 +99,21 @@
               color: aquamarine
               padding: .5rem 0 .5rem 1rem
               border-right: 1pt solid aquamarine
+
+
+      div.move-nav-panel
+        padding: 0 1rem
+
+      .move-nav-panel .column
+          background-color: black
+          color: aquamarine
+          text-align: center
+          font-size: large
+          font-weight: bold
+
+          &:hover
+            background-color: aquamarine
+            color: black
 
     </style>
 

@@ -86,7 +86,10 @@ export default class FenNumber {
     }
 
     clone(): FenNumber {
-        return new FenNumber(this.toString())
+        const fen =  new FenNumber(this.toString())
+        fen.isCheck = this.isCheck
+        fen.isCheckMate = this.isCheckMate
+        return fen
     }
 
     isWhiteMoving() {

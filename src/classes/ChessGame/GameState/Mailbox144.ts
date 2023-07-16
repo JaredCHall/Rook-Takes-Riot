@@ -111,7 +111,11 @@ export default class Mailbox144 {
         }
     }
 
-    makeMove(move: ChessMove, validateMated: boolean = true): FenNumber {
+    makeMove(move: ChessMove, validateMated: boolean = true): FenNumber
+    {
+
+        console.log(validateMated ? 'console making move' : 'testing move')
+        console.log(move)
 
         // handle promotion
         if(move instanceof PawnPromotionMove){
@@ -208,6 +212,11 @@ export default class Mailbox144 {
         return moves
     }
 
+    clone(fenNumber: null|FenNumber = null): Mailbox144
+    {
+
+    }
+
     isKingChecked(color: string, fenNumber: FenNumber|null = null): boolean
     {
         let isKingChecked = false
@@ -215,7 +224,11 @@ export default class Mailbox144 {
         const king = this.pieceList.getKing(color)
         const mailbox = new Mailbox144(fenNumber.clone()) // get a new mailbox so we dont mess up the current one
 
-        return mailbox.isSquareThreatenedBy(king.currentSquare, this.getOppositeColor(color), fenNumber)
+        console.log('testing is '+color+'king checked')
+
+        const ret = mailbox.isSquareThreatenedBy(king.currentSquare, this.getOppositeColor(color), fenNumber)
+        console.log(ret)
+        return ret
     }
 
     isKingMated(color: string, fenNumber: FenNumber): boolean
