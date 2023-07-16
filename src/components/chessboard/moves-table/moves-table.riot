@@ -10,10 +10,10 @@
         </tbody>
     </table>
     <div class="row move-nav-panel">
-        <div class="column move-nav-button">&lt&lt</div>
-        <div class="column move-nav-button">&lt</div>
-        <div class="column move-nav-button">&gt</div>
-        <div class="column move-nav-button">&gt&gt</div>
+        <div class="column move-nav-button" onclick={() => showFirstMove()}>&lt&lt</div>
+        <div class="column move-nav-button" onclick={() => showPreviousMove()}>&lt</div>
+        <div class="column move-nav-button" onclick={() => showNextMove()}>&gt</div>
+        <div class="column move-nav-button" onclick={() => showLastMove()}>&gt&gt</div>
     </div>
 
 
@@ -46,6 +46,28 @@
             },
             showSelectedMove(moveIndex: number): void {
                 this.board.showMove(moveIndex)
+            },
+            showPreviousMove(): void {
+                const i = this.getSelectedIndex()
+                if(i === 0){
+                    return
+                }
+                this.showSelectedMove(i - 1)
+            },
+            showNextMove(): void {
+                const i = this.getSelectedIndex()
+                const len = this.moveHistory.length()
+
+                if(1 === len){
+                    return
+                }
+                this.showSelectedMove(i + 1)
+            },
+            showFirstMove(): void {
+                this.showSelectedMove(0)
+            },
+            showLastMove(): void {
+                this.showSelectedMove(this.moveHistory.length() - 1)
             },
             getMoveRows(): {moveCounter:number, move1: MoveHistoryItem, move2: null|MoveHistoryItem}[] {
                 const moveHistory = this.board.getGameEngine().gameState.moveHistory

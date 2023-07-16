@@ -37,10 +37,12 @@ export default class MoveHistoryItem {
 
         if(isPawn && chessMove.capturedPiece){
             moveNotation += chessMove.oldSquare.split('')[0]
+        }else{
+            moveNotation += this.determineDisambiguation()
         }
 
 
-        moveNotation += this.determineDisambiguation()
+
 
         moveNotation += chessMove.capturedPiece ? 'x' : ''
 
